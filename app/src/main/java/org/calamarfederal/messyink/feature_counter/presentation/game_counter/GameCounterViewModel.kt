@@ -30,6 +30,9 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 
+/**
+ *  View model for a simple counter with no extra data. Designed for uses like tracking health in Magic the Gathering
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GameCounterViewModel @Inject constructor(
@@ -40,6 +43,9 @@ class GameCounterViewModel @Inject constructor(
     private val createTickFrom: CreateTickFrom,
 ) : ViewModel() {
     companion object {
+        /**
+         * 'Global' key for navigation argument & saving its counter id
+         */
         const val COUNTER_ID_KEY = "counter_id"
     }
 
