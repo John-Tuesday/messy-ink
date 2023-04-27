@@ -8,9 +8,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import org.calamarfederal.messyink.feature_counter.presentation.TestStartViewModel
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.test_start.TestStartViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.test_start.TestStartScreen
 
 internal object TestStartNode : CounterNavNode("test_start") {
