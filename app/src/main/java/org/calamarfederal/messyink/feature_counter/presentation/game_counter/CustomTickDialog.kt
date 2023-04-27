@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,9 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import org.calamarfederal.messyink.common.compose.Placeholder
+
+@Preview
+@Composable
+private fun TickDialoguePreview() {
+    CustomTickEntryDialog(visible = true, onDismiss = {}, onAddTick = {})
+}
 
 @Composable
 internal fun CustomTickEntryDialog(
@@ -30,7 +38,7 @@ internal fun CustomTickEntryDialog(
     onAddTick: (Double) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (visible) {
+    AnimatedVisibility(visible = visible) {
         Dialog(onDismissRequest = onDismiss) {
             Column {
                 CustomTickEntry(onAddTick = { onAddTick(it); onDismiss() }, modifier = modifier)
