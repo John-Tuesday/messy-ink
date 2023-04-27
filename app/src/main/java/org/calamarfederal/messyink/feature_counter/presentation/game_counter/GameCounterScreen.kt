@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,11 @@ private fun GameCounterPreview() {
 }
 
 
+/**
+ *  # Game Counter Screen
+ *
+ *  ## Display mode designed for tracking mainly simple integer data. (e.g. health in Magic the Gathering)
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun GameCounterScreen(
@@ -90,7 +96,6 @@ fun GameCounterScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GameCounterLayout(
     counter: UiCounter,
@@ -114,7 +119,7 @@ private fun GameCounterLayout(
 }
 
 @Composable
-fun VerticalGameCounter(
+private fun VerticalGameCounter(
     counter: UiCounter,
     tickSum: Double,
     onAddTick: (Double) -> Unit,
@@ -239,8 +244,14 @@ private fun CounterCenter(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
+            val sumStr = remember(tickSum) {
+                if (tickSum.toLong().toDouble() == tickSum)
+                    tickSum.toLong().toString()
+                else
+                    tickSum.toString()
+            }
             Text(
-                text = "$tickSum",
+                text = sumStr,
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Black,
             )
