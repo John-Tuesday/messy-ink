@@ -11,6 +11,9 @@ object TonalElevation {
 
 
 
+    /**
+     * @return Material Layer with height <= [height]
+     */
     fun heightToLayer(height: Dp): Int {
         for ((index, floor) in heights.withIndex().reversed()) {
             if (height >= floor)
@@ -19,6 +22,9 @@ object TonalElevation {
         return 0
     }
 
+    /**
+     * @return the height in [Dp] of the Material Layer above [height]
+     */
     fun heightOfNext(height: Dp, minimumHeight: Dp = Dp.Unspecified, minimumLayer: Int = 0): Dp {
         require(minimumLayer < heights.size && minimumLayer >= 0)
 
@@ -31,6 +37,9 @@ object TonalElevation {
         return if (minimumHeight.isSpecified) minimumHeight else height
     }
 
+    /**
+     * @return height in [Dp] of the Material Layer below [height]
+     */
     fun heightOfPrevious(height: Dp, maximumHeight: Dp = Dp.Unspecified, maximumLayer: Int = 0): Dp {
         require(maximumLayer < heights.size)
 
