@@ -12,10 +12,18 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Popup
 
 
+/**
+ * Popup showing quick options to manipulate counter
+ *
+ * @param[alignment] hoisted Popup alignment
+ * @param[offset] hoisted Popup offset
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CounterOptionsPopup(
@@ -24,11 +32,14 @@ internal fun CounterOptionsPopup(
     onDelete: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.BottomCenter,
+    offset: IntOffset = IntOffset.Zero
 ) {
     AnimatedVisibility(visible = visible, modifier = modifier) {
         Popup(
             onDismissRequest = onDismiss,
-            alignment = Alignment.BottomCenter,
+            alignment = alignment,
+            offset = offset,
         ) {
             ElevatedCard {
                 Row {
