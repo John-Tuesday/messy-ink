@@ -114,3 +114,7 @@ private fun CounterOverviewLayout(
         }
     }
 }
+
+@Composable
+private fun BottomDetail() {
+}
