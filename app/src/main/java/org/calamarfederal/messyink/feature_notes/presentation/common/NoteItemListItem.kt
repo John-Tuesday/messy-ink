@@ -83,11 +83,11 @@ fun NoteItemListItem(
 ) {
     ListItem(
         modifier = modifier,
-        headlineText = { ListItemPartViewNameAndField(name = item.name, field = item.field) },
-        overlineText = if (item.subtitle.isBlank()) null else { ->
+        headlineContent = { ListItemPartViewNameAndField(name = item.name, field = item.field) },
+        overlineContent = if (item.subtitle.isBlank()) null else { ->
             ListItemPartViewSubtitle(subtitle = item.subtitle)
         },
-        supportingText = if (item.description.isBlank()) null else { ->
+        supportingContent = if (item.description.isBlank()) null else { ->
             ListItemPartViewDescription(description = item.description)
         },
         trailingContent = {

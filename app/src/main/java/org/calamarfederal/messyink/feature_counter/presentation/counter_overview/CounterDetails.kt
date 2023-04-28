@@ -11,7 +11,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -25,7 +24,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import java.util.stream.Collectors.toList
 
 @Preview
 @Composable
@@ -82,13 +80,13 @@ private fun TickListItem(
                 text = "${tick.id}"
             )
         },
-        headlineText = {
+        headlineContent = {
             Text(
                 text = tick.amount.toStringAllowShorten(),
                 style = LocalTextStyle.current + headlineStyle
             )
         },
-        supportingText = {
+        supportingContent = {
             Row {
                 Text(
                     text = "created: ${tick.timeCreated.toLocalDateTime(timeZone).date}",
@@ -99,6 +97,6 @@ private fun TickListItem(
                     style = LocalTextStyle.current + supportStyle,
                 )
             }
-        }
+        },
     )
 }

@@ -5,14 +5,19 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,21 +57,23 @@ fun CounterOverviewScreen(
     onClearCounterTicks: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        modifier = modifier,
-    ) { padding ->
-        Surface(
-            modifier = Modifier
-                .padding(padding)
-                .consumeWindowInsets(padding)
-        ) {
-            CounterOverviewLayout(
-                counters = counters,
-                tickSums = tickSums,
-                onDeleteCounter = onDeleteCounter,
-                onClearCounterTicks = onClearCounterTicks,
-                modifier = Modifier.fillMaxSize()
-            )
+    BottomDetail { sheetPadding ->
+        Scaffold(
+            modifier = modifier.padding(sheetPadding).consumeWindowInsets(sheetPadding),
+        ) { padding ->
+            Surface(
+                modifier = Modifier
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+            ) {
+                CounterOverviewLayout(
+                    counters = counters,
+                    tickSums = tickSums,
+                    onDeleteCounter = onDeleteCounter,
+                    onClearCounterTicks = onClearCounterTicks,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
@@ -115,6 +122,21 @@ private fun CounterOverviewLayout(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BottomDetail() {
+private fun BottomDetail(
+    modifier: Modifier = Modifier,
+    scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    BottomSheetScaffold(
+        modifier = modifier,
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            repeat(9) {
+                Text("content content $it")
+            }
+        },
+        content = content,
+    )
 }
