@@ -24,6 +24,7 @@ private fun CounterOverviewPreview() {
     MessyInkTheme {
         CounterOverviewScreen(
             counters = previewUiCounters.take(5).toList(),
+            tickSums = mapOf(),
         )
     }
 }
@@ -35,6 +36,7 @@ private fun CounterOverviewPreview() {
 @Composable
 fun CounterOverviewScreen(
     counters: List<UiCounter>,
+    tickSums: Map<Long, Double>,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -47,6 +49,7 @@ fun CounterOverviewScreen(
         ) {
             CounterOverviewLayout(
                 counters = counters,
+                tickSums = tickSums,
             )
         }
     }
@@ -55,6 +58,7 @@ fun CounterOverviewScreen(
 @Composable
 private fun CounterOverviewLayout(
     counters: List<UiCounter>,
+    tickSums: Map<Long, Double>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -63,6 +67,7 @@ private fun CounterOverviewLayout(
         items(items = counters, key = { it.id }) { counter ->
             CounterListItem(
                 counter = counter,
+                summaryNumber = tickSums[counter.id],
             )
         }
     }
