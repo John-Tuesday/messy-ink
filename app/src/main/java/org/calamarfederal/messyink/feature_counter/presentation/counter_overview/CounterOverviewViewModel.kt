@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.presentation.counter_overvie
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharingStarted.Companion
@@ -16,6 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * # View Model for viewing summary information of all Counters
  */
+@HiltViewModel
 class CounterOverviewViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getCountersFlow: GetCountersFlow,
