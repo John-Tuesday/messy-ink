@@ -20,28 +20,47 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import javax.inject.Inject
 
-class GetCounterFlowImpl(private val repo: CountersRepo) : GetCounterFlow {
+/**
+ * Default Implementation
+ */
+class GetCounterFlowImpl @Inject constructor(private val repo: CountersRepo) : GetCounterFlow {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(id: Long): Flow<UiCounter?> =
         repo.getCounterFlow(id).mapLatest { it?.toUI() }
 }
 
-class GetCountersFlowImpl(private val repo: CountersRepo) : GetCountersFlow {
+/**
+ *  Default Implementation
+ */
+class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : GetCountersFlow {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(): Flow<List<UiCounter>> =
         repo.getCountersFlow().mapLatest { it.map { item -> item.toUI() } }
 }
 
-class GetTicksOfFlowImpl(private val repo: CountersRepo) : GetTicksOfFlow {
+/**
+ * Default Implementation
+ */
+class GetTicksOfFlowImpl @Inject constructor (private val repo: CountersRepo) : GetTicksOfFlow {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(parentId: Long): Flow<List<UiTick>> =
         repo.getTicksFlow(parentId = parentId).mapLatest { it.map { item -> item.toUi() } }
 }
 
-class CreateCounterFromImpl(private val repo: CountersRepo) : CreateCounterFrom {
+/**
+ * Default Implementation
+ */
+class CreateCounterFromImpl @Inject constructor(private val repo: CountersRepo) : CreateCounterFrom {
     override suspend fun invoke(sample: UiCounter): UiCounter =
         repo.createCounterFrom(sample.copy(id = NOID).toCounter()).toUI()
 }
 
-class CreateTickFromImpl(private val repo: CountersRepo) : CreateTickFrom {
+/**
+ * Default Implementation
+ */
+class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : CreateTickFrom {
     override suspend fun invoke(sample: UiTick): UiTick {
         require(sample.parentId != NOID)
         println("use case: create tick from: tick { parentId  = ${sample.parentId}, id = ${sample.id} }")
@@ -49,16 +68,25 @@ class CreateTickFromImpl(private val repo: CountersRepo) : CreateTickFrom {
     }
 }
 
-class GetTicksSumOfFlowImpl(private val repo: CountersRepo) : GetTicksSumOfFlow {
+/**
+ * Default Implementation
+ */
+class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksSumOfFlow {
     override fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double> =
         repo.getTicksSumOfFlow(parentId = parentId, start = start, end = end)
 }
 
-class GetTicksAverageOfFlowImpl(private val repo: CountersRepo) : GetTicksAverageFlow {
+/**
+ * Default Implementation
+ */
+class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksAverageFlow {
     override fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double> =
         repo.getTicksAverageOfFlow(parentId = parentId, start = start, end = end)
 }
 
-class GetTicksSumByFlowImpl(private val repo: CountersRepo) : GetTicksSumByFlow {
+/**
+ * Default Implementation
+ */
+class GetTicksSumByFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksSumByFlow {
     override fun invoke(): Flow<Map<Long, Double>> = repo.getTicksSumByFlow()
 }

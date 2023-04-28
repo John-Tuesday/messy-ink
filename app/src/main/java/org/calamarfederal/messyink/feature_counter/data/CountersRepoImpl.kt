@@ -13,6 +13,7 @@ import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.Tick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import javax.inject.Inject
 import kotlin.random.Random
 
 /**
@@ -30,7 +31,7 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
  * Implement CountersRepo using CounterDao
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class CountersRepoImpl(private val dao: CounterDao) : CountersRepo {
+class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : CountersRepo {
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
 

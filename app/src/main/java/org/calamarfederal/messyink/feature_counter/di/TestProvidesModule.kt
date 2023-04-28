@@ -40,6 +40,9 @@ abstract class TestBindsModules {
    @Binds
    @ViewModelScoped
    abstract fun bindCounterRepo(repoImpl: CountersRepoImpl): CountersRepo
+
+   @Binds
+   abstract fun bindGetCounterFlow(impl: GetCounterFlowImpl): GetCounterFlow
 }
 
 /**
@@ -50,15 +53,11 @@ abstract class TestBindsModules {
 @InstallIn(ViewModelComponent::class)
 object TestProvidesModule {
     /**
-     *
+     * Provide View Model scoped DAO to application scoped database
      */
     @Provides
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
-
-    /**
-     * # Use Cases
-     */
 
     @Provides
     @ViewModelScoped
