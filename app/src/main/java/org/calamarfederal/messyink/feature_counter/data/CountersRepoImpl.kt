@@ -15,12 +15,20 @@ import org.calamarfederal.messyink.feature_counter.domain.Tick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import kotlin.random.Random
 
+/**
+ * Generate new Id (randomly), not in Pool
+ *
+ * note: this is a temporary implementation so I don't rely on iterative ids
+ */
 private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong() }): Long {
     var newId = nextRand()
     while (pool.contains(newId) || newId == NOID) newId = nextRand()
     return newId
 }
 
+/**
+ * Implement CountersRepo using CounterDao
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CountersRepoImpl(private val dao: CounterDao) : CountersRepo {
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
