@@ -176,22 +176,3 @@ private fun CounterOptions(
     }
 
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CounterListItem(
-    counter: UiCounter,
-    modifier: Modifier = Modifier,
-    summaryNumber: Double? = null,
-    selected: Boolean = false,
-) {
-    ListItem(
-        modifier = modifier,
-        headlineText = { Text(text = counter.name) },
-        leadingContent = summaryNumber?.let { { Text(text = it.toStringAllowShorten()) } },
-        tonalElevation = if (!selected)
-            LocalAbsoluteTonalElevation.current
-        else
-            TonalElevation.heightOfNext(LocalAbsoluteTonalElevation.current, minimumLayer = 2)
-    )
-}
