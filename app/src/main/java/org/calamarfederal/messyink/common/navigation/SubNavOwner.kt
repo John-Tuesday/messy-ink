@@ -7,10 +7,31 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 
+/**
+ * # Navigation Sub-graph Owner
+ *
+ * intended to be implemented as a stateless object at the Feature-Level
+ *
+ */
 interface SubNavOwner <T : SubNavNode> {
+    /**
+     * route to this, i.e. the owner of the nested graph
+     *
+     * should be const
+     */
     val rootRoute: String
+    /**
+     * The typical first screen / subcomponent when entering this
+     *
+     * should be const
+     */
     val defaultStart: T
 
+    /**
+     * Convenience function for creating the owned [NavHost]
+     *
+     * often the [navController] is hoisted
+     */
     @Composable
     fun SubNavHost(
         modifier: Modifier = Modifier,

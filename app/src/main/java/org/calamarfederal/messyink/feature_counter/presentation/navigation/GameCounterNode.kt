@@ -18,6 +18,9 @@ import org.calamarfederal.messyink.feature_counter.presentation.game_counter.Gam
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 
+/**
+ * # Game Counter Navigation Node
+ */
 internal object GameCounterNode : CounterNavNode(route = "game_counter") {
     private const val COUNTER_ID = GameCounterViewModel.COUNTER_ID_KEY
     override val arguments: List<NamedNavArgument> =
@@ -27,11 +30,7 @@ internal object GameCounterNode : CounterNavNode(route = "game_counter") {
         navHostController: NavHostController,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
-        composable(
-            route = GameCounterNode.route,
-            arguments = GameCounterNode.arguments,
-            deepLinks = GameCounterNode.deepLinks,
-        ) { entry ->
+        subNavNode { entry ->
             onEntry(entry)
 
             val onNavigateUp by remember(entry) {
