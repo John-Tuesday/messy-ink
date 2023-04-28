@@ -1,8 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,19 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Redo
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Undo
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
-import kotlin.math.absoluteValue
 
 @Preview
 @Composable
@@ -119,15 +110,19 @@ private fun GameCounterLayout(
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
-    VerticalGameCounter(
-        counter = counter,
-        tickSum = tickSum,
+    QuickTickButtons(
+        modifier = modifier.fillMaxSize(),
+        centerSlot = {
+            CounterCenter(
+                counter = counter,
+                tickSum = tickSum,
+                onAddCustomTick = { showAmountPrompt = true },
+                onUndo = onUndo,
+                onRedo = onRedo,
+                onReset = onReset,
+            )
+        },
         onAddTick = onAddTick,
-        onAddCustomTick = { showAmountPrompt = true },
-        onUndo = onUndo,
-        onRedo = onRedo,
-        onReset = onReset,
-        modifier = modifier
     )
     CustomTickEntryDialog(
         visible = showAmountPrompt,
@@ -135,120 +130,6 @@ private fun GameCounterLayout(
         onAddTick = onAddTick,
     )
 }
-
-@Composable
-private fun VerticalGameCounter(
-    counter: UiCounter,
-    tickSum: Double,
-    onAddTick: (Double) -> Unit,
-    onAddCustomTick: () -> Unit,
-    onReset: () -> Unit,
-    onUndo: () -> Unit,
-    onRedo: () -> Unit,
-    modifier: Modifier = Modifier,
-    mainAmount: Double = 5.00,
-    mediumAmount: Double = 2.00,
-    smallAmount: Double = 1.00,
-    mainWeight: Float = 10f,
-    mediumWeight: Float = 7.5f,
-    smallWeight: Float = 5f,
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        MainTickButton(
-            amount = mainAmount,
-            onClick = onAddTick,
-            modifier = Modifier
-                .weight(mainWeight)
-                .fillMaxWidth()
-        )
-        MiddleTickButton(
-            amount = mediumAmount, onClick = onAddTick,
-            modifier = Modifier
-                .weight(mediumWeight)
-                .fillMaxWidth()
-        )
-        SmallestTickButton(
-            amount = smallAmount, onClick = onAddTick,
-            modifier = Modifier
-                .weight(smallWeight)
-                .fillMaxWidth()
-        )
-        CounterCenter(
-            counter = counter,
-            tickSum = tickSum,
-            onAddCustomTick = onAddCustomTick,
-            onReset = onReset,
-            onRedo = onRedo,
-            onUndo = onUndo,
-            modifier = Modifier.weight(2 * mainWeight),
-        )
-        SmallestTickButton(
-            amount = -smallAmount, onClick = onAddTick,
-            modifier = Modifier
-                .weight(smallWeight)
-                .fillMaxWidth()
-        )
-        MiddleTickButton(
-            amount = -mediumAmount, onClick = onAddTick,
-            modifier = Modifier
-                .weight(mediumWeight)
-                .fillMaxWidth()
-        )
-        MainTickButton(
-            amount = -mainAmount,
-            onClick = onAddTick,
-            modifier = Modifier
-                .weight(mainWeight)
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun MainTickButton(
-    amount: Double,
-    onClick: (Double) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = { onClick(amount) },
-        modifier = modifier,
-    ) {
-        Icon(if (amount < 0) Icons.Filled.Remove else Icons.Filled.Add, "add $amount")
-        Text("${amount.absoluteValue}")
-    }
-}
-
-@Composable
-private fun MiddleTickButton(
-    amount: Double,
-    onClick: (Double) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FilledTonalButton(
-        onClick = { onClick(amount) },
-        modifier = modifier,
-    ) {
-        Icon(if (amount < 0) Icons.Filled.Remove else Icons.Filled.Add, "add $amount")
-        Text("${amount.absoluteValue}")
-    }
-}
-
-@Composable
-private fun SmallestTickButton(
-    amount: Double,
-    onClick: (Double) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    OutlinedButton(
-        onClick = { onClick(amount) },
-        modifier = modifier,
-    ) {
-        Icon(if (amount < 0) Icons.Filled.Remove else Icons.Filled.Add, "add $amount")
-        Text("${amount.absoluteValue}")
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterCenter(
