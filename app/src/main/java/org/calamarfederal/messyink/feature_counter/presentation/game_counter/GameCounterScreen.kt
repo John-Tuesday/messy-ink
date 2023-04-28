@@ -1,19 +1,29 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -51,7 +61,6 @@ private fun GameCounterPreview() {
     }
 }
 
-
 /**
  *  # Game Counter Screen
  *
@@ -72,12 +81,12 @@ fun GameCounterScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            GameCounterAppBar(
-                onReset = onReset,
-                onUndo = onUndo,
-                onRedo = onRedo,
-                onNavigateUp = onNavigateUp,
-            )
+//            GameCounterAppBar(
+//                onReset = onReset,
+//                onUndo = onUndo,
+//                onRedo = onRedo,
+//                onNavigateUp = onNavigateUp,
+//            )
         },
     ) { padding ->
         Surface(
@@ -90,6 +99,9 @@ fun GameCounterScreen(
                 counter = counter,
                 tickSum = tickSum,
                 onAddTick = onAddTick,
+                onRedo = onRedo,
+                onReset = onReset,
+                onUndo = onUndo,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -101,6 +113,9 @@ private fun GameCounterLayout(
     counter: UiCounter,
     tickSum: Double,
     onAddTick: (Double) -> Unit,
+    onUndo: () -> Unit,
+    onRedo: () -> Unit,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
@@ -109,6 +124,9 @@ private fun GameCounterLayout(
         tickSum = tickSum,
         onAddTick = onAddTick,
         onAddCustomTick = { showAmountPrompt = true },
+        onUndo = onUndo,
+        onRedo = onRedo,
+        onReset = onReset,
         modifier = modifier
     )
     CustomTickEntryDialog(
@@ -124,6 +142,9 @@ private fun VerticalGameCounter(
     tickSum: Double,
     onAddTick: (Double) -> Unit,
     onAddCustomTick: () -> Unit,
+    onReset: () -> Unit,
+    onUndo: () -> Unit,
+    onRedo: () -> Unit,
     modifier: Modifier = Modifier,
     mainAmount: Double = 5.00,
     mediumAmount: Double = 2.00,
@@ -156,6 +177,9 @@ private fun VerticalGameCounter(
             counter = counter,
             tickSum = tickSum,
             onAddCustomTick = onAddCustomTick,
+            onReset = onReset,
+            onRedo = onRedo,
+            onUndo = onUndo,
             modifier = Modifier.weight(2 * mainWeight),
         )
         SmallestTickButton(
@@ -180,7 +204,6 @@ private fun VerticalGameCounter(
     }
 }
 
-
 @Composable
 private fun MainTickButton(
     amount: Double,
@@ -195,7 +218,6 @@ private fun MainTickButton(
         Text("${amount.absoluteValue}")
     }
 }
-
 
 @Composable
 private fun MiddleTickButton(
@@ -233,7 +255,13 @@ private fun CounterCenter(
     counter: UiCounter,
     tickSum: Double,
     onAddCustomTick: () -> Unit,
+    onUndo: () -> Unit,
+    onRedo: () -> Unit,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier,
+    enableUndo: Boolean = false,
+    enableRedo: Boolean = false,
+    enableReset: Boolean = false,
 ) {
     Surface(
         modifier = modifier,
@@ -261,6 +289,50 @@ private fun CounterCenter(
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Medium,
             )
+            AnimatedEditActions(
+                onRedo = onRedo,
+                onUndo = onUndo,
+                onReset = onReset,
+                enableRedo = enableRedo,
+                enableUndo = enableUndo,
+                enableReset = enableReset,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnimatedEditActions(
+    onRedo: () -> Unit,
+    onUndo: () -> Unit,
+    onReset: () -> Unit,
+    enableRedo: Boolean,
+    enableUndo: Boolean,
+    enableReset: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            this@Row.AnimatedVisibility(visible = enableUndo) {
+                IconButton(onClick = onUndo) {
+                    Icon(Icons.Filled.Undo, "undo")
+                }
+            }
+        }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            this@Row.AnimatedVisibility(visible = enableReset) {
+                IconButton(onClick = onReset) {
+                    Icon(Icons.Filled.RestartAlt, "reset")
+                }
+            }
+        }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            this@Row.AnimatedVisibility(visible = enableRedo) {
+                IconButton(onClick = onRedo) {
+                    Icon(Icons.Filled.Redo, "redo")
+                }
+            }
         }
     }
 }
