@@ -5,7 +5,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.TestStartNode.testStart
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
@@ -26,7 +25,6 @@ fun CounterFeatureEntry(
         CounterNavHost.SubNavHost(
             navController = navController,
         ) {
-            testStart(navController)
             gameCounterNode(navController)
         }
     }
