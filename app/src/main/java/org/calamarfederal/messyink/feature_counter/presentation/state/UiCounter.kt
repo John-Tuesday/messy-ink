@@ -61,7 +61,7 @@ val previewUiCounters: Sequence<UiCounter> get() = (1..Int.MAX_VALUE).asSequence
  *
  * used to generate self-labeled UiTicks for preview and testing purposes.
  */
-fun previewUiTicks(parentId: Long): Sequence<UiTick> = (1..Int.MAX_VALUE).asSequence().map {
+fun previewUiTicks(parentId: Long): Sequence<UiTick> = (1..Int.MAX_VALUE).asSequence().filterNot { it.toLong() == parentId }.map {
     UiTick(
         amount = it.toDouble(),
         parentId = parentId,
