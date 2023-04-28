@@ -7,10 +7,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewScreen
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewViewModel
 
 internal object CounterOverviewNode : CounterNavNode(route = "counter_overview") {
+    fun NavHostController.navigateToCounterOverview() {
+        navigate(this@CounterOverviewNode.route, navOptions { launchSingleTop = true })
+    }
+
     fun NavGraphBuilder.counterOverview(
         navController: NavHostController,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
