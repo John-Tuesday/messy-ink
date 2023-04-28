@@ -63,8 +63,12 @@ class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : Counte
 
     override suspend fun updateTick(tick: Tick) = dao.updateTick(tick.toEntity())
 
-    override suspend fun deleteCounter(counter: Counter) = dao.deleteCounter(counter.id)
-    override suspend fun deleteTick(tick: Tick) = dao.deleteTick(tick.id)
+    override suspend fun deleteCounter(id: Long) = dao.deleteCounter(id)
+    override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
+    override suspend fun deleteTicks(ids: List<Long>) = dao.deleteTicks(ids)
+
+    override suspend fun deleteTicksFrom(parentId: Long, start: Instant, end: Instant) =
+        dao.deleteTicksFrom(parentId, start = start, end = end)
 
     /**
      * # Summary & Calculation

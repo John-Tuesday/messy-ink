@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
 
@@ -16,11 +17,6 @@ import org.calamarfederal.messyink.data.entity.TickEntity
  */
 @Dao
 interface CounterDao {
-
-    /**
-     * ## IDs
-     *
-     */
 
     /**
      * [List] of every [CounterEntity.id]
@@ -33,12 +29,6 @@ interface CounterDao {
      */
     @Query("SELECT id FROM counter_ticks")
     suspend fun tickIds(): List<Long>
-
-    /**
-     * # Get Objects
-     * ## One-shot
-     *
-     */
 
     /**
      * All [CounterEntity] ordered by [CounterEntity.timeModified]
@@ -61,11 +51,6 @@ interface CounterDao {
     @MapInfo(keyColumn = "parent_id")
     @Query("SELECT * FROM counter_ticks GROUP BY parent_id")
     fun ticksByCounter(): Map<Long, List<TickEntity>>
-
-    /**
-     * ## Flow
-     *
-     */
 
     /**
      * @return emits [CounterEntity] with matching [id] or null when none exists
@@ -98,12 +83,6 @@ interface CounterDao {
     fun ticksByCounterFlow(): Flow<Map<Long, List<TickEntity>>>
 
     /**
-     * # Insert, Update,
-     * ## by Object
-     *
-     */
-
-    /**
      * Add [counter] if it doesn't already exist
      */
     @Insert
@@ -126,11 +105,6 @@ interface CounterDao {
      */
     @Update
     suspend fun updateTick(tick: TickEntity)
-
-    /**
-     * # Delete
-     * ## by ID
-     */
 
     /**
      * Delete any [CounterEntity] with matching [id]
@@ -157,9 +131,17 @@ interface CounterDao {
     suspend fun deleteTicks(ids: List<Long>)
 
     /**
-     * # Summary & Calculation
-     * ## as One-shot
+     * delete all [TickEntity] with matching [parentId] and [TickEntity.timeForData] in bounds [[start], [end]]
+     *
+     * @param[start] inclusive lower bound
+     * @param[end] inclusive upper bound
      */
+    @Query("DELETE FROM counter_ticks WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
+    suspend fun deleteTicksFrom(
+        parentId: Long,
+        @TypeConverters(TimeTypeConverters::class) start: Instant,
+        @TypeConverters(TimeTypeConverters::class) end: Instant,
+    )
 
     /**
      * Sum of all [TickEntity] when grouped by [TickEntity.parentId]
@@ -176,7 +158,7 @@ interface CounterDao {
 
     /**
      * Sum of all [TickEntity] with matching [parentId] within the bounds [[start], [end]]
-     * 
+     *
      * @param[start] inclusive lower bound
      * @param[end] inclusive upper bound
      */
@@ -199,10 +181,6 @@ interface CounterDao {
         @TypeConverters(TimeTypeConverters::class) start: Instant,
         @TypeConverters(TimeTypeConverters::class) end: Instant,
     ): Double
-
-    /**
-     * ## as Flow
-     */
 
     /**
      * key is [TickEntity.parentId]

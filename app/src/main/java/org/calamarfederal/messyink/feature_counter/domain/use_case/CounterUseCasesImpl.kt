@@ -9,6 +9,9 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
@@ -64,6 +67,29 @@ class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : C
         println("use case: create tick from: tick { parentId  = ${sample.parentId}, id = ${sample.id} }")
         return repo.createTickFrom(sample.copy(id = NOID).toTick()).toUi()
     }
+}
+
+/**
+ * Default Implementation
+ */
+class DeleteCounterImpl @Inject constructor(private val repo: CountersRepo): DeleteCounter {
+    override suspend fun invoke(id: Long) = repo.deleteCounter(id)
+}
+
+/**
+ * Default Implementation
+ */
+class DeleteTicksImpl @Inject constructor(private val repo: CountersRepo): DeleteTicks {
+    override suspend fun invoke(ids: List<Long>) = repo.deleteTicks(ids)
+    override suspend fun invoke(id: Long) = repo.deleteTick(id)
+}
+
+/**
+ * Default Implementation
+ */
+class DeleteTicksFromImpl @Inject constructor(private val repo: CountersRepo): DeleteTicksFrom {
+    override suspend fun invoke(parentId: Long, start: Instant, end: Instant) =
+        repo.deleteTicksFrom(parentId = parentId, start = start, end = end)
 }
 
 /**

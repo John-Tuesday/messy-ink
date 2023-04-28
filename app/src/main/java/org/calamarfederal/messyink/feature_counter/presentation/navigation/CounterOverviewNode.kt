@@ -30,6 +30,8 @@ internal object CounterOverviewNode : CounterNavNode(route = "counter_overview")
             CounterOverviewScreen(
                 counters = counters,
                 tickSums = tickSums,
+                onDeleteCounter = { viewModel.deleteCounter(it.id) },
+                onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
             )
         }
     }

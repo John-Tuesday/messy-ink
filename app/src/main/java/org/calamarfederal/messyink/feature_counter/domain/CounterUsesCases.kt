@@ -69,6 +69,47 @@ fun interface CreateTickFrom {
 }
 
 /**
+ * @see [invoke]
+ */
+fun interface DeleteCounter {
+    /**
+     * Delete any [Counter] with matching [id]
+     */
+    suspend operator fun invoke(id: Long)
+}
+
+/**
+ * @see [invoke]
+ */
+fun interface DeleteTicks {
+    /**
+     * Delete each [Tick] specified by [ids]
+     */
+    suspend operator fun invoke(ids: List<Long>)
+    /**
+     * Convenience for single tick deletion
+     * @see [invoke]
+     */
+    suspend operator fun invoke(id: Long) = invoke(listOf(id))
+}
+
+/**
+ * @see [invoke]
+ */
+fun interface DeleteTicksFrom {
+    /**
+     * Delete all [Tick] with [Tick.parentId] and [Tick.timeForData] within [[start], [end]]
+     */
+    suspend operator fun invoke(parentId: Long, start: Instant, end: Instant)
+
+    /**
+     * Overload of [invoke] with bounds set to max
+     */
+    suspend operator fun invoke(parentId: Long) =
+        invoke(parentId, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
+}
+
+/**
  * SAM
  *
  * @see invoke

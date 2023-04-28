@@ -6,6 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
@@ -14,6 +17,9 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickFromImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteCounterImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksFromImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCounterFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCountersFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksAverageOfFlowImpl
@@ -57,6 +63,24 @@ abstract class CounterUseCasesModule {
      */
     @Binds
     abstract fun bindCreateTickFrom(impl: CreateTickFromImpl): CreateTickFrom
+
+    /**
+     * Binds Default Implementation
+     */
+    @Binds
+    abstract fun bindDeleteCounter(impl: DeleteCounterImpl): DeleteCounter
+
+    /**
+     * Binds Default Implementation
+     */
+    @Binds
+    abstract fun bindDeleteTicks(impl: DeleteTicksImpl): DeleteTicks
+
+    /**
+     * Binds Default Implementation
+     */
+    @Binds
+    abstract fun bindDeleteTicksFrom(impl: DeleteTicksFromImpl): DeleteTicksFrom
 
     /**
      * Binds Implementation to interface

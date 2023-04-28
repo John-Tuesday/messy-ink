@@ -2,6 +2,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
 
 /**
  * # Wrapper for managing counters, ticks, and their common commands
@@ -75,18 +76,24 @@ interface CountersRepo {
     suspend fun updateTick(tick: Tick)
 
     /**
-     * Find and delete any Counter with matching [counter].id
-     *
-     * @param[counter] counter whose id will be used
+     * Find and delete any [Counter] with matching [Counter.id]
      */
-    suspend fun deleteCounter(counter: Counter)
+    suspend fun deleteCounter(id: Long)
 
     /**
-     * Find and delete any TIck with matching [tick].id
-     *
-     * @param[tick] tick whose id will be used
+     * Find and delete any [Tick] with matching [Tick.id]
      */
-    suspend fun deleteTick(tick: Tick)
+    suspend fun deleteTick(id: Long)
+
+    /**
+     * Find and delete all [Tick] with matching [Tick.id]
+     */
+    suspend fun deleteTicks(ids: List<Long>)
+
+    /**
+     * Delete all [Tick] with matching [Tick.parentId] from [[start], [end]]
+     */
+    suspend fun deleteTicksFrom(parentId: Long, start: Instant = Instant.DISTANT_PAST, end: Instant = Instant.DISTANT_FUTURE)
 
     /**
      * # Summary & Calculation

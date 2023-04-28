@@ -20,7 +20,7 @@ object TonalElevation {
     }
 
     fun heightOfNext(height: Dp, minimumHeight: Dp = Dp.Unspecified, minimumLayer: Int = 0): Dp {
-        require(minimumLayer < heights.size && minimumLayer > 0)
+        require(minimumLayer < heights.size && minimumLayer >= 0)
 
         val testHeight = if (minimumHeight.isSpecified) height.coerceAtLeast(minimumHeight) else height
 
