@@ -5,9 +5,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
-import org.calamarfederal.messyink.data.CounterDao
-import org.calamarfederal.messyink.data.MessyInkDb
-import org.calamarfederal.messyink.feature_counter.data.CountersRepoImpl
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
@@ -26,28 +23,9 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlo
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
 
-/**
- *
- */
 @Module
 @InstallIn(ViewModelComponent::class)
-object TestStartModule {
-    @Provides
-    @ViewModelScoped
-    fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
-
-    @Provides
-    @ViewModelScoped
-    fun provideCountersRepo(dao: CounterDao): CountersRepo = CountersRepoImpl(dao)
-
-    /**
-     * # Use Cases
-     */
-
-    @Provides
-    @ViewModelScoped
-    fun provideGetCounterFlow(repo: CountersRepo): GetCounterFlow = GetCounterFlowImpl(repo)
-
+object CouterUseCases {
     @Provides
     @ViewModelScoped
     fun provideGetCountersFlows(repo: CountersRepo): GetCountersFlow = GetCountersFlowImpl(repo)
@@ -62,7 +40,7 @@ object TestStartModule {
 
     @Provides
     @ViewModelScoped
-    fun provideCreateTickFrom(repo: CountersRepo): CreateTickFrom= CreateTickFromImpl(repo)
+    fun provideCreateTickFrom(repo: CountersRepo): CreateTickFrom = CreateTickFromImpl(repo)
 
     /**
      * ## Calculation
@@ -79,4 +57,5 @@ object TestStartModule {
     @Provides
     @ViewModelScoped
     fun provideGetSumOfTicksByFlow(repo: CountersRepo): GetTicksSumByFlow = GetTicksSumByFlowImpl(repo)
+
 }
