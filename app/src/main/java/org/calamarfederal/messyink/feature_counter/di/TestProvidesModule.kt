@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.di
 
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,18 +28,33 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumBy
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
 
 /**
- *
+ * # Test Binds
+ * ## View model scoped
  */
 @Module
 @InstallIn(ViewModelComponent::class)
-object TestStartModule {
+abstract class TestBindsModules {
+   /**
+    * Binds CountersRepo Implementation to Interface
+    */
+   @Binds
+   @ViewModelScoped
+   abstract fun bindCounterRepo(repoImpl: CountersRepoImpl): CountersRepo
+}
+
+/**
+ * # Test Provides
+ * ## View Model scoped
+ */
+@Module
+@InstallIn(ViewModelComponent::class)
+object TestProvidesModule {
+    /**
+     *
+     */
     @Provides
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
-
-    @Provides
-    @ViewModelScoped
-    fun provideCountersRepo(dao: CounterDao): CountersRepo = CountersRepoImpl(dao)
 
     /**
      * # Use Cases
