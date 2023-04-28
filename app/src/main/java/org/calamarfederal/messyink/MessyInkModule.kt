@@ -9,9 +9,15 @@ import dagger.hilt.components.SingletonComponent
 import org.calamarfederal.messyink.data.MessyInkDb
 import javax.inject.Singleton
 
+/**
+ * # Application-level dependencies
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object MessyInkModule {
+    /**
+     * Build Room database, scoped to the application
+     */
     @Provides
     @Singleton
     fun provideMessyInkDb(app: Application): MessyInkDb =

@@ -8,6 +8,14 @@ import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameC
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.TestStartNode.testStart
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
+/**
+ * # Navigation Graph Root for the Counter Feature
+ *
+ * the params are meant to mimic NavGraphBuilder::composable
+ *
+ * @param[backStackEntry] current back stack entry
+ * @param[parentHostController] navController used by parent (Messy Ink)
+ */
 @Composable
 fun CounterFeatureEntry(
     backStackEntry: NavBackStackEntry,
