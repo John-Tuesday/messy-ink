@@ -1,28 +1,5 @@
 package org.calamarfederal.messyink.feature_counter.di
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
-import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
-import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
-import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickFromImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCounterFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCountersFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksAverageOfFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
-
 //@Module
 //@InstallIn(ViewModelComponent::class)
 //object CouterUseCases {

@@ -93,7 +93,7 @@ fun interface GetTicksSumOfFlow {
  *
  * @see invoke
  */
-fun interface GetTicksAverageFlow {
+fun interface GetTicksAverageOfFlow {
     /**
      * Average all ticks from [[start], [end]] with [parentId]
      *

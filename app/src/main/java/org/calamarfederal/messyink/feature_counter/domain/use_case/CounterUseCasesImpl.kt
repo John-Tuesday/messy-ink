@@ -5,14 +5,12 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
@@ -79,7 +77,7 @@ class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) 
 /**
  * Default Implementation
  */
-class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksAverageFlow {
+class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksAverageOfFlow {
     override fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double> =
         repo.getTicksAverageOfFlow(parentId = parentId, start = start, end = end)
 }
