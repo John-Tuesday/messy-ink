@@ -156,7 +156,7 @@ private fun AllNotesLayout(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NoteListItem(
     note: UiNoteBrief,
@@ -186,7 +186,7 @@ private fun NoteListItem(
                 else onSelectNote()
             },
         ),
-        headlineText = {
+        headlineContent = {
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.titleLarge,

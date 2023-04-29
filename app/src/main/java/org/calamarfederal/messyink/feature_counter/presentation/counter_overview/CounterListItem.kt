@@ -43,7 +43,7 @@ internal fun CounterListItem(
 ) {
     ListItem(
         modifier = modifier,
-        headlineText = {
+        headlineContent = {
             Text(
                 text = counter.name,
                 style = if (selected) textStyle.merge(
@@ -65,10 +65,10 @@ internal fun CounterListItem(
                 ) else textStyle,
             )
         },
-        overlineText = {
+        overlineContent = {
             Text("ID: ${counter.id}")
         },
-        supportingText = {
+        supportingContent = {
             Column {
                 Text("modified: ${counter.timeModified.toLocalDateTime(timeZone).date}")
 //                Text("created: ${counter.timeCreated.toLocalDateTime(timeZone).date}")

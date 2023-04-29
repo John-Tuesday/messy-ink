@@ -26,10 +26,15 @@ internal object CounterOverviewNode : CounterNavNode(route = "counter_overview")
             val viewModel: CounterOverviewViewModel = hiltViewModel()
             val counters by viewModel.countersState.collectAsState()
             val tickSums by viewModel.ticksSumState.collectAsState()
+            val selectedCounter by viewModel.selectedCounter.collectAsState()
+            val ticksOfSelected by viewModel.ticksOfSelectedCounter.collectAsState()
 
             CounterOverviewScreen(
                 counters = counters,
                 tickSums = tickSums,
+                selectedCounter = selectedCounter,
+                ticksOfSelected = ticksOfSelected ?: listOf(),
+                onSelectCounter = viewModel::selectCounter,
                 onDeleteCounter = { viewModel.deleteCounter(it.id) },
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
             )

@@ -87,7 +87,7 @@ internal fun EditableNoteItem(
         tonalElevation = LocalAbsoluteTonalElevation.current + when {
             isSelected -> 8.dp; else -> 0.dp
         },
-        headlineText = {
+        headlineContent = {
             NameAndFieldText(
                 name = item.name,
                 field = item.field,
@@ -96,7 +96,7 @@ internal fun EditableNoteItem(
                 enabled = !selectMode,
             )
         },
-        overlineText = {
+        overlineContent = {
             ItemSubtitle(
                 subtitle = item.subtitle,
                 onChange = { onItemChange(item.copy(subtitle = it)) },
@@ -104,7 +104,7 @@ internal fun EditableNoteItem(
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        supportingText = {
+        supportingContent = {
             ItemDescription(
                 description = item.description,
                 onChange = { onItemChange(item.copy(description = it)) },
