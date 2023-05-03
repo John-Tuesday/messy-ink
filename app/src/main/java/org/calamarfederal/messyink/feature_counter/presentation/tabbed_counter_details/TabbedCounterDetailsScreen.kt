@@ -1,21 +1,10 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
-import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.generateDecayAnimationSpec
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.snapping.SnapFlingBehavior
-import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
-import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -30,10 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -154,60 +140,3 @@ private fun DetailsLayout(
         }
     }
 }
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun DetailsLayoutTest(
-    counter: UiCounter,
-    ticks: List<UiTick>,
-    tickSum: Double?,
-    tickAverage: Double?,
-    modifier: Modifier = Modifier,
-    listState: LazyListState = rememberLazyListState(),
-) {
-    val snappingLayout = remember(listState) { SnapLayoutInfoProvider(listState) }
-    val density = LocalDensity.current
-    val flingBehavior = remember(snappingLayout, density) {
-        tabDetailsFlingBehavior(snappingLayout, density)
-    }
-
-    LazyRow(
-        state = listState,
-        flingBehavior = flingBehavior,
-        modifier = modifier,
-    ) {
-        items(items = CounterDetailsTab.values(), key = { it }) {
-            when (it) {
-                TickDetails -> TickDetailsLayout(
-                    ticks = ticks,
-                    modifier = Modifier.fillParentMaxSize()
-                )
-
-                GameCounter -> GameCounterTab(
-                    counter = counter,
-                    tickSum = tickSum,
-                    modifier = Modifier.fillParentMaxSize()
-                )
-
-                TestScreen  -> {
-                    Surface(modifier = Modifier.fillParentMaxSize()) {
-                        Text("Testing :P")
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-private fun tabDetailsFlingBehavior(
-    snapLayout: SnapLayoutInfoProvider,
-    density: Density,
-) = SnapFlingBehavior(
-    snapLayoutInfoProvider = snapLayout,
-    lowVelocityAnimationSpec = SpringSpec(stiffness = Spring.StiffnessMediumLow),
-    highVelocityAnimationSpec = SplineBasedFloatDecayAnimationSpec(density).generateDecayAnimationSpec(),
-    snapAnimationSpec = SpringSpec(),
-    density = density,
-    shortSnapVelocityThreshold = 64.dp,
-)
