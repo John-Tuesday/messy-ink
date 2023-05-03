@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.counterOverview
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails.navigateToTabbedDetails
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails.tabbedCounterDetails
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
@@ -27,7 +28,7 @@ fun CounterFeatureEntry(
         CounterNavHost.SubNavHost(
             navController = navController,
         ) {
-            counterOverview(navController)
+            counterOverview(navController, onNavigateToCounterDetails = {navController.navigateToTabbedDetails(it)})
             gameCounterNode(navController)
             tabbedCounterDetails(navController)
         }

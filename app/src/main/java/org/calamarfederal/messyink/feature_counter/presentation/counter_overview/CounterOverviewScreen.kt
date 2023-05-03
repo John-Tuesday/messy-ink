@@ -53,6 +53,7 @@ private fun CounterOverviewPreview() {
 //            selectedCounter = null,
             onDeleteCounter = {},
             onClearCounterTicks = {},
+            onNavigateToCounterDetails = {},
         )
     }
 }
@@ -70,6 +71,7 @@ fun CounterOverviewScreen(
     onSelectCounter: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
     onClearCounterTicks: (UiCounter) -> Unit,
+    onNavigateToCounterDetails: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sheetState = rememberStandardBottomSheetState(initialValue = Hidden, skipHiddenState = false)
@@ -79,12 +81,10 @@ fun CounterOverviewScreen(
     LaunchedEffect(selectedCounter?.id) {
         if (selectedCounter == null && sheetState.isVisible) {
             bottomSheetScope.launch {
-                println("hide bottom sheet")
                 sheetState.hide()
             }
         } else if (selectedCounter != null) {
             bottomSheetScope.launch {
-                println("show bottom sheet")
                 sheetState.show()
             }
         }
@@ -94,7 +94,9 @@ fun CounterOverviewScreen(
         scaffoldState = scaffoldState,
         sheetContent = {
             CounterDetails(
-                counter = selectedCounter ?: UiCounter(name = "???", id = 100L), ticks = ticksOfSelected, ticksSum = null
+                counter = selectedCounter ?: UiCounter(name = "???", id = 100L),
+                ticks = ticksOfSelected,
+                ticksSum = null,
             )
         },
     ) { sheetPadding ->
@@ -112,7 +114,9 @@ fun CounterOverviewScreen(
                     counters = counters,
                     tickSums = tickSums,
                     onSelectCounter = {
-                        onSelectCounter(it)
+                        if (selectedCounter?.id != it.id)
+                            onSelectCounter(it)
+                        else onNavigateToCounterDetails(it.id)
                     },
                     onDeleteCounter = onDeleteCounter,
                     onClearCounterTicks = onClearCounterTicks,

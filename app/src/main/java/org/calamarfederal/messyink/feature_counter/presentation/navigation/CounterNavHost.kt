@@ -9,5 +9,5 @@ import org.calamarfederal.messyink.common.navigation.SubNavOwner
  */
 object CounterNavHost : SubNavOwner<CounterNavNode> {
     override val rootRoute: String = "counter_feature"
-    override val defaultStart: CounterNavNode = TabbedCounterDetails
+    override val defaultStart: CounterNavNode = CounterOverviewNode
 }
