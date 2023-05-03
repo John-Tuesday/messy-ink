@@ -70,50 +70,6 @@ internal enum class CounterDetailsTab(val displayName: String) {
 }
 
 @Composable
-private fun BasicIndicator(
-    width: Dp,
-    offset: Density.() -> IntOffset,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
-    thickness: Dp = 2.dp,
-) {
-    Box(Modifier.fillMaxSize()) {
-        Divider(
-            thickness = thickness,
-            color = color,
-            modifier = modifier
-                .align(alignment = Alignment.BottomStart)
-                .width(width)
-                .padding(4.dp)
-                .offset(offset)
-        )
-    }
-}
-
-internal fun tabIndicator(
-    selectedIndex: Int,
-    currentIndex: Int,
-    offsetFraction: Float,
-    onChangeSelect: (Int) -> Unit,
-): @Composable (List<TabPosition>) -> Unit = { tabPositions ->
-    LaunchedEffect(currentIndex, selectedIndex) {
-        if (currentIndex != selectedIndex) onChangeSelect(currentIndex)
-    }
-
-    BasicIndicator(
-        width = tabPositions[currentIndex].width,
-        offset = {
-            IntOffset(
-                x = (tabPositions[currentIndex].left + tabPositions[currentIndex].width * offsetFraction)
-                    .coerceIn(tabPositions.first().left, tabPositions.last().left)
-                    .roundToPx(),
-                y = 0
-            )
-        }
-    )
-}
-
-@Composable
 internal fun CounterDetailsTabRow(
     selectedIndex: Int,
     onChangeSelect: (Int) -> Unit,
@@ -145,4 +101,48 @@ private fun CounterDetailsTab.TabLabel(
         selectedContentColor = MaterialTheme.colorScheme.inversePrimary,
         unselectedContentColor = MaterialTheme.colorScheme.primary
     )
+}
+
+internal fun tabIndicator(
+    selectedIndex: Int,
+    currentIndex: Int,
+    offsetFraction: Float,
+    onChangeSelect: (Int) -> Unit,
+): @Composable (List<TabPosition>) -> Unit = { tabPositions ->
+    LaunchedEffect(currentIndex, selectedIndex) {
+        if (currentIndex != selectedIndex) onChangeSelect(currentIndex)
+    }
+
+    BasicIndicator(
+        width = tabPositions[currentIndex].width,
+        offset = {
+            IntOffset(
+                x = (tabPositions[currentIndex].left + tabPositions[currentIndex].width * offsetFraction)
+                    .coerceIn(tabPositions.first().left, tabPositions.last().left)
+                    .roundToPx(),
+                y = 0
+            )
+        }
+    )
+}
+
+@Composable
+private fun BasicIndicator(
+    width: Dp,
+    offset: Density.() -> IntOffset,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
+    thickness: Dp = 2.dp,
+) {
+    Box(Modifier.fillMaxSize()) {
+        Divider(
+            thickness = thickness,
+            color = color,
+            modifier = modifier
+                .align(alignment = Alignment.BottomStart)
+                .width(width)
+                .padding(4.dp)
+                .offset(offset)
+        )
+    }
 }
