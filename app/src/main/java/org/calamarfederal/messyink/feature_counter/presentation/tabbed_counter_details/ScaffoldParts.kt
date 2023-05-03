@@ -22,20 +22,50 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 
+/**
+ * # Enum containing all tabs
+ *
+ * ## Single Source of Truth:
+ * - quantity of tabs
+ * - tab display names
+ * - index of each tab
+ */
 internal enum class CounterDetailsTab(val displayName: String) {
-    TestScreen("Test Screen"), TickDetails("Tick Details"), GameCounter("Game View");
+    TestScreen("Test Screen"),
+    TickDetails("Tick Details"),
+    GameCounter("Game View"),
+    ;
+
+    /**
+     * mapped tab index of this
+     *
+     * alias for [::ordinal]
+     */
+    val index: Int get() = ordinal
 
     companion object {
+        /**
+         * total number of tabs
+         *
+         * convenience method for: `CounterDetailsTab.values().size`
+         */
         val size: Int get() = CounterDetailsTab.values().size
 
+        /**
+         * Get the corresponding [CounterDetailsTab] from [index] or `null`
+         */
         fun fromIndexOrNull(index: Int): CounterDetailsTab? = when (index) {
-            TestScreen.ordinal -> TestScreen
-            TickDetails.ordinal -> TickDetails
-            GameCounter.ordinal -> GameCounter
+            TestScreen.index -> TestScreen
+            TickDetails.index -> TickDetails
+            GameCounter.index -> GameCounter
             else -> null
         }
 
-        fun fromIndex(index: Int): CounterDetailsTab = fromIndexOrNull(index)!!
+        /**
+         * Get the corresponding [CounterDetailsTab] from [index] or throw [IndexOutOfBoundsException]
+         */
+        fun fromIndex(index: Int): CounterDetailsTab = fromIndexOrNull(index)
+            ?: throw (IndexOutOfBoundsException("index: $index does not map to a valid object"))
     }
 }
 
