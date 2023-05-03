@@ -1,16 +1,10 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
 import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
-import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.generateDecayAnimationSpec
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.MutatePriority.Default
-import androidx.compose.foundation.MutatePriority.PreventUserInput
-import androidx.compose.foundation.MutatePriority.UserInput
 import androidx.compose.foundation.gestures.snapping.SnapFlingBehavior
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.stopScroll
@@ -22,12 +16,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.Dp.Companion
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -52,7 +43,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_d
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TestScreen
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun TabbedPreview() {
@@ -70,7 +60,16 @@ private fun TabbedPreview() {
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalTransitionApi::class)
+/**
+ * # Tabbed Counter Details Screen
+ *
+ * ## focus on [counter] and display its details at various levels of depth, as well as
+ * ## offer tabs for basic interaction
+ *
+ * [ticks] should be the ticks of [counter]
+ * if the [ticks] is empty [tickSum] and [tickAverage] may be null
+ */
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun TabbedCounterDetailsScreen(
     counter: UiCounter,
@@ -80,37 +79,79 @@ fun TabbedCounterDetailsScreen(
     modifier: Modifier = Modifier,
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
-    val listState = rememberLazyListState()
-    val listScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+    val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
+    val offsetFraction by remember { derivedStateOf(calculation = pagerState::currentPageOffsetFraction) }
+    val tabScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier,
         topBar = {
             CounterDetailsTabRow(
                 selectedIndex = selectedIndex,
-                onChangeSelect = {
-                    listScope.launch { listState.animateScrollToItem(it) }
-                },
-                indicator = testIndicator(selectedIndex, listState) {
-                    selectedIndex = it
-                    listScope.launch { listState.stopScroll(Default); listState.animateScrollToItem(it) }
-                },
+                onChangeSelect = { tabScope.launch { pagerState.animateScrollToPage(it) } },
+                indicator = tabIndicator(
+                    selectedIndex = selectedIndex,
+                    currentIndex = currentIndex,
+                    offsetFraction = offsetFraction,
+                    onChangeSelect = {
+                        selectedIndex = it
+                        tabScope.launch { pagerState.animateScrollToPage(it) }
+                    }
+                ),
                 modifier = Modifier,
             )
         },
         bottomBar = {},
     ) { padding ->
-        DetailsLayoutTest(
+        DetailsLayout(
             counter = counter,
             ticks = ticks,
             tickSum = tickSum,
             tickAverage = tickAverage,
-            listState = listState,
+            state = pagerState,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
                 .fillMaxSize(),
         )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun DetailsLayout(
+    counter: UiCounter,
+    ticks: List<UiTick>,
+    tickSum: Double?,
+    tickAverage: Double?,
+    modifier: Modifier = Modifier,
+    state: PagerState = rememberPagerState(),
+    enabled: Boolean = true,
+) {
+    HorizontalPager(
+        modifier = modifier,
+        state = state,
+        pageCount = CounterDetailsTab.values().size,
+        userScrollEnabled = true,
+        key = { ticks[it].id },
+    ) {
+        when (CounterDetailsTab.fromIndex(it)) {
+            TickDetails -> TickDetailsLayout(
+                ticks = ticks,
+            )
+
+            GameCounter -> GameCounterTab(
+                counter = counter,
+                tickSum = tickSum,
+            )
+
+            TestScreen  -> {
+                Surface() {
+                    Text("Testing :P")
+                }
+            }
+        }
     }
 }
 
