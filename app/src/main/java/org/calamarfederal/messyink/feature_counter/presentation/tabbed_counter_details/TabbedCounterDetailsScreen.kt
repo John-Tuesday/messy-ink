@@ -80,12 +80,8 @@ fun TabbedCounterDetailsScreen(
                     selectedIndex = selectedIndex,
                     currentIndex = currentIndex,
                     offsetFraction = offsetFraction,
-                    onChangeSelect = {
-                        selectedIndex = it
-                        tabScope.launch { pagerState.animateScrollToPage(it) }
-                    }
+                    onChangeSelect = { selectedIndex = it }
                 ),
-                modifier = Modifier,
             )
         },
         bottomBar = {},
@@ -113,14 +109,14 @@ private fun DetailsLayout(
     tickAverage: Double?,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(),
-    enabled: Boolean = true,
+    userScrollEnabled: Boolean = true,
 ) {
     HorizontalPager(
         modifier = modifier,
         state = state,
         pageCount = CounterDetailsTab.values().size,
-        userScrollEnabled = true,
-        key = { ticks[it].id },
+        userScrollEnabled = userScrollEnabled,
+        key = { it },
     ) {
         when (CounterDetailsTab.fromIndex(it)) {
             TickDetails -> TickDetailsLayout(
