@@ -5,12 +5,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.NavType.Companion
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsViewModel
@@ -21,7 +19,7 @@ internal object TabbedCounterDetails : CounterNavNode() {
     private const val COUNTER_ID = CounterDetailsViewModel.COUNTER_ID
 
     override val arguments = listOf(navArgument(COUNTER_ID) { type = NavType.LongType })
-    override val route = "$BASE_ROUTE/${arguments.asRouteString()}"
+    override val route = "$BASE_ROUTE/${arguments.toArgPlaceholder()}"
 
     fun NavHostController.navigateToTabbedDetails(counterId: Long) {
         navigate("$BASE_ROUTE/$counterId")

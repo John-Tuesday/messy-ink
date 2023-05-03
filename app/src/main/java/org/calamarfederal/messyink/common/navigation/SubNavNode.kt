@@ -27,10 +27,10 @@ interface SubNavNode {
      * create the arguments side of the normal route string
      *
      * For example:
-     * - `listOf(navArgument("Name")).`[asRouteString]` = "{Name}"`
-     * - `listOf(navArgument("One"), navArgument("two")).`[asRouteString]` = "{One}/{two}"`
+     * - `listOf(navArgument("Name")).`[toArgPlaceholder]` = "{Name}"`
+     * - `listOf(navArgument("One"), navArgument("two")).`[toArgPlaceholder]` = "{One}/{two}"`
      */
-    fun List<NamedNavArgument>.asRouteString() = joinToString(
+    fun List<NamedNavArgument>.toArgPlaceholder() = joinToString(
         separator = "/",
         prefix = "{",
         postfix = "}",
