@@ -45,7 +45,6 @@ object CreateCounterNode : CounterNavNode() {
                 onCancel = onCancel,
                 onDone = onDone,
                 onDelete = { viewModel.deleteCounter(); onDelete() },
-                showNavigationIcon = true,
             )
         }
     }
