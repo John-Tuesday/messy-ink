@@ -1,10 +1,17 @@
 package org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.More
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 
 
@@ -29,11 +37,12 @@ import androidx.compose.ui.window.Popup
 internal fun CounterOptionsPopup(
     visible: Boolean,
     onDismiss: () -> Unit,
+    onDetails: () -> Unit,
     onDelete: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.BottomCenter,
-    offset: IntOffset = IntOffset.Zero
+    offset: IntOffset = IntOffset.Zero,
 ) {
     AnimatedVisibility(visible = visible, modifier = modifier) {
         Popup(
@@ -42,7 +51,17 @@ internal fun CounterOptionsPopup(
             offset = offset,
         ) {
             ElevatedCard {
-                Row {
+                Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                    InputChip(
+                        selected = false,
+                        onClick = onDetails,
+                        border = null,
+                        label = { Text("Details") },
+                        leadingIcon = { Icon(Filled.More, "show more details") }
+                    )
+
+                    Divider(Modifier.fillMaxHeight().width(1.dp))
+
                     InputChip(
                         selected = false,
                         onClick = onClear,
@@ -50,7 +69,7 @@ internal fun CounterOptionsPopup(
                         label = { Text("Clear") },
                         leadingIcon = { Icon(Filled.ClearAll, "clear all") },
                     )
-//                    Divider()
+
                     InputChip(
                         selected = false,
                         onClick = onDelete,

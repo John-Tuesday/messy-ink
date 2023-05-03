@@ -5,6 +5,8 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.counterOverview
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.createCounter
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToCreateCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails.navigateToTabbedDetails
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails.tabbedCounterDetails
@@ -28,9 +30,19 @@ fun CounterFeatureEntry(
         CounterNavHost.SubNavHost(
             navController = navController,
         ) {
-            counterOverview(navController, onNavigateToCounterDetails = {navController.navigateToTabbedDetails(it)})
+            counterOverview(
+                navController,
+                onNavigateToCreateCounter = {navController.navigateToCreateCounter()},
+                onNavigateToCounterDetails = {navController.navigateToTabbedDetails(it)},
+            )
             gameCounterNode(navController)
             tabbedCounterDetails(navController)
+            createCounter(
+                navController,
+                onCancel = {navController.popBackStack()},
+                onDone = {navController.popBackStack()},
+                onDelete = {navController.popBackStack()},
+            )
         }
     }
 }

@@ -27,6 +27,7 @@ internal object CounterOverviewNode : CounterNavNode() {
     fun NavGraphBuilder.counterOverview(
         navController: NavHostController,
         onNavigateToCounterDetails: (Long) -> Unit,
+        onNavigateToCreateCounter: () -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
@@ -46,6 +47,7 @@ internal object CounterOverviewNode : CounterNavNode() {
                 onSelectCounter = viewModel::selectCounter,
                 onDeleteCounter = { viewModel.deleteCounter(it.id) },
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
+                onCreateCounter = { onNavigateToCreateCounter() },
                 onNavigateToCounterDetails = onNavigateToCounterDetails,
             )
         }

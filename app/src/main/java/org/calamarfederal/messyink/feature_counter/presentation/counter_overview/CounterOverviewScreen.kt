@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FabPosition.Companion
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Hidden
@@ -40,25 +42,11 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
-@Preview
-@Composable
-private fun CounterOverviewPreview() {
-    MessyInkTheme {
-        CounterOverviewScreen(
-            counters = previewUiCounters.take(5).toList(),
-            tickSums = mapOf(),
-            selectedCounter = null,
-            ticksOfSelected = listOf(),
-            onSelectCounter = {},
-            onDeleteCounter = {},
-            onClearCounterTicks = {},
-            onNavigateToCounterDetails = {},
-        )
-    }
-}
 
 /**
- * Screen for browsing Counters
+ * # Screen for browsing Counters at a high level
+ *
+ * should allow navigation to most if not all other (major) screens
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -70,24 +58,13 @@ fun CounterOverviewScreen(
     onSelectCounter: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
     onClearCounterTicks: (UiCounter) -> Unit,
+    onCreateCounter: () -> Unit,
     onNavigateToCounterDetails: (Long) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    val sheetState = rememberStandardBottomSheetState(initialValue = Hidden, skipHiddenState = false)
+    val sheetState =
+        rememberStandardBottomSheetState(initialValue = Hidden, skipHiddenState = false)
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val bottomSheetScope = rememberCoroutineScope()
-
-    LaunchedEffect(selectedCounter?.id) {
-        if (selectedCounter == null && sheetState.isVisible) {
-            bottomSheetScope.launch {
-                sheetState.hide()
-            }
-        } else if (selectedCounter != null) {
-            bottomSheetScope.launch {
-                sheetState.show()
-            }
-        }
-    }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -100,7 +77,15 @@ fun CounterOverviewScreen(
         },
     ) { sheetPadding ->
         Scaffold(
-            modifier = modifier
+            topBar = { CounterOverviewAppBar() },
+            floatingActionButton = {
+                CounterOverviewFAB(
+                    expanded = true,
+                    onCreateCounter = onCreateCounter,
+                )
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+            modifier = Modifier
                 .padding(sheetPadding)
                 .consumeWindowInsets(sheetPadding),
         ) { padding ->
@@ -117,9 +102,10 @@ fun CounterOverviewScreen(
                             onSelectCounter(it)
                         else onNavigateToCounterDetails(it.id)
                     },
+                    onCounterDetails = { onNavigateToCounterDetails(it.id) },
                     onDeleteCounter = onDeleteCounter,
                     onClearCounterTicks = onClearCounterTicks,
-                    modifier = modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }
@@ -133,6 +119,7 @@ private fun CounterOverviewLayout(
     tickSums: Map<Long, Double>,
     onSelectCounter: (UiCounter) -> Unit,
     onClearCounterTicks: (UiCounter) -> Unit,
+    onCounterDetails: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,6 +142,10 @@ private fun CounterOverviewLayout(
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             showOptions = true
                         },
+                        onDoubleClick = {
+//                            if (!showOptions)
+                                onCounterDetails(counter)
+                        },
                         onClick = {
                             onSelectCounter(counter)
                         },
@@ -164,11 +155,30 @@ private fun CounterOverviewLayout(
                 CounterOptionsPopup(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
+                    onDetails = { onCounterDetails(counter) },
                     onDelete = { onDeleteCounter(counter) },
                     onClear = { onClearCounterTicks(counter) },
                     modifier = Modifier.align(Alignment.TopCenter),
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CounterOverviewPreview() {
+    MessyInkTheme {
+        CounterOverviewScreen(
+            counters = previewUiCounters.take(5).toList(),
+            tickSums = mapOf(),
+            selectedCounter = null,
+            ticksOfSelected = listOf(),
+            onSelectCounter = {},
+            onDeleteCounter = {},
+            onClearCounterTicks = {},
+            onCreateCounter = {},
+            onNavigateToCounterDetails = {},
+        )
     }
 }
