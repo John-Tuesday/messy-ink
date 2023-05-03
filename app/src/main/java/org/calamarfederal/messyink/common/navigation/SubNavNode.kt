@@ -22,6 +22,20 @@ interface SubNavNode {
      * Arguments for navigating to this node
      */
     val arguments: List<NamedNavArgument> get() = listOf()
+
+    /**
+     * create the arguments side of the normal route string
+     *
+     * For example:
+     * - `listOf(navArgument("Name")).`[asRouteString]` = "{Name}"`
+     * - `listOf(navArgument("One"), navArgument("two")).`[asRouteString]` = "{One}/{two}"`
+     */
+    fun List<NamedNavArgument>.asRouteString() = joinToString(
+        separator = "/",
+        prefix = "{",
+        postfix = "}",
+    ) { it.name }
+
     /**
      * Deep links associated with this node
      */
@@ -39,3 +53,4 @@ interface SubNavNode {
         )
     }
 }
+

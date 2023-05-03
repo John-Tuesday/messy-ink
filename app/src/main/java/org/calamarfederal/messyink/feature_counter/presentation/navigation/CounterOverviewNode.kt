@@ -7,13 +7,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewScreen
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewViewModel
 
-internal object CounterOverviewNode : CounterNavNode(route = "counter_overview") {
-    fun NavHostController.navigateToCounterOverview() {
-        navigate(this@CounterOverviewNode.route, navOptions { launchSingleTop = true })
+/**
+ * # Counter Overview Node
+ *
+ * high level view of all counters and summary stats
+ */
+internal object CounterOverviewNode : CounterNavNode() {
+    override val route: String = "counter_overview"
+
+    fun NavHostController.navigateToCounterOverview(navOptions: NavOptions = navOptions { launchSingleTop = true }) {
+        navigate(this@CounterOverviewNode.route, navOptions)
     }
 
     fun NavGraphBuilder.counterOverview(

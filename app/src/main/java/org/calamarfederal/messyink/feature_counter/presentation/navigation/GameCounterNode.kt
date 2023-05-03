@@ -11,9 +11,11 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -21,11 +23,21 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 /**
  * # Game Counter Navigation Node
  */
-internal object GameCounterNode : CounterNavNode(route = "game_counter") {
+internal object GameCounterNode : CounterNavNode() {
+    private const val BASE_ROUTE = "game_counter"
     private const val COUNTER_ID = GameCounterViewModel.COUNTER_ID_KEY
 
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(COUNTER_ID) { type = NavType.LongType; defaultValue = NOID })
+    override val arguments = listOf(
+        navArgument(COUNTER_ID) { type = NavType.LongType; defaultValue = NOID },
+    )
+    override val route = "$BASE_ROUTE/${arguments.asRouteString()}"
+
+    fun NavHostController.navigateToGameCounter(
+        counterId: Long,
+        navOptions: NavOptions = navOptions {},
+    ) {
+        navigate("$BASE_ROUTE/$counterId", navOptions)
+    }
 
     fun NavGraphBuilder.gameCounterNode(
         navHostController: NavHostController,
@@ -42,7 +54,7 @@ internal object GameCounterNode : CounterNavNode(route = "game_counter") {
                 }
             }
 
-            val viewModel: GameCounterViewModel = hiltViewModel()
+            val viewModel: GameCounterViewModel = hiltViewModel(entry)
 
             val id by remember(entry) {
                 derivedStateOf {
