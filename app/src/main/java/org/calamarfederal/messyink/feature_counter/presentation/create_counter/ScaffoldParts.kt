@@ -12,6 +12,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -25,20 +26,17 @@ internal fun CreateCounterAppBar(
     onDone: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    showNavigationIcon: Boolean = true,
 ) {
-    TopAppBar(
+    MediumTopAppBar(
         modifier = modifier,
-        title = { Text("Create Counter?") },
+        title = { Text("Create Counter") },
         navigationIcon = {
-            if (showNavigationIcon) {
-                IconButton(onClick = onClose) {
-                    Icon(Icons.Filled.Close, "close")
-                }
+            IconButton(onClick = onClose) {
+                Icon(Icons.Filled.Close, "close")
             }
         },
         actions = {
-            FilledIconButton(onClick = onDone) {
+            FilledTonalIconButton(onClick = onDone) {
                 Icon(Icons.Filled.Done, "finalize counter")
             }
         }

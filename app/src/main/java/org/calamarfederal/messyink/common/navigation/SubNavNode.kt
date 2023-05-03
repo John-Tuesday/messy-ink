@@ -44,13 +44,12 @@ interface SubNavNode {
     /**
      * Convenience function for starting composable logic
      */
-    fun NavGraphBuilder.subNavNode(content: @Composable (NavBackStackEntry) -> Unit) {
+    fun NavGraphBuilder.subNavNode(content: @Composable (NavBackStackEntry) -> Unit) =
         composable(
             route = this@SubNavNode.route,
             arguments = this@SubNavNode.arguments,
             deepLinks = this@SubNavNode.deepLinks,
             content = content
         )
-    }
 }
 

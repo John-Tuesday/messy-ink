@@ -42,9 +42,6 @@ internal object CounterOverviewNode : CounterNavNode() {
             CounterOverviewScreen(
                 counters = counters,
                 tickSums = tickSums,
-                selectedCounter = selectedCounter,
-                ticksOfSelected = ticksOfSelected ?: listOf(),
-                onSelectCounter = viewModel::selectCounter,
                 onDeleteCounter = { viewModel.deleteCounter(it.id) },
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
                 onCreateCounter = { onNavigateToCreateCounter() },
