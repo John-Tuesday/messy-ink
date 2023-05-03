@@ -67,7 +67,6 @@ fun GameCounterScreen(
     onRedo: () -> Unit,
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateUp: (() -> Unit)? = null,
 ) {
     Scaffold(
         modifier = modifier,

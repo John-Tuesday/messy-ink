@@ -2,7 +2,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
+import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 
 /**
  * # Wrapper for managing counters, ticks, and their common commands
@@ -58,22 +58,18 @@ interface CountersRepo {
     suspend fun createTickFrom(tick: Tick): Tick
 
     /**
-     * Find saved Counter with matching id; if found, update saved version to match [counter]
+     * Update old [Counter] to [counter] and set [timeModified]
      *
-     * this method should preserve timeCreated, i think
-     *
-     * @param[counter] counter whose content and id will be used to update the saved version
+     * if old [counter] cannot be found; then this does nothing
      */
-    suspend fun updateCounter(counter: Counter)
+    suspend fun updateCounter(counter: Counter, timeModified: Instant): Boolean
 
     /**
-     * Find saved Tick with matching id; if found, update saved version to match [tick]
+     * Update old [Tick] to [tick] and set [timeModified]
      *
-     * this method should preserve timeCreated, i think
-     *
-     * @param[tick] tick whose content and id will be used to update the saved version
+     * if old [tick] cannot be found; then this does nothing
      */
-    suspend fun updateTick(tick: Tick)
+    suspend fun updateTick(tick: Tick, timeModified: Instant): Boolean
 
     /**
      * Find and delete any [Counter] with matching [Counter.id]
@@ -91,9 +87,19 @@ interface CountersRepo {
     suspend fun deleteTicks(ids: List<Long>)
 
     /**
+     * Delete all [Tick] with [parentId]
+     */
+    suspend fun deleteTicksOf(parentId: Long)
+
+    /**
      * Delete all [Tick] with matching [Tick.parentId] from [[start], [end]]
      */
-    suspend fun deleteTicksFrom(parentId: Long, start: Instant = Instant.DISTANT_PAST, end: Instant = Instant.DISTANT_FUTURE)
+    suspend fun deleteTicksByTimeForData(parentId: Long, start: Instant = Instant.DISTANT_PAST, end: Instant = Instant.DISTANT_FUTURE)
+
+    /**
+     * delete up to [limit], or all if [limit] is null, [Tick] with [Tick.timeModified] in bounds [[start], [end]]
+     */
+    suspend fun deleteTicksByTimeModified(parentId: Long, limit: Int? = null, start: Instant = Instant.DISTANT_PAST, end: Instant = Instant.DISTANT_FUTURE)
 
     /**
      * # Summary & Calculation

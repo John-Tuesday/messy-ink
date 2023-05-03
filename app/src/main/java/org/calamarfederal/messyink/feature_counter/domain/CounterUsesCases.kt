@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import kotlin.time.Duration
 
 
 /**
@@ -69,6 +70,51 @@ fun interface CreateTickFrom {
 }
 
 /**
+ * SAM to Update Counter
+ *
+ * @see [invoke]
+ */
+fun interface UpdateCounter {
+    /**
+     * find and set [UiCounter] to [changed]; also update [UiCounter.timeModified]
+     *
+     * should it return the new value or `null` if not found
+     */
+    suspend operator fun invoke(changed: UiCounter): Boolean
+}
+
+/**
+ * SAM to Update Tick
+ *
+ * @see [invoke]
+ */
+fun interface UpdateTick {
+    /**
+     * find and set [UiTick] to [changed]; also update [UiCounter.timeModified]
+     *
+     * should it return the new value or `null` if not found
+     */
+    suspend operator fun invoke(changed: UiTick): Boolean
+}
+
+/**
+ * SAM: Undo Ticks by time with optional limit
+ *
+ */
+fun interface UndoTicks {
+    /**
+     * delete up to [limit], or all if [limit] is null, [Tick] modified within [duration] ago
+     */
+    suspend operator fun invoke(parentId: Long, limit: Int?, duration: Duration)
+    /**
+     * [invoke] with no limit
+     *
+     * overload because I cant use default values
+     */
+    suspend operator fun invoke(parentId: Long, duration: Duration) = invoke(parentId, limit = null, duration)
+}
+
+/**
  * @see [invoke]
  */
 fun interface DeleteCounter {
@@ -91,6 +137,18 @@ fun interface DeleteTicks {
      * @see [invoke]
      */
     suspend operator fun invoke(id: Long) = invoke(listOf(id))
+}
+
+/**
+ * SAM delete all ticks of a counter
+ *
+ * @see [invoke]
+ */
+fun interface DeleteTicksOf {
+    /**
+     * delete all ticks with [parentId]
+     */
+    suspend operator fun invoke(parentId: Long)
 }
 
 /**

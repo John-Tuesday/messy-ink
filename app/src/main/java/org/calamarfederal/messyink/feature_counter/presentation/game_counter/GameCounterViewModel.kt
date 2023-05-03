@@ -8,81 +8,105 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
+import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
+import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 
 /**
- *  View model for a simple counter with no extra data. Designed for uses like tracking health in Magic the Gathering
+ * # Game Counter View Model
+ *
+ * Design to fill the purpose of a health counter in Magic the Gathering, or any simple value
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getCounterFlow: GetCounterFlow,
-    private val getTicksSumOfFlow: GetTicksSumOfFlow,
-    private val createCounterFrom: CreateCounterFrom,
-    private val createTickFrom: CreateTickFrom,
+    private val _getCounterFlow: GetCounterFlow,
+    private val _getTicksSumOfFlow: GetTicksSumOfFlow,
+    private val _createTickFrom: CreateTickFrom,
+    private val _updateCounter: UpdateCounter,
+    private val _deleteTicksOf: DeleteTicksOf,
+    private val _undoTicks: UndoTicks,
 ) : ViewModel() {
     companion object {
         /**
-         * 'Global' key for navigation argument & saving its counter id
+         * key for navigation argument & saving its counter id
          */
-        const val COUNTER_ID_KEY = "counter_id"
+        const val COUNTER_ID = "counter_id"
     }
 
     private val ioScope = viewModelScope + SupervisorJob() + Dispatchers.IO
 
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), initial
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
+        initial,
     )
 
     private fun <T> Flow<T>.stateInIo(initial: T) = stateIn(
-        ioScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), initial
+        ioScope,
+        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
+        initial,
     )
 
-    val counter = getCounterFlow(savedStateHandle.get<Long>(COUNTER_ID_KEY) ?: NOID)
-        .mapLatest {
-            it ?: createCounterFrom(UiCounter(id = NOID)).also { spawned ->
-                savedStateHandle[COUNTER_ID_KEY] = spawned.id
-            }
-        }
-        .stateInIo(UiCounter(name = "init", id = NOID))
+    private val counterIdState = savedStateHandle.getStateFlow(COUNTER_ID, NOID)
 
-    val tickSum = counter.distinctUntilChanged { old, new -> old.id == new.id }
-        .flatMapLatest { getTicksSumOfFlow(it.id) }.stateInIo(0.00)
 
+    /**
+     * counter being examined; idk how to handle when DNE.
+     */
+    val counter = counterIdState
+        .flatMapLatest { _getCounterFlow(it) }
+        .mapLatest { it ?: UiCounter(name = "<DNE>", id = NOID) }
+        .stateInViewModel(UiCounter(name = "<init>", id = NOID))
+
+    /**
+     * Sum of all [UiTick] with parent [counter]
+     */
+    val tickSum = counterIdState
+        .flatMapLatest { _getTicksSumOfFlow(it) }
+        .stateInIo(0.00)
+
+    /**
+     * change [counter] name to [name]
+     */
     fun onChangeName(name: String) {
-        TODO("need use case and ui implementation")
+        ioScope.launch { _updateCounter(counter.value.copy(name = name)) }
     }
 
+    /**
+     * Add new [UiTick] as a child of [counter] with [amount]
+     */
     fun addTick(amount: Double) {
         ioScope.launch {
-            createTickFrom(UiTick(amount = amount, parentId = counter.value.id, id = NOID))
+            _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
         }
     }
 
+    /**
+     * Delete any tick owned by [counter] and modified within
+     */
     fun undoTick() {
-        println("undo")
-        TODO("needs use case")
+        ioScope.launch { _undoTicks(parentId = counterIdState.value, duration = 1.minutes) }
     }
 
     fun redoTick() {
@@ -90,8 +114,10 @@ class GameCounterViewModel @Inject constructor(
         TODO("needs use case")
     }
 
+    /**
+     * Deletes all ticks owned by [counter]
+     */
     fun restartCounter(amount: Double = 0.00) {
-        println("reset")
-        TODO("needs use case")
+        ioScope.launch { _deleteTicksOf(counterIdState.value) }
     }
 }

@@ -14,6 +14,7 @@ internal fun CounterEntity.toCounter() = Counter(
 
 internal fun TickEntity.toTick() = Tick(
     amount = amount,
+    timeModified = timeModified,
     timeCreated = timeCreated,
     timeForData = timeForData,
     parentId = parentId,
@@ -29,6 +30,7 @@ internal fun Counter.toEntity() = CounterEntity(
 
 internal fun Tick.toEntity() = TickEntity(
     amount = amount,
+    timeModified = timeModified,
     timeCreated = timeCreated,
     timeForData = timeForData,
     parentId = parentId,

@@ -50,7 +50,6 @@ private fun CounterOverviewPreview() {
             selectedCounter = null,
             ticksOfSelected = listOf(),
             onSelectCounter = {},
-//            selectedCounter = null,
             onDeleteCounter = {},
             onClearCounterTicks = {},
             onNavigateToCounterDetails = {},

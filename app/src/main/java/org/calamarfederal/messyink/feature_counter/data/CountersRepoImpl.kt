@@ -5,10 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.CounterDao
-import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.Tick
@@ -59,16 +57,29 @@ class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : Counte
             .also { dao.insertCounterTick(it.toEntity()) }
     }
 
-    override suspend fun updateCounter(counter: Counter) = dao.updateCounter(counter.toEntity())
+    override suspend fun updateCounter(counter: Counter, timeModified: Instant) =
+        0 < dao.updateCounter(counter.copy(timeModified = timeModified).toEntity())
 
-    override suspend fun updateTick(tick: Tick) = dao.updateTick(tick.toEntity())
+    override suspend fun updateTick(tick: Tick, timeModified: Instant) =
+        0 < dao.updateTick(tick.copy(timeCreated = timeModified).toEntity())
 
     override suspend fun deleteCounter(id: Long) = dao.deleteCounter(id)
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
     override suspend fun deleteTicks(ids: List<Long>) = dao.deleteTicks(ids)
+    override suspend fun deleteTicksOf(parentId: Long) = dao.deleteTicksOf(parentId)
 
-    override suspend fun deleteTicksFrom(parentId: Long, start: Instant, end: Instant) =
-        dao.deleteTicksFrom(parentId, start = start, end = end)
+    override suspend fun deleteTicksByTimeForData(parentId: Long, start: Instant, end: Instant) =
+        dao.deleteTicksByTimeForData(parentId, start = start, end = end)
+
+    override suspend fun deleteTicksByTimeModified(
+        parentId: Long,
+        limit: Int?,
+        start: Instant,
+        end: Instant
+    ) {
+        if (limit == null) dao.deleteTicksByTimeModified(parentId, start, end)
+        else dao.deleteTicksByTimeModifiedLimited(parentId, limit, start, end)
+    }
 
     /**
      * # Summary & Calculation

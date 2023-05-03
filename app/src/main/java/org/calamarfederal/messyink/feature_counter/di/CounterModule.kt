@@ -7,10 +7,22 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.CounterDao
 import org.calamarfederal.messyink.data.MessyInkDb
 import org.calamarfederal.messyink.feature_counter.data.CountersRepoImpl
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
+import javax.inject.Qualifier
+import kotlin.annotation.AnnotationRetention.BINARY
+
+/**
+ * Specify provided [Instant] represents current time
+ */
+@Qualifier
+@Retention(BINARY)
+annotation class CurrentTime
 
 /**
  * Bindings for each Counter-feature ViewModel
@@ -38,4 +50,18 @@ object CounterModuleProvider {
     @Provides
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
+
+    /**
+     * Provide the current time of the system at initialization
+     */
+    @CurrentTime
+    @Provides
+    fun provideCurrentTime(): Instant = Clock.System.now()
+
+    /**
+     * Provides a simple callable which returns the current time
+     */
+    @CurrentTime
+    @Provides
+    fun provideCurrentTimeGetter(): GetTime = GetTime{ Clock.System.now() }
 }
