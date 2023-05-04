@@ -30,6 +30,7 @@ data class UiCounter(
  * ticks are modification events to a counter.
  *
  * @param[amount] amount to offset the counter's total
+ * @param[timeModified] time the tick was last modified
  * @param[timeCreated] time the tick was created
  * @param[timeForData] time the tick is considered to be when graphing or doing timeline operations
  * @param[parentId] the id of the owning Counter
@@ -38,6 +39,7 @@ data class UiCounter(
 @Stable
 data class UiTick(
     val amount: Double = 0.0,
+    val timeModified: Instant = Instant.DISTANT_FUTURE,
     val timeCreated: Instant = Instant.DISTANT_FUTURE,
     val timeForData: Instant = Instant.DISTANT_FUTURE,
     val parentId: Long,

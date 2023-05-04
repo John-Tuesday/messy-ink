@@ -21,6 +21,7 @@ data class Counter(
  * Single event to be counted
  *
  * @property[amount] value to measured
+ * @property[timeModified] time of last modification
  * @property[timeCreated] time the [Tick] was created; for use with history and logs
  * @property[timeForData] time to be used when analyzing; e.g. graphing
  * @property[parentId] id of owning [Counter]
@@ -28,6 +29,7 @@ data class Counter(
  */
 data class Tick(
     val amount: Double,
+    val timeModified: Instant,
     val timeCreated: Instant,
     val timeForData: Instant,
     val parentId: Long,

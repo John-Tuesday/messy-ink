@@ -15,6 +15,7 @@ internal fun Counter.toUI() = UiCounter(
 
 internal fun Tick.toUi() = UiTick(
     amount = amount,
+    timeModified = timeModified,
     timeCreated = timeCreated,
     timeForData = timeForData,
     parentId = parentId,
@@ -30,6 +31,7 @@ internal fun UiCounter.toCounter() = Counter(
 
 internal fun UiTick.toTick() = Tick(
     amount = amount,
+    timeModified = timeModified,
     timeForData = timeForData,
     timeCreated = timeCreated,
     parentId = parentId,

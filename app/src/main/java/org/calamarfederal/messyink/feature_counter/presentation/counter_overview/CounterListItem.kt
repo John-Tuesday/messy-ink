@@ -28,9 +28,9 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
+import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import org.calamarfederal.messyink.ui.theme.TonalElevation
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CounterListItem(
     counter: UiCounter,
@@ -39,7 +39,6 @@ internal fun CounterListItem(
     selected: Boolean = false,
     multiSelect: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.headlineLarge,
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
     ListItem(
         modifier = modifier,
@@ -65,15 +64,6 @@ internal fun CounterListItem(
                 ) else textStyle,
             )
         },
-        overlineContent = {
-            Text("ID: ${counter.id}")
-        },
-        supportingContent = {
-            Column {
-                Text("modified: ${counter.timeModified.toLocalDateTime(timeZone).date}")
-//                Text("created: ${counter.timeCreated.toLocalDateTime(timeZone).date}")
-            }
-        },
         trailingContent = {
             AnimatedVisibility(visible = selected && multiSelect) {
                 Icon(Icons.Filled.Check, null)
@@ -84,4 +74,12 @@ internal fun CounterListItem(
         else
             TonalElevation.heightOfNext(LocalAbsoluteTonalElevation.current, minimumLayer = 3)
     )
+}
+
+@Preview
+@Composable
+private fun PreviewCounterItem() {
+    MessyInkTheme {
+        CounterListItem(counter = previewUiCounters.first())
+    }
 }

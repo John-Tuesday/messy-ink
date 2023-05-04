@@ -4,11 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.MapInfo
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.TypeConverters
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
 
@@ -83,6 +83,21 @@ interface CounterDao {
     fun ticksByCounterFlow(): Flow<Map<Long, List<TickEntity>>>
 
     /**
+     * [List] of [TickEntity.id] sorted by [TickEntity.timeModified] in bounds [[start], [end]] with [parentId]
+     */
+    @Query("SELECT id FROM counter_ticks WHERE parent_id = :parentId AND time_modified BETWEEN :start AND :end ORDER BY time_modified LIMIT :limit")
+    suspend fun tickIdsByTimeModifiedWithLimit(
+        parentId: Long,
+        limit: Int,
+
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    ): List<Long>
+
+    /**
      * Add [counter] if it doesn't already exist
      */
     @Insert
@@ -98,13 +113,13 @@ interface CounterDao {
      * update [CounterEntity] to match [counter] if possible
      */
     @Update
-    suspend fun updateCounter(counter: CounterEntity)
+    suspend fun updateCounter(counter: CounterEntity): RowsChanged
 
     /**
      * update [TickEntity] to match [tick] if possible
      */
     @Update
-    suspend fun updateTick(tick: TickEntity)
+    suspend fun updateTick(tick: TickEntity): RowsChanged
 
     /**
      * Delete any [CounterEntity] with matching [id]
@@ -131,17 +146,64 @@ interface CounterDao {
     suspend fun deleteTicks(ids: List<Long>)
 
     /**
+     * Delete all [TickEntity] with [parentId]
+     */
+    @Query("DELETE FROM counter_ticks WHERE parent_id = :parentId")
+    suspend fun deleteTicksOf(parentId: Long)
+
+    /**
      * delete all [TickEntity] with matching [parentId] and [TickEntity.timeForData] in bounds [[start], [end]]
      *
      * @param[start] inclusive lower bound
      * @param[end] inclusive upper bound
      */
     @Query("DELETE FROM counter_ticks WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
-    suspend fun deleteTicksFrom(
+    suspend fun deleteTicksByTimeForData(
         parentId: Long,
-        @TypeConverters(TimeTypeConverters::class) start: Instant,
-        @TypeConverters(TimeTypeConverters::class) end: Instant,
+
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
     )
+
+    /**
+     * delete all [TickEntity] with [parentId] and [TickEntity.timeModified] in bounds [[start], [end]]
+     */
+    @Query("DELETE FROM counter_ticks WHERE parent_id = :parentId AND time_modified BETWEEN :start AND :end")
+    suspend fun deleteTicksByTimeModified(
+        parentId: Long,
+
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    )
+
+    /**
+     * Delete up to [limit] [TickEntity] with [parentId] in bounds [[start], [end]]
+     */
+    @Transaction
+    suspend fun deleteTicksByTimeModifiedLimited(
+        parentId: Long,
+        limit: Int,
+
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    ) {
+        val ids = tickIdsByTimeModifiedWithLimit(
+            parentId = parentId,
+            limit = limit,
+            start = start,
+            end = end
+        )
+        deleteTicks(ids)
+    }
 
     /**
      * Sum of all [TickEntity] when grouped by [TickEntity.parentId]
