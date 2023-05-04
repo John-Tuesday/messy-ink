@@ -1,12 +1,20 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.DataExploration
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -21,6 +29,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.GameCounter
+import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TestScreen
+import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
 
 /**
  * # Enum containing all tabs
@@ -67,6 +78,49 @@ internal enum class CounterDetailsTab(val displayName: String) {
         fun fromIndex(index: Int): CounterDetailsTab = fromIndexOrNull(index)
             ?: throw (IndexOutOfBoundsException("index: $index does not map to a valid object"))
     }
+}
+
+@Composable
+internal fun CounterDetailsNavBar(
+    selectedIndex: Int,
+    onChangeSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    NavigationBar(
+        modifier = modifier,
+    ) {
+        for (tab in CounterDetailsTab.values()) {
+            NavBarItem(
+                tab = tab,
+                selectedIndex = selectedIndex,
+                onClick = { onChangeSelect(tab.index) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.NavBarItem(
+    tab: CounterDetailsTab,
+    selectedIndex: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    alwaysShowLabel: Boolean = false,
+) {
+    NavigationBarItem(
+        modifier = modifier,
+        alwaysShowLabel = alwaysShowLabel,
+        selected = selectedIndex == tab.index,
+        onClick = onClick,
+//        label = { Text(tab.displayName) },
+        icon = {
+            when (tab) {
+                GameCounter -> Icon(Icons.Filled.ImportExport, "game mode screen")
+                TickDetails -> Icon(Icons.Filled.DataExploration, "details of each tick")
+                TestScreen  -> Icon(Icons.Filled.Analytics, "test screen")
+            }
+        },
+    )
 }
 
 @Composable

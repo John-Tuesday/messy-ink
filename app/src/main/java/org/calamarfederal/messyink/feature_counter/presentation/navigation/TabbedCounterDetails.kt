@@ -55,6 +55,7 @@ internal object TabbedCounterDetails : CounterNavNode() {
                 onAddTick = viewModel::addTick,
                 onDeleteTick = viewModel::deleteTick,
                 onResetCounter = viewModel::resetCounter,
+                onNavigateUp = { navController.navigateUp() },
             )
         }
     }
