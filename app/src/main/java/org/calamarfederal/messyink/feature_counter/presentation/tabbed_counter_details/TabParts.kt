@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
  * - index of each tab
  */
 internal enum class CounterDetailsTab(val displayName: String) {
-    TestScreen("Test Screen"),
-    TickDetails("Tick Details"),
     GameCounter("Game View"),
+    TickDetails("Tick Details"),
+    TestScreen("Test Screen"),
     ;
 
     /**

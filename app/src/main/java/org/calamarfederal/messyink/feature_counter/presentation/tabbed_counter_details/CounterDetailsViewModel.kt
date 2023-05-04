@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharingStarted.Companion
@@ -12,6 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
@@ -34,6 +40,8 @@ class CounterDetailsViewModel @Inject constructor(
     private val _getTicksOfFlow: GetTicksOfFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
+    private val _createTickFrom: CreateTickFrom,
+    private val _deleteTicksOf: DeleteTicksOf
 ) : ViewModel() {
     companion object {
         /**
@@ -47,6 +55,13 @@ class CounterDetailsViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initial,
     )
+    private fun <T> Flow<T>.stateInIo(initial: T) = stateIn(
+        ioScope,
+        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
+        initial,
+    )
+
+    private val ioScope: CoroutineScope = viewModelScope + SupervisorJob()
 
     private val counterIdState = savedStateHandle.getStateFlow(COUNTER_ID, NOID)
 
@@ -84,4 +99,11 @@ class CounterDetailsViewModel @Inject constructor(
     val tickAverage: StateFlow<Double?> = counterIdState
         .flatMapLatest { _getTicksAverageOfFlow(it) }
         .stateInViewModel(null)
+
+    fun addTick(amount: Double) {
+        ioScope.launch { _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID)) }
+    }
+    fun resetCounter() {
+        ioScope.launch { _deleteTicksOf(counterIdState.value) }
+    }
 }

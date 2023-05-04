@@ -29,23 +29,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_d
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TestScreen
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
 
-@Preview
-@Composable
-private fun TabbedPreview() {
-    val counter = previewUiCounters.first()
-    var tickSum: Double? = null
-    val ticks = previewUiTicks(counter.id).take(7).apply {
-        tickSum = sumOf { it.amount }
-    }.toList()
-
-    TabbedCounterDetailsScreen(
-        counter = counter,
-        ticks = ticks,
-        tickSum = tickSum,
-        tickAverage = tickSum?.div(ticks.size),
-    )
-}
-
 /**
  * # Tabbed Counter Details Screen
  *
@@ -62,6 +45,8 @@ fun TabbedCounterDetailsScreen(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    onAddTick: (Double) -> Unit,
+    onResetCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
@@ -91,6 +76,8 @@ fun TabbedCounterDetailsScreen(
             ticks = ticks,
             tickSum = tickSum,
             tickAverage = tickAverage,
+            onAddTick = onAddTick,
+            onResetCounter = onResetCounter,
             state = pagerState,
             modifier = Modifier
                 .padding(padding)
@@ -107,6 +94,8 @@ private fun DetailsLayout(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    onAddTick: (Double) -> Unit,
+    onResetCounter: () -> Unit,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(),
     userScrollEnabled: Boolean = true,
@@ -126,6 +115,8 @@ private fun DetailsLayout(
             GameCounter -> GameCounterTab(
                 counter = counter,
                 tickSum = tickSum,
+                onAddTick = onAddTick,
+                onResetCounter = onResetCounter,
             )
 
             TestScreen  -> {
@@ -135,4 +126,23 @@ private fun DetailsLayout(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun TabbedPreview() {
+    val counter = previewUiCounters.first()
+    var tickSum: Double? = null
+    val ticks = previewUiTicks(counter.id).take(7).apply {
+        tickSum = sumOf { it.amount }
+    }.toList()
+
+    TabbedCounterDetailsScreen(
+        counter = counter,
+        ticks = ticks,
+        tickSum = tickSum,
+        tickAverage = tickSum?.div(ticks.size),
+        onAddTick = {},
+        onResetCounter = {},
+    )
 }

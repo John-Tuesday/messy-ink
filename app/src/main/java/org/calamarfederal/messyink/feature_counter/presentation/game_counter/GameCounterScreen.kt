@@ -70,20 +70,12 @@ fun GameCounterScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = {
-//            GameCounterAppBar(
-//                onReset = onReset,
-//                onUndo = onUndo,
-//                onRedo = onRedo,
-//                onNavigateUp = onNavigateUp,
-//            )
-        },
     ) { padding ->
         Surface(
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             GameCounterLayout(
                 counter = counter,
@@ -99,7 +91,7 @@ fun GameCounterScreen(
 }
 
 @Composable
-private fun GameCounterLayout(
+internal fun GameCounterLayout(
     counter: UiCounter,
     tickSum: Double,
     onAddTick: (Double) -> Unit,
@@ -109,7 +101,7 @@ private fun GameCounterLayout(
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
-    QuickTickButtons(
+    CompactTickButtons(
         modifier = modifier.fillMaxSize(),
         centerSlot = {
             CounterCenter(
