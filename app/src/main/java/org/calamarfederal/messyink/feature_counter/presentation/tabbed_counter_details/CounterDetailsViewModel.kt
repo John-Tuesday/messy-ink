@@ -106,7 +106,7 @@ class CounterDetailsViewModel @Inject constructor(
 
     fun addTick(amount: Double) {
         ioScope.launch { _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID)) }
-    }b
+    }
     fun changeTick(tick: UiTick) {
         ioScope.launch { _updateTick(tick) }
     }

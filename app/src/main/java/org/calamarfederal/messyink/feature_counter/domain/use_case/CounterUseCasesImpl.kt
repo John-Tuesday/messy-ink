@@ -60,9 +60,7 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : G
 /**
  * Default Implementation
  */
-class CreateCounterFromImpl @Inject constructor(
-    private val repo: CountersRepo
-) : CreateCounterFrom {
+class CreateCounterFromImpl @Inject constructor(private val repo: CountersRepo) : CreateCounterFrom {
     override suspend fun invoke(sample: UiCounter): UiCounter =
         repo.createCounterFrom(sample.copy(id = NOID).toCounter()).toUI()
 }
@@ -73,7 +71,6 @@ class CreateCounterFromImpl @Inject constructor(
 class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : CreateTickFrom {
     override suspend fun invoke(sample: UiTick): UiTick {
         require(sample.parentId != NOID)
-        println("use case: create tick from: tick { parentId  = ${sample.parentId}, id = ${sample.id} }")
         return repo.createTickFrom(sample.copy(id = NOID).toTick()).toUi()
     }
 }
@@ -81,11 +78,8 @@ class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : C
 /**
  * Default Implementation
  */
-class UpdateCounterImpl @Inject constructor(
-    private val repo: CountersRepo,
-    @CurrentTime private val getTime: GetTime,
-) : UpdateCounter {
-    override suspend fun invoke(changed: UiCounter) = repo.updateCounter(changed.toCounter(), getTime())
+class UpdateCounterImpl @Inject constructor(private val repo: CountersRepo) : UpdateCounter {
+    override suspend fun invoke(changed: UiCounter) = repo.updateCounter(changed.toCounter())
 }
 
 /**
@@ -107,11 +101,8 @@ class UndoTicksImpl @Inject constructor(
 /**
  * Default Implementation
  */
-class UpdateTickImpl @Inject constructor(
-    private val repo: CountersRepo,
-    @CurrentTime private val getTime: GetTime,
-) : UpdateTick {
-    override suspend fun invoke(changed: UiTick) = repo.updateTick(changed.toTick(), getTime())
+class UpdateTickImpl @Inject constructor(private val repo: CountersRepo) : UpdateTick {
+    override suspend fun invoke(changed: UiTick) = repo.updateTick(changed.toTick())
 }
 
 /**

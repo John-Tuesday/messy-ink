@@ -62,14 +62,14 @@ interface CountersRepo {
      *
      * if old [counter] cannot be found; then this does nothing
      */
-    suspend fun updateCounter(counter: Counter, timeModified: Instant): Boolean
+    suspend fun updateCounter(counter: Counter): Boolean
 
     /**
      * Update old [Tick] to [tick] and set [timeModified]
      *
      * if old [tick] cannot be found; then this does nothing
      */
-    suspend fun updateTick(tick: Tick, timeModified: Instant): Boolean
+    suspend fun updateTick(tick: Tick): Boolean
 
     /**
      * Find and delete any [Counter] with matching [Counter.id]

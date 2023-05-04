@@ -6,9 +6,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
+import kotlinx.datetime.isDistantFuture
+import kotlinx.datetime.isDistantPast
 import org.calamarfederal.messyink.data.CounterDao
+import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.Tick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import javax.inject.Inject
@@ -29,7 +33,10 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
  * Implement CountersRepo using CounterDao
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : CountersRepo {
+class CountersRepoImpl @Inject constructor(
+    private val dao: CounterDao,
+    @CurrentTime private val getCurrentTime: GetTime,
+) : CountersRepo {
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
 
@@ -47,21 +54,32 @@ class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : Counte
         dao.ticksOfFlow(parentId).distinctUntilChanged().map { data -> data.map { it.toTick() } }
 
 
-    override suspend fun createCounterFrom(counter: Counter): Counter =
-        counter.copy(id = generateId(pool = getCounterIds().toSet()))
-            .also { dao.insertCounter(it.toEntity()) }
+    override suspend fun createCounterFrom(counter: Counter): Counter {
+        val time = getCurrentTime()
+        return counter.copy(
+            timeCreated = time,
+            timeModified = time,
+            id = generateId(pool = getCounterIds().toSet()),
+        ).also { dao.insertCounter(it.toEntity()) }
+    }
 
     override suspend fun createTickFrom(tick: Tick): Tick {
         require(tick.parentId != NOID)
-        return tick.copy(id = generateId(pool = getTickIds().toSet()))
-            .also { dao.insertCounterTick(it.toEntity()) }
+
+        val time = getCurrentTime()
+        return tick.copy(
+            timeCreated = time,
+            timeModified = time,
+            timeForData = tick.timeForData.run { if (isDistantFuture || isDistantPast) time else this },
+            id = generateId(pool = getTickIds().toSet()),
+        ).also { dao.insertCounterTick(it.toEntity()) }
     }
 
-    override suspend fun updateCounter(counter: Counter, timeModified: Instant) =
-        0 < dao.updateCounter(counter.copy(timeModified = timeModified).toEntity())
+    override suspend fun updateCounter(counter: Counter) =
+        0 < dao.updateCounter(counter.copy(timeModified = getCurrentTime()).toEntity())
 
-    override suspend fun updateTick(tick: Tick, timeModified: Instant) =
-        0 < dao.updateTick(tick.copy(timeCreated = timeModified).toEntity())
+    override suspend fun updateTick(tick: Tick) =
+        0 < dao.updateTick(tick.copy(timeModified = getCurrentTime()).toEntity())
 
     override suspend fun deleteCounter(id: Long) = dao.deleteCounter(id)
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
@@ -75,7 +93,7 @@ class CountersRepoImpl @Inject constructor(private val dao: CounterDao) : Counte
         parentId: Long,
         limit: Int?,
         start: Instant,
-        end: Instant
+        end: Instant,
     ) {
         if (limit == null) dao.deleteTicksByTimeModified(parentId, start, end)
         else dao.deleteTicksByTimeModifiedLimited(parentId, limit, start, end)
