@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -107,8 +108,9 @@ private fun TickListItem(
             )
         },
         supportingContent = {
+            val localTime by remember { derivedStateOf { tick.timeForData.toLocalDateTime(timeZone) }}
             Text(
-                text = "${tick.timeForData.toLocalDateTime(timeZone).date}",
+                text = "${localTime.date} @${localTime.hour}:${localTime.minute}:${localTime.second}",
                 style = MaterialTheme.typography.titleSmall.let {
                     if (selected) it + TextStyle(
                         fontWeight = FontWeight.Medium,
