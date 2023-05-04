@@ -17,11 +17,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -41,7 +43,9 @@ class CounterDetailsViewModel @Inject constructor(
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
     private val _createTickFrom: CreateTickFrom,
-    private val _deleteTicksOf: DeleteTicksOf
+    private val _updateTick: UpdateTick,
+    private val _deleteTicksOf: DeleteTicksOf,
+    private val _deleteTick: DeleteTicks,
 ) : ViewModel() {
     companion object {
         /**
@@ -102,6 +106,13 @@ class CounterDetailsViewModel @Inject constructor(
 
     fun addTick(amount: Double) {
         ioScope.launch { _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID)) }
+    }b
+    fun changeTick(tick: UiTick) {
+        ioScope.launch { _updateTick(tick) }
+    }
+
+    fun deleteTick(id: Long) {
+        ioScope.launch { _deleteTick(id) }
     }
     fun resetCounter() {
         ioScope.launch { _deleteTicksOf(counterIdState.value) }

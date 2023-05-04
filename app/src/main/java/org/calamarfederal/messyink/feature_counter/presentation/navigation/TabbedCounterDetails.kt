@@ -53,6 +53,7 @@ internal object TabbedCounterDetails : CounterNavNode() {
                 tickSum = tickSum,
                 tickAverage = tickAverage,
                 onAddTick = viewModel::addTick,
+                onDeleteTick = viewModel::deleteTick,
                 onResetCounter = viewModel::resetCounter,
             )
         }

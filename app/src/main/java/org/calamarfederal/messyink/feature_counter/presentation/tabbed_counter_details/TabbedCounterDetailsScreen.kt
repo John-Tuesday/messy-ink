@@ -46,6 +46,7 @@ fun TabbedCounterDetailsScreen(
     tickSum: Double?,
     tickAverage: Double?,
     onAddTick: (Double) -> Unit,
+    onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -77,6 +78,7 @@ fun TabbedCounterDetailsScreen(
             tickSum = tickSum,
             tickAverage = tickAverage,
             onAddTick = onAddTick,
+            onDeleteTick = onDeleteTick,
             onResetCounter = onResetCounter,
             state = pagerState,
             modifier = Modifier
@@ -95,6 +97,7 @@ private fun DetailsLayout(
     tickSum: Double?,
     tickAverage: Double?,
     onAddTick: (Double) -> Unit,
+    onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(),
@@ -110,6 +113,8 @@ private fun DetailsLayout(
         when (CounterDetailsTab.fromIndex(it)) {
             TickDetails -> TickDetailsLayout(
                 ticks = ticks,
+                onDelete = onDeleteTick,
+                onEdit = {},
             )
 
             GameCounter -> GameCounterTab(
@@ -143,6 +148,7 @@ private fun TabbedPreview() {
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
         onAddTick = {},
+        onDeleteTick = {},
         onResetCounter = {},
     )
 }
