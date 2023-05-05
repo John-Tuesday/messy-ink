@@ -1,21 +1,24 @@
 package org.calamarfederal.messyink.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 
+/**
+ * Model the (tonal) Material Layers from M3 spec
+ */
 object TonalElevation {
-    private val heights = arrayListOf(0.dp, 1.dp, 3.dp, 6.dp, 8.dp, 12.dp)
-
-
+    /**
+     * [List] of each layer and their corresponding height
+     */
+    val layers = listOf(0.dp, 1.dp, 3.dp, 6.dp, 8.dp, 12.dp)
 
     /**
      * @return Material Layer with height <= [height]
      */
     fun heightToLayer(height: Dp): Int {
-        for ((index, floor) in heights.withIndex().reversed()) {
+        for ((index, floor) in layers.withIndex().reversed()) {
             if (height >= floor)
                 return index
         }
@@ -26,11 +29,12 @@ object TonalElevation {
      * @return the height in [Dp] of the Material Layer above [height]
      */
     fun heightOfNext(height: Dp, minimumHeight: Dp = Dp.Unspecified, minimumLayer: Int = 0): Dp {
-        require(minimumLayer < heights.size && minimumLayer >= 0)
+        require(minimumLayer < layers.size && minimumLayer >= 0)
 
-        val testHeight = if (minimumHeight.isSpecified) height.coerceAtLeast(minimumHeight) else height
+        val testHeight =
+            if (minimumHeight.isSpecified) height.coerceAtLeast(minimumHeight) else height
 
-        for (floor in heights.subList(minimumLayer, heights.size)) {
+        for (floor in layers.subList(minimumLayer, layers.size)) {
             if (testHeight < floor)
                 return floor
         }
@@ -40,14 +44,18 @@ object TonalElevation {
     /**
      * @return height in [Dp] of the Material Layer below [height]
      */
-    fun heightOfPrevious(height: Dp, maximumHeight: Dp = Dp.Unspecified, maximumLayer: Int = 0): Dp {
-        require(maximumLayer < heights.size)
+    fun heightOfPrevious(
+        height: Dp,
+        maximumHeight: Dp = Dp.Unspecified,
+        maximumLayer: Int = 0,
+    ): Dp {
+        require(maximumLayer < layers.size)
 
-        for (floor in heights.subList(0, maximumLayer + 1).reversed()) {
+        for (floor in layers.subList(0, maximumLayer + 1).reversed()) {
             if (height > floor && floor <= maximumHeight)
                 return floor
         }
-        return if (maximumHeight.isSpecified) maximumHeight else heights.first()
+        return if (maximumHeight.isSpecified) maximumHeight else layers.first()
     }
 }
 

@@ -101,6 +101,8 @@ internal fun GameCounterLayout(
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
+    var primaryAmount by rememberSaveable { mutableStateOf(5.00) }
+    var secondaryAmount by rememberSaveable { mutableStateOf(1.00) }
     CompactTickButtons(
         modifier = modifier.fillMaxSize(),
         centerSlot = {
@@ -114,6 +116,8 @@ internal fun GameCounterLayout(
             )
         },
         onAddTick = onAddTick,
+        onChangePrimaryAmount = { primaryAmount = it },
+        onChangeSecondaryAmount = { secondaryAmount = it }
     )
     CustomTickEntryDialog(
         visible = showAmountPrompt,
@@ -121,6 +125,7 @@ internal fun GameCounterLayout(
         onAddTick = onAddTick,
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterCenter(

@@ -1,37 +1,52 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion.LongPress
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventPass.Initial
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.withTimeoutOrNull
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CompactTickButtons(
     centerSlot: @Composable () -> Unit,
     onAddTick: (Double) -> Unit,
+    onChangePrimaryAmount: (Double) -> Unit,
+    onChangeSecondaryAmount: (Double) -> Unit,
     modifier: Modifier = Modifier,
     primaryWeight: Float = 10f,
     primaryAmount: Double = 5.00,
@@ -43,8 +58,9 @@ internal fun CompactTickButtons(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
+        val haptic = LocalHapticFeedback.current
         Button(
-            onClick = { onAddTick(primaryAmount) },
+            onClick = { onAddTick(primaryAmount); println("button click :(") },
             modifier = Modifier
                 .weight(primaryWeight)
                 .fillMaxWidth(),
@@ -95,5 +111,39 @@ internal fun CompactTickButtons(
             Text(primaryAmount.toStringAllowShorten(), style = textStyle)
         }
     }
+}
+
+@Composable
+private fun ButtonFacade(
+    onLongClick: () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    button: @Composable () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    Box(modifier = modifier
+        .pointerInput(onClick, onLongClick) {
+            awaitEachGesture {
+                val pass = Initial
+                awaitFirstDown(pass = pass)
+                val result = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+                    waitForUpOrCancellation() != null
+                }
+                when (result) {
+                    true  -> onClick()
+                    null  -> onLongClick()
+                    false -> Unit
+                }
+                awaitPointerEvent(pass = pass).changes.forEach { it.consume() }
+//            awaitLongPressOrCancellation(id)?.let {
+//                haptic.performHapticFeedback(LongPress)
+//                onLongClick()
+//            }
+            }
+        }
+        .semantics(mergeDescendants = true) {
+            this.onLongClick(label = null, action = { onLongClick(); true })
+        }
+    )
 }
 
