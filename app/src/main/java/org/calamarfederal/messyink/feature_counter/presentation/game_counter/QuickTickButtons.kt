@@ -26,11 +26,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion.LongPress
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
@@ -143,8 +146,10 @@ internal fun EditIncrement(
     onChangeAmount: (Double) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    prompt: String = "Edit Increment"
+    prompt: String = "Edit Increment",
+    focusRequester: FocusRequester = remember { FocusRequester() }
 ) {
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             var amount by remember { mutableStateOf("") }
@@ -172,6 +177,7 @@ internal fun EditIncrement(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions { onSubmit() },
+                modifier = Modifier.focusRequester(focusRequester),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),

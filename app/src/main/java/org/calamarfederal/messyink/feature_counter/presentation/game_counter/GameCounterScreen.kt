@@ -40,6 +40,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.game_counter.Tic
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
+import kotlin.math.absoluteValue
 
 
 /**
@@ -111,6 +112,8 @@ internal fun GameCounterLayout(
             showAmountPrompt = false
             showEditAmount = it
         },
+        primaryAmount = primaryAmount,
+        secondaryAmount = secondaryAmount,
     )
     AnimatedVisibility(
         visible = showAmountPrompt,
@@ -132,7 +135,10 @@ internal fun GameCounterLayout(
                 Dialog(onDismissRequest = { showEditAmount = null }) {
                     EditIncrement(
                         currentAmount = primaryAmount,
-                        onChangeAmount = { primaryAmount = it; showEditAmount = null },
+                        onChangeAmount = {
+                            primaryAmount = it.absoluteValue
+                            showEditAmount = null
+                        },
                         onDismissRequest = { showEditAmount = null },
                         prompt = "Primary Increment"
                     )
@@ -143,7 +149,10 @@ internal fun GameCounterLayout(
                 Dialog(onDismissRequest = { showEditAmount = null }) {
                     EditIncrement(
                         currentAmount = secondaryAmount,
-                        onChangeAmount = { secondaryAmount = it; showEditAmount = null },
+                        onChangeAmount = {
+                            secondaryAmount = it.absoluteValue
+                            showEditAmount = null
+                        },
                         onDismissRequest = { showEditAmount = null },
                         prompt = "Secondary Increment"
                     )
