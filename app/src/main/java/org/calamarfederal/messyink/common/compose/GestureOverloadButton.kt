@@ -40,7 +40,7 @@ import org.calamarfederal.messyink.common.compose.exposed.tonalElevation
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Button(
+fun MoreClickButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.shape,
@@ -96,4 +96,124 @@ fun Button(
             }
         }
     }
+}
+
+/**
+ * [FilledTonalButton] but with [onLongClick] and [onDoubleClick]
+ *
+ * implementation through [MoreClickButton]
+ */
+@Composable
+fun MoreClickFilledTonalButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = ButtonDefaults.filledTonalShape,
+    colors: ExposedButtonColors = ExposedButtonDefaults.filledTonalButtonColors,
+    elevation: ExposedButtonElevation? = ExposedButtonDefaults.filledTonalButtonElevation,
+    border: BorderStroke? = null,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit = {},
+    onClickLabel: String? = null,
+    onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    content: @Composable RowScope.() -> Unit,
+) {
+    MoreClickButton(
+        modifier = modifier,
+        enabled = enabled,
+        shape = shape,
+        colors = colors,
+        elevation = elevation,
+        border = border,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        onClick = onClick,
+        onClickLabel = onClickLabel,
+        onLongClick = onLongClick,
+        onLongClickLabel = onLongClickLabel,
+        onDoubleClick = onDoubleClick,
+        content = content
+    )
+}
+
+/**
+ * [ElevatedButton] but with [onLongClick] and [onDoubleClick]
+ *
+ * implementation through [MoreClickButton]
+ */
+@Composable
+fun MoreClickElevatedButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = ButtonDefaults.elevatedShape,
+    colors: ExposedButtonColors = ExposedButtonDefaults.elevatedButtonColors,
+    elevation: ExposedButtonElevation? = ExposedButtonDefaults.elevatedButtonElevation,
+    border: BorderStroke? = null,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit = {},
+    onClickLabel: String? = null,
+    onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    content: @Composable RowScope.() -> Unit,
+) {
+    MoreClickButton(
+        modifier = modifier,
+        enabled = enabled,
+        shape = shape,
+        colors = colors,
+        elevation = elevation,
+        border = border,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        onClick = onClick,
+        onClickLabel = onClickLabel,
+        onLongClick = onLongClick,
+        onLongClickLabel = onLongClickLabel,
+        onDoubleClick = onDoubleClick,
+        content = content
+    )
+}
+
+/**
+ * [OutlinedButton] but with [onLongClick] and [onDoubleClick]
+ *
+ * implementation through [MoreClickButton]
+ */
+@Composable
+fun MoreClickOutlinedButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = ButtonDefaults.outlinedShape,
+    colors: ExposedButtonColors = ExposedButtonDefaults.outlinedButtonColors,
+    elevation: ExposedButtonElevation? = null,
+    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit = {},
+    onClickLabel: String? = null,
+    onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    content: @Composable RowScope.() -> Unit,
+) {
+    MoreClickButton(
+        modifier = modifier,
+        enabled = enabled,
+        shape = shape,
+        colors = colors,
+        elevation = elevation,
+        border = border,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        onClick = onClick,
+        onClickLabel = onClickLabel,
+        onLongClick = onLongClick,
+        onLongClickLabel = onLongClickLabel,
+        onDoubleClick = onDoubleClick,
+        content = content
+    )
 }

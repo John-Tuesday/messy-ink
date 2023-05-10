@@ -70,6 +70,14 @@ object ExposedButtonDefaults {
             disabledContent = MaterialTheme.colorScheme.onSurface.copy(alpha = DisabledContentOpacity),
         )
 
+    val outlinedButtonColors: ExposedButtonColors
+        @Composable get() = ExposedButtonColors(
+            container = Color.Transparent,
+            content = MaterialTheme.colorScheme.primary,
+            disabledContainer = Color.Transparent,
+            disabledContent = MaterialTheme.colorScheme.onSurface.copy(alpha = DisabledContentOpacity),
+        )
+
     /**
      * facsimile of internal implementation
      */
@@ -95,5 +103,5 @@ object ExposedButtonDefaults {
     /**
      * facsimile of internal implementation; just a alias for [buttonElevation]
      */
-    val filledTonalButton: ExposedButtonElevation = buttonElevation
+    val filledTonalButtonElevation: ExposedButtonElevation = buttonElevation
 }

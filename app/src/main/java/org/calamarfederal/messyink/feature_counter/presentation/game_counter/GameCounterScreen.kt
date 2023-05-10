@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,24 +34,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
+import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
-@Preview
-@Composable
-private fun GameCounterPreview() {
-    MessyInkTheme {
-        GameCounterScreen(
-            counter = previewUiCounters.first(),
-            tickSum = 5.00,
-            onAddTick = {},
-            onReset = {},
-            onUndo = {},
-            onRedo = {},
-        )
-    }
-}
 
 /**
  *  # Game Counter Screen
@@ -101,6 +91,7 @@ internal fun GameCounterLayout(
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
+    var showEditAmount by rememberSaveable { mutableStateOf<TickButton?>(null) }
     var primaryAmount by rememberSaveable { mutableStateOf(5.00) }
     var secondaryAmount by rememberSaveable { mutableStateOf(1.00) }
     CompactTickButtons(
@@ -116,17 +107,53 @@ internal fun GameCounterLayout(
             )
         },
         onAddTick = onAddTick,
-        onChangePrimaryAmount = { primaryAmount = it },
-        onChangeSecondaryAmount = { secondaryAmount = it }
+        onEditTick = {
+            showAmountPrompt = false
+            showEditAmount = it
+        },
     )
-    CustomTickEntryDialog(
+    AnimatedVisibility(
         visible = showAmountPrompt,
-        onDismiss = { showAmountPrompt = false },
-        onAddTick = onAddTick,
-    )
+        label = ""
+    ) {
+        Dialog(onDismissRequest = { showAmountPrompt = false }) {
+            EditIncrement(
+                currentAmount = 0.00,
+                onChangeAmount = { onAddTick(it); showAmountPrompt = false },
+                onDismissRequest = { showAmountPrompt = false },
+                prompt = "Custom Amount",
+            )
+        }
+    }
+    AnimatedContent(targetState = showEditAmount, label = "edit tick amount") { tickButton ->
+        when (tickButton) {
+            null      -> {}
+            Primary   -> {
+                Dialog(onDismissRequest = { showEditAmount = null }) {
+                    EditIncrement(
+                        currentAmount = primaryAmount,
+                        onChangeAmount = { primaryAmount = it; showEditAmount = null },
+                        onDismissRequest = { showEditAmount = null },
+                        prompt = "Primary Increment"
+                    )
+                }
+            }
+
+            Secondary -> {
+                Dialog(onDismissRequest = { showEditAmount = null }) {
+                    EditIncrement(
+                        currentAmount = secondaryAmount,
+                        onChangeAmount = { secondaryAmount = it; showEditAmount = null },
+                        onDismissRequest = { showEditAmount = null },
+                        prompt = "Secondary Increment"
+                    )
+                }
+            }
+        }
+
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterCenter(
     counter: UiCounter,
@@ -211,5 +238,23 @@ private fun AnimatedEditActions(
                 }
             }
         }
+    }
+}
+
+/**
+ * ## Preview
+ */
+@Preview
+@Composable
+private fun GameCounterPreview() {
+    MessyInkTheme {
+        GameCounterScreen(
+            counter = previewUiCounters.first(),
+            tickSum = 5.00,
+            onAddTick = {},
+            onReset = {},
+            onUndo = {},
+            onRedo = {},
+        )
     }
 }
