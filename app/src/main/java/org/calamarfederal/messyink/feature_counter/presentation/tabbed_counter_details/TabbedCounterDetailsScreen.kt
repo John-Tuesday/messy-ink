@@ -81,6 +81,7 @@ fun TabbedCounterDetailsScreen(
     onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
+    onCounterChange: (UiCounter) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -126,6 +127,7 @@ fun TabbedCounterDetailsScreen(
             onDeleteTick = onDeleteTick,
             onResetCounter = onResetCounter,
             state = pagerState,
+            onCounterChange = onCounterChange,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -144,6 +146,7 @@ private fun DetailsLayout(
     onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
+    onCounterChange: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(),
     userScrollEnabled: Boolean = true,
@@ -167,6 +170,7 @@ private fun DetailsLayout(
                 tickSum = tickSum,
                 onAddTick = onAddTick,
                 onResetCounter = onResetCounter,
+                onCounterChange = onCounterChange,
             )
 
             TestScreen  -> {
@@ -229,6 +233,7 @@ private fun TabbedPreview() {
         onAddTick = {},
         onDeleteTick = {},
         onResetCounter = {},
+        onCounterChange = {},
         onNavigateUp = {},
     )
 }

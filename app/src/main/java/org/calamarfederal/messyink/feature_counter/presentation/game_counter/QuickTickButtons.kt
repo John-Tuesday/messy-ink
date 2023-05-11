@@ -50,7 +50,8 @@ import org.calamarfederal.messyink.feature_counter.presentation.game_counter.Tic
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 
 internal enum class TickButton {
-    Primary, Secondary
+    Primary {},
+    Secondary
 }
 
 @Composable
@@ -147,7 +148,7 @@ internal fun EditIncrement(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     prompt: String = "Edit Increment",
-    focusRequester: FocusRequester = remember { FocusRequester() }
+    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
     Card(modifier = modifier) {

@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.KeyboardOptions.Companion
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -15,21 +15,40 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.TimeZone
+import org.calamarfederal.messyink.common.compose.toDbgString
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 
+/**
+ * Card for editing counter-level details
+ */
 @Composable
-internal fun EditCounterDetailsCard(
+fun EditCounterDetailsCard(
     counter: UiCounter,
     onChange: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier) {
         Column(modifier = modifier.padding(16.dp)) {
-            Text("Counter Details")
+            Text(
+                text = "Counter Details",
+                style = MaterialTheme.typography.titleLarge,
+            )
             EditName(
                 name = counter.name,
                 onSubmit = { onChange(counter.copy(name = it)) },
+            )
+            Text(
+                text = counter.timeCreated.toDbgString(
+                    tz = TimeZone.currentSystemDefault(),
+                    now = { System.now() },
+                )
             )
         }
     }
@@ -42,8 +61,8 @@ private fun EditName(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text("Name")
-        var input by rememberSaveable(name) { mutableStateOf(name)}
+        Text(text = "Name", style = MaterialTheme.typography.labelLarge)
+        var input by rememberSaveable(name) { mutableStateOf(name) }
         TextField(
             value = input,
             onValueChange = { input = it },
@@ -53,3 +72,11 @@ private fun EditName(
     }
 }
 
+@Preview
+@Composable
+private fun EditCounterDetailsPreview() {
+    EditCounterDetailsCard(
+        counter = previewUiCounters.first(),
+        onChange = {}
+    )
+}

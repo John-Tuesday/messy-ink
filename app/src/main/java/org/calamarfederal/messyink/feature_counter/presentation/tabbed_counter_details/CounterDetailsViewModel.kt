@@ -23,6 +23,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -44,6 +45,7 @@ class CounterDetailsViewModel @Inject constructor(
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
     private val _createTickFrom: CreateTickFrom,
     private val _updateTick: UpdateTick,
+    private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
     private val _deleteTick: DeleteTicks,
 ) : ViewModel() {
@@ -59,6 +61,7 @@ class CounterDetailsViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initial,
     )
+
     private fun <T> Flow<T>.stateInIo(initial: T) = stateIn(
         ioScope,
         SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
@@ -105,8 +108,21 @@ class CounterDetailsViewModel @Inject constructor(
         .stateInViewModel(null)
 
     fun addTick(amount: Double) {
-        ioScope.launch { _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID)) }
+        ioScope.launch {
+            _createTickFrom(
+                UiTick(
+                    amount = amount,
+                    parentId = counterIdState.value,
+                    id = NOID
+                )
+            )
+        }
     }
+
+    fun changeCounter(counter: UiCounter) {
+        ioScope.launch { _updateCounter(counter) }
+    }
+
     fun changeTick(tick: UiTick) {
         ioScope.launch { _updateTick(tick) }
     }
@@ -114,6 +130,7 @@ class CounterDetailsViewModel @Inject constructor(
     fun deleteTick(id: Long) {
         ioScope.launch { _deleteTick(id) }
     }
+
     fun resetCounter() {
         ioScope.launch { _deleteTicksOf(counterIdState.value) }
     }

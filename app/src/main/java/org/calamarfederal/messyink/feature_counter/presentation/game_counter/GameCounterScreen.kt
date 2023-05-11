@@ -2,6 +2,8 @@ package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,7 +80,8 @@ fun GameCounterScreen(
                 onRedo = onRedo,
                 onReset = onReset,
                 onUndo = onUndo,
-                modifier = Modifier.padding(16.dp)
+                onEditCounter = {},
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -89,6 +95,7 @@ internal fun GameCounterLayout(
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
+    onEditCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
@@ -105,6 +112,7 @@ internal fun GameCounterLayout(
                 onUndo = onUndo,
                 onRedo = onRedo,
                 onReset = onReset,
+                onEditCounter = onEditCounter,
             )
         },
         onAddTick = onAddTick,
@@ -163,11 +171,13 @@ internal fun GameCounterLayout(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CounterCenter(
     counter: UiCounter,
     tickSum: Double,
     onAddCustomTick: () -> Unit,
+    onEditCounter: () -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
@@ -176,9 +186,17 @@ private fun CounterCenter(
     enableRedo: Boolean = false,
     enableReset: Boolean = false,
 ) {
+    val haptic = LocalHapticFeedback.current
     Surface(
-        modifier = modifier,
-        onClick = onAddCustomTick,
+        modifier = modifier
+            .combinedClickable(
+                onClick = { onAddCustomTick() },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onEditCounter()
+                }
+            ),
+        shape = MaterialTheme.shapes.medium,
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
