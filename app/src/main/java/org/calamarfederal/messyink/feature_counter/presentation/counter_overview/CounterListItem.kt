@@ -1,35 +1,25 @@
 package org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalAbsoluteTonalElevation
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
+import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
-import org.calamarfederal.messyink.ui.theme.TonalElevation
+import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
 @Composable
 internal fun CounterListItem(
@@ -72,7 +62,9 @@ internal fun CounterListItem(
         tonalElevation = if (!selected)
             LocalAbsoluteTonalElevation.current
         else
-            TonalElevation.heightOfNext(LocalAbsoluteTonalElevation.current, minimumLayer = 3)
+            LocalAbsoluteTonalElevation.current
+                .toMaterialLevelCiel()
+                .coerceAtLeast(MaterialLevel(3)).elevation
     )
 }
 

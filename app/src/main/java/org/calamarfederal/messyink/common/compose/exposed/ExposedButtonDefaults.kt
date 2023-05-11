@@ -4,7 +4,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import org.calamarfederal.messyink.ui.theme.TonalElevation
+import org.calamarfederal.messyink.ui.theme.materialLevels
 
 /**
  * Expose the private values for elevation and color in [ButtonDefaults]
@@ -70,6 +70,9 @@ object ExposedButtonDefaults {
             disabledContent = MaterialTheme.colorScheme.onSurface.copy(alpha = DisabledContentOpacity),
         )
 
+    /**
+     * exposed facsimile of [ButtonDefaults.outlinedButtonColors]
+     */
     val outlinedButtonColors: ExposedButtonColors
         @Composable get() = ExposedButtonColors(
             container = Color.Transparent,
@@ -82,22 +85,22 @@ object ExposedButtonDefaults {
      * facsimile of internal implementation
      */
     val buttonElevation: ExposedButtonElevation = ExposedButtonElevation(
-        default = TonalElevation.layers[0],
-        pressed = TonalElevation.layers[0],
-        focused = TonalElevation.layers[0],
-        hovered = TonalElevation.layers[1],
-        disabled = TonalElevation.layers[0]
+        default = MaterialTheme.materialLevels[0].elevation,
+        pressed = MaterialTheme.materialLevels[0].elevation,
+        focused = MaterialTheme.materialLevels[0].elevation,
+        hovered = MaterialTheme.materialLevels[1].elevation,
+        disabled = MaterialTheme.materialLevels[0].elevation,
     )
 
     /**
      * facsimile of internal implementation
      */
     val elevatedButtonElevation: ExposedButtonElevation = ExposedButtonElevation(
-        default = TonalElevation.layers[1],
-        pressed = TonalElevation.layers[1],
-        focused = TonalElevation.layers[1],
-        hovered = TonalElevation.layers[2],
-        disabled = TonalElevation.layers[0],
+        default = MaterialTheme.materialLevels[1].elevation,
+        pressed = MaterialTheme.materialLevels[1].elevation,
+        focused = MaterialTheme.materialLevels[1].elevation,
+        hovered = MaterialTheme.materialLevels[2].elevation,
+        disabled = MaterialTheme.materialLevels[0].elevation,
     )
 
     /**
