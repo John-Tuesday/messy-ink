@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomSheetDefaults
@@ -21,6 +24,7 @@ import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -88,7 +92,7 @@ fun CounterOverviewScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterOverviewLayout(
     counters: List<UiCounter>,
@@ -122,14 +126,14 @@ private fun CounterOverviewLayout(
                     )
                 )
 
-                CounterOptionsPopup(
+                CounterOptions(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
                     onDetails = { onCounterDetails(counter) },
                     onGameMode = { onCounterGameMode(counter) },
                     onDelete = { onDeleteCounter(counter) },
                     onClear = { onClearCounterTicks(counter) },
-                    modifier = Modifier.align(Alignment.TopCenter),
+                    modifier = Modifier.safeContentPadding(),
                 )
             }
         }
