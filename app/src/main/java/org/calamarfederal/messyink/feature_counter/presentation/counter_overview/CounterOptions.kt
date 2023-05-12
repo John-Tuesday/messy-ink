@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.More
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
@@ -38,6 +39,7 @@ internal fun CounterOptionsPopup(
     visible: Boolean,
     onDismiss: () -> Unit,
     onDetails: () -> Unit,
+    onGameMode: () -> Unit,
     onDelete: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
@@ -54,13 +56,24 @@ internal fun CounterOptionsPopup(
                 Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                     InputChip(
                         selected = false,
+                        onClick = onGameMode,
+                        border = null,
+                        label = { Text("Game Mode") },
+                        leadingIcon = { Icon(Icons.Filled.Games, "enter game mode") }
+                    )
+
+                    InputChip(
+                        selected = false,
                         onClick = onDetails,
                         border = null,
                         label = { Text("Details") },
                         leadingIcon = { Icon(Filled.More, "show more details") }
                     )
 
-                    Divider(Modifier.fillMaxHeight().width(1.dp))
+                    Divider(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp))
 
                     InputChip(
                         selected = false,

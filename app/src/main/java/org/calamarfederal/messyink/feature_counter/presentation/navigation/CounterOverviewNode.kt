@@ -28,6 +28,7 @@ internal object CounterOverviewNode : CounterNavNode {
         navController: NavHostController,
         onNavigateToCounterDetails: (Long) -> Unit,
         onNavigateToCreateCounter: () -> Unit,
+        onNavigateToCounterGameMode: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
@@ -46,6 +47,7 @@ internal object CounterOverviewNode : CounterNavNode {
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
                 onCreateCounter = { onNavigateToCreateCounter() },
                 onNavigateToCounterDetails = onNavigateToCounterDetails,
+                onNavigateToCounterGameMode = onNavigateToCounterGameMode,
             )
         }
     }

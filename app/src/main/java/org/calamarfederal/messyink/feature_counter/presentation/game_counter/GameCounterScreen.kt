@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -53,11 +53,15 @@ import kotlin.math.absoluteValue
  *
  *  ## Display mode designed for tracking mainly simple integer data. (e.g. health in Magic the Gathering)
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameCounterScreen(
     counter: UiCounter,
     tickSum: Double,
+    primaryIncrement: Double,
+    onChangePrimaryIncrement: (Double) -> Unit,
+    secondaryIncrement: Double,
+    onChangeSecondaryIncrement: (Double) -> Unit,
     onAddTick: (Double) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
@@ -76,6 +80,10 @@ fun GameCounterScreen(
             GameCounterLayout(
                 counter = counter,
                 tickSum = tickSum,
+                primaryIncrement = primaryIncrement,
+                onChangePrimaryIncrement = onChangePrimaryIncrement,
+                secondaryIncrement = secondaryIncrement,
+                onChangeSecondaryIncrement = onChangeSecondaryIncrement,
                 onAddTick = onAddTick,
                 onRedo = onRedo,
                 onReset = onReset,
@@ -87,10 +95,15 @@ fun GameCounterScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GameCounterLayout(
     counter: UiCounter,
     tickSum: Double,
+    primaryIncrement: Double,
+    onChangePrimaryIncrement: (Double) -> Unit,
+    secondaryIncrement: Double,
+    onChangeSecondaryIncrement: (Double) -> Unit,
     onAddTick: (Double) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
@@ -98,17 +111,17 @@ internal fun GameCounterLayout(
     onEditCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
-    var showEditAmount by rememberSaveable { mutableStateOf<TickButton?>(null) }
-    var primaryAmount by rememberSaveable { mutableStateOf(5.00) }
-    var secondaryAmount by rememberSaveable { mutableStateOf(1.00) }
+    var customIncrementPrompt by rememberSaveable { mutableStateOf(false) }
+    var editIncrementOf by rememberSaveable(primaryIncrement, secondaryIncrement) {
+        mutableStateOf<TickButton?>(null)
+    }
     CompactTickButtons(
         modifier = modifier.fillMaxSize(),
         centerSlot = {
             CounterCenter(
                 counter = counter,
                 tickSum = tickSum,
-                onAddCustomTick = { showAmountPrompt = true },
+                onAddCustomTick = { customIncrementPrompt = true },
                 onUndo = onUndo,
                 onRedo = onRedo,
                 onReset = onReset,
@@ -116,58 +129,29 @@ internal fun GameCounterLayout(
             )
         },
         onAddTick = onAddTick,
-        onEditTick = {
-            showAmountPrompt = false
-            showEditAmount = it
-        },
-        primaryAmount = primaryAmount,
-        secondaryAmount = secondaryAmount,
+        onEditIncrement = { editIncrementOf = it },
+        primaryAmount = primaryIncrement,
+        secondaryAmount = secondaryIncrement,
     )
     AnimatedVisibility(
-        visible = showAmountPrompt,
-        label = ""
+        visible = customIncrementPrompt,
+        label = "custom tick"
     ) {
-        Dialog(onDismissRequest = { showAmountPrompt = false }) {
-            EditIncrement(
-                currentAmount = 0.00,
-                onChangeAmount = { onAddTick(it); showAmountPrompt = false },
-                onDismissRequest = { showAmountPrompt = false },
-                prompt = "Custom Amount",
-            )
-        }
+        EditIncrementDialog(
+            currentAmount = 0.00,
+            onChangeAmount = onAddTick,
+            onDismissRequest = { customIncrementPrompt = false })
     }
-    AnimatedContent(targetState = showEditAmount, label = "edit tick amount") { tickButton ->
-        when (tickButton) {
-            null      -> {}
-            Primary   -> {
-                Dialog(onDismissRequest = { showEditAmount = null }) {
-                    EditIncrement(
-                        currentAmount = primaryAmount,
-                        onChangeAmount = {
-                            primaryAmount = it.absoluteValue
-                            showEditAmount = null
-                        },
-                        onDismissRequest = { showEditAmount = null },
-                        prompt = "Primary Increment"
-                    )
-                }
-            }
-
-            Secondary -> {
-                Dialog(onDismissRequest = { showEditAmount = null }) {
-                    EditIncrement(
-                        currentAmount = secondaryAmount,
-                        onChangeAmount = {
-                            secondaryAmount = it.absoluteValue
-                            showEditAmount = null
-                        },
-                        onDismissRequest = { showEditAmount = null },
-                        prompt = "Secondary Increment"
-                    )
-                }
-            }
+    AnimatedContent(
+        targetState = editIncrementOf,
+        label = "edit tick amount"
+    ) { tickButton ->
+        if (tickButton != null) {
+            EditIncrementDialog(
+                currentAmount = if (tickButton == Primary) primaryIncrement else secondaryIncrement,
+                onChangeAmount = if (tickButton == Primary) onChangePrimaryIncrement else onChangeSecondaryIncrement,
+                onDismissRequest = { editIncrementOf = null })
         }
-
     }
 }
 
@@ -278,6 +262,10 @@ private fun GameCounterPreview() {
         GameCounterScreen(
             counter = previewUiCounters.first(),
             tickSum = 5.00,
+            primaryIncrement = 5.00,
+            onChangePrimaryIncrement = {},
+            secondaryIncrement = 1.00,
+            onChangeSecondaryIncrement = {},
             onAddTick = {},
             onReset = {},
             onUndo = {},

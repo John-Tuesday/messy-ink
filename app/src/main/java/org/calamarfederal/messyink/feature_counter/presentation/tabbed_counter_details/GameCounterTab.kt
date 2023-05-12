@@ -25,22 +25,7 @@ internal fun GameCounterTab(
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
 ) {
-    var showEditCounter by remember { mutableStateOf(false) }
     Surface(modifier = Modifier.fillMaxSize()) {
-        GameCounterLayout(
-            counter = counter,
-            tickSum = tickSum ?: 0.00,
-            onAddTick = onAddTick,
-            onReset = onResetCounter,
-            onUndo = {},
-            onRedo = {},
-            onEditCounter = { showEditCounter = true },
-            modifier = Modifier.padding(16.dp),
-        )
-    }
-    AnimatedVisibility(visible = showEditCounter) {
-        Dialog(onDismissRequest = { showEditCounter = false }) {
-            EditCounterDetailsCard(counter = counter, onChange = onCounterChange)
-        }
+        Text("This should be a dedicated screen not a tabbed screen")
     }
 }

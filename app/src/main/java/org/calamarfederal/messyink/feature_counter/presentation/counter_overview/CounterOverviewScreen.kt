@@ -57,6 +57,7 @@ fun CounterOverviewScreen(
     onClearCounterTicks: (UiCounter) -> Unit,
     onCreateCounter: () -> Unit,
     onNavigateToCounterDetails: (Long) -> Unit,
+    onNavigateToCounterGameMode: (Long) -> Unit,
 ) {
     var fabExpand by remember { mutableStateOf(counters.isEmpty() || tickSums.isEmpty()) }
     Scaffold(
@@ -78,6 +79,7 @@ fun CounterOverviewScreen(
                 counters = counters,
                 tickSums = tickSums,
                 onCounterDetails = { onNavigateToCounterDetails(it.id) },
+                onCounterGameMode = { onNavigateToCounterGameMode(it.id) },
                 onDeleteCounter = onDeleteCounter,
                 onClearCounterTicks = onClearCounterTicks,
                 modifier = Modifier.fillMaxSize()
@@ -93,6 +95,7 @@ private fun CounterOverviewLayout(
     tickSums: Map<Long, Double>,
     onClearCounterTicks: (UiCounter) -> Unit,
     onCounterDetails: (UiCounter) -> Unit,
+    onCounterGameMode: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -123,6 +126,7 @@ private fun CounterOverviewLayout(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
                     onDetails = { onCounterDetails(counter) },
+                    onGameMode = { onCounterGameMode(counter) },
                     onDelete = { onDeleteCounter(counter) },
                     onClear = { onClearCounterTicks(counter) },
                     modifier = Modifier.align(Alignment.TopCenter),
@@ -143,6 +147,7 @@ private fun CounterOverviewPreview() {
             onClearCounterTicks = {},
             onCreateCounter = {},
             onNavigateToCounterDetails = {},
+            onNavigateToCounterGameMode = {},
         )
     }
 }
