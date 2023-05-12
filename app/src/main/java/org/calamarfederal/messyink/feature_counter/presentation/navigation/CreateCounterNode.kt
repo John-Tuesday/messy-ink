@@ -12,7 +12,7 @@ import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterViewModel
 
-object CreateCounterNode : CounterNavNode() {
+object CreateCounterNode : CounterNavNode {
     override val route: String = "create_counter"
 
     /**

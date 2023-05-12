@@ -14,7 +14,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.TabbedCounterDetailsScreen
 
-internal object TabbedCounterDetails : CounterNavNode() {
+internal object TabbedCounterDetails : CounterNavNode {
     private const val BASE_ROUTE = "tabbed_counter_details"
     private const val COUNTER_ID = CounterDetailsViewModel.COUNTER_ID
 
