@@ -23,6 +23,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,9 +65,13 @@ fun CounterOverviewScreen(
     onNavigateToCounterDetails: (Long) -> Unit,
     onNavigateToCounterGameMode: (Long) -> Unit,
 ) {
-    var fabExpand by remember { mutableStateOf(counters.isEmpty() || tickSums.isEmpty()) }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+//    var fabExpand by remember(scrollBehavior.state.collapsedFraction ) { mutableStateOf(counters.isEmpty() || tickSums.isEmpty()) }
+    val fabExpand by remember { derivedStateOf { scrollBehavior.state.collapsedFraction < 0.9f } }
+
     Scaffold(
-        topBar = { CounterOverviewAppBar() },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { CounterOverviewAppBar(scrollBehavior = scrollBehavior) },
         floatingActionButton = {
             CounterOverviewFAB(
                 expanded = fabExpand,
