@@ -1,36 +1,28 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,14 +34,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -85,10 +75,8 @@ fun TabbedCounterDetailsScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-//    var selectedIndex by remember { mutableStateOf(0) }
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = ticks::size)
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
-//    val offsetFraction by remember { derivedStateOf(calculation = pagerState::currentPageOffsetFraction) }
     val tabScope = rememberCoroutineScope()
 
     val topBarState = rememberTopAppBarState()
@@ -148,38 +136,44 @@ private fun DetailsLayout(
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
-    state: PagerState = rememberPagerState(),
+    state: PagerState = rememberPagerState(pageCount = ticks::size),
     userScrollEnabled: Boolean = true,
 ) {
     HorizontalPager(
         modifier = modifier,
         state = state,
-        pageCount = CounterDetailsTab.values().size,
+        pageSpacing = 0.dp,
         userScrollEnabled = userScrollEnabled,
+        reverseLayout = false,
+        contentPadding = PaddingValues(0.dp),
+        beyondBoundsPageCount = 0,
+        pageSize = PageSize.Fill,
+        flingBehavior = PagerDefaults.flingBehavior(state = state),
         key = { it },
-    ) {
-        when (CounterDetailsTab.fromIndex(it)) {
-            TickDetails -> TickDetailsLayout(
-                ticks = ticks,
-                onDelete = onDeleteTick,
-                onEdit = {},
-            )
+        pageContent = {
+            when (CounterDetailsTab.fromIndex(it)) {
+                TickDetails -> TickDetailsLayout(
+                    ticks = ticks,
+                    onDelete = onDeleteTick,
+                    onEdit = {},
+                )
 
-            GameCounter -> GameCounterTab(
-                counter = counter,
-                tickSum = tickSum,
-                onAddTick = onAddTick,
-                onResetCounter = onResetCounter,
-                onCounterChange = onCounterChange,
-            )
+                GameCounter -> GameCounterTab(
+                    counter = counter,
+                    tickSum = tickSum,
+                    onAddTick = onAddTick,
+                    onResetCounter = onResetCounter,
+                    onCounterChange = onCounterChange,
+                )
 
-            TestScreen  -> {
-                Surface() {
-                    Text("Testing :P")
+                TestScreen  -> {
+                    Surface() {
+                        Text("Testing :P")
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
