@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
@@ -43,7 +44,7 @@ internal fun CounterListItem(
                 ) else textStyle,
             )
         },
-        leadingContent = {
+        trailingContent = {
             Text(
                 text = summaryNumber?.toStringAllowShorten() ?: "--",
                 style = if (selected) textStyle.merge(
@@ -54,7 +55,7 @@ internal fun CounterListItem(
                 ) else textStyle,
             )
         },
-        trailingContent = {
+        leadingContent = {
             AnimatedVisibility(visible = selected && multiSelect) {
                 Icon(Icons.Filled.Check, null)
             }
@@ -64,7 +65,7 @@ internal fun CounterListItem(
         else
             LocalAbsoluteTonalElevation.current
                 .toMaterialLevelCiel()
-                .coerceAtLeast(MaterialLevel(3)).elevation
+                .coerceAtLeast(MaterialLevel(3)).elevation,
     )
 }
 

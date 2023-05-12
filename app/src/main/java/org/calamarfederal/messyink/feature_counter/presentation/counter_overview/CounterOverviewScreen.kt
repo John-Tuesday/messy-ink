@@ -75,7 +75,7 @@ fun CounterOverviewScreen(
         floatingActionButton = {
             CounterOverviewFAB(
                 expanded = fabExpand,
-                onCreateCounter = onCreateCounter,
+                onCreateCounter = onCreateCounter
             )
         },
         floatingActionButtonPosition = if (fabExpand) FabPosition.Center else FabPosition.End,
