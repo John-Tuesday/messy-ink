@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.common.compose.MoreClickButton
 import org.calamarfederal.messyink.common.compose.MoreClickFilledTonalButton
 import org.calamarfederal.messyink.common.compose.Placeholder
-import org.calamarfederal.messyink.common.compose.exposed.ExposedButtonDefaults
+import org.calamarfederal.messyink.common.compose.material3.exposed.ExposedButtonDefaults
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary

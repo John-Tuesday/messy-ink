@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.common.compose.exposed
+package org.calamarfederal.messyink.common.compose.material3.exposed
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.InteractionSource
