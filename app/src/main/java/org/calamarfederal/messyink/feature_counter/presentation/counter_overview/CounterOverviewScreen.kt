@@ -135,10 +135,10 @@ private fun CounterOverviewLayout(
                 CounterOptions(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
-                    onDetails = { onCounterDetails(counter) },
-                    onGameMode = { onCounterGameMode(counter) },
-                    onDelete = { onDeleteCounter(counter) },
-                    onClear = { onClearCounterTicks(counter) },
+                    onDetails = { onCounterDetails(counter); showOptions = false },
+                    onGameMode = { onCounterGameMode(counter); showOptions = false },
+                    onDelete = { onDeleteCounter(counter); showOptions = false },
+                    onClear = { onClearCounterTicks(counter); showOptions = false },
                     modifier = Modifier.safeContentPadding(),
                 )
             }
