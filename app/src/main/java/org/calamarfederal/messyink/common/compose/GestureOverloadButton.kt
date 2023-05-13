@@ -119,24 +119,22 @@ fun MoreClickFilledTonalButton(
     onLongClickLabel: String? = null,
     onDoubleClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit,
-) {
-    MoreClickButton(
-        modifier = modifier,
-        enabled = enabled,
-        shape = shape,
-        colors = colors,
-        elevation = elevation,
-        border = border,
-        contentPadding = contentPadding,
-        interactionSource = interactionSource,
-        onClick = onClick,
-        onClickLabel = onClickLabel,
-        onLongClick = onLongClick,
-        onLongClickLabel = onLongClickLabel,
-        onDoubleClick = onDoubleClick,
-        content = content
-    )
-}
+) = MoreClickButton(
+    modifier = modifier,
+    enabled = enabled,
+    shape = shape,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    contentPadding = contentPadding,
+    interactionSource = interactionSource,
+    onClick = onClick,
+    onClickLabel = onClickLabel,
+    onLongClick = onLongClick,
+    onLongClickLabel = onLongClickLabel,
+    onDoubleClick = onDoubleClick,
+    content = content
+)
 
 /**
  * [ElevatedButton] but with [onLongClick] and [onDoubleClick]
@@ -159,24 +157,22 @@ fun MoreClickElevatedButton(
     onLongClickLabel: String? = null,
     onDoubleClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit,
-) {
-    MoreClickButton(
-        modifier = modifier,
-        enabled = enabled,
-        shape = shape,
-        colors = colors,
-        elevation = elevation,
-        border = border,
-        contentPadding = contentPadding,
-        interactionSource = interactionSource,
-        onClick = onClick,
-        onClickLabel = onClickLabel,
-        onLongClick = onLongClick,
-        onLongClickLabel = onLongClickLabel,
-        onDoubleClick = onDoubleClick,
-        content = content
-    )
-}
+) = MoreClickButton(
+    modifier = modifier,
+    enabled = enabled,
+    shape = shape,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    contentPadding = contentPadding,
+    interactionSource = interactionSource,
+    onClick = onClick,
+    onClickLabel = onClickLabel,
+    onLongClick = onLongClick,
+    onLongClickLabel = onLongClickLabel,
+    onDoubleClick = onDoubleClick,
+    content = content
+)
 
 /**
  * [OutlinedButton] but with [onLongClick] and [onDoubleClick]
@@ -199,21 +195,20 @@ fun MoreClickOutlinedButton(
     onLongClickLabel: String? = null,
     onDoubleClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit,
-) {
-    MoreClickButton(
-        modifier = modifier,
-        enabled = enabled,
-        shape = shape,
-        colors = colors,
-        elevation = elevation,
-        border = border,
-        contentPadding = contentPadding,
-        interactionSource = interactionSource,
-        onClick = onClick,
-        onClickLabel = onClickLabel,
-        onLongClick = onLongClick,
-        onLongClickLabel = onLongClickLabel,
-        onDoubleClick = onDoubleClick,
-        content = content
-    )
-}
+) = MoreClickButton(
+    modifier = modifier,
+    enabled = enabled,
+    shape = shape,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    contentPadding = contentPadding,
+    interactionSource = interactionSource,
+    onClick = onClick,
+    onClickLabel = onClickLabel,
+    onLongClick = onLongClick,
+    onLongClickLabel = onLongClickLabel,
+    onDoubleClick = onDoubleClick,
+    content = content
+)
+
