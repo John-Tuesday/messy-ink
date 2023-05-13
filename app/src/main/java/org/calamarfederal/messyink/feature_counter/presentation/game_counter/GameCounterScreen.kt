@@ -2,6 +2,14 @@ package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +27,7 @@ import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,11 +47,15 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntOffset.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.calamarfederal.messyink.feature_counter.presentation.common.EditCounterLayout
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.math.absoluteValue
@@ -68,6 +81,7 @@ fun GameCounterScreen(
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var editCounter by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
     ) { padding ->
@@ -88,10 +102,24 @@ fun GameCounterScreen(
                 onRedo = onRedo,
                 onReset = onReset,
                 onUndo = onUndo,
-                onEditCounter = {},
+                onEditCounter = { editCounter = true },
                 modifier = Modifier.padding(16.dp),
             )
         }
+    }
+    AnimatedVisibility(visible = editCounter) {
+        var support by remember(editCounter) { mutableStateOf(UiCounterSupport(nameInput = counter.name)) }
+        EditCounterLayout(
+            counter = counter,
+            counterSupport = support,
+            onChange = {
+                support = UiCounterSupport(
+                    nameInput = it.name,
+                    nameHelp = if (it.name.isBlank()) "name must have at least one non-whitespace character" else null,
+                )
+            },
+            onClose = { editCounter = false },
+        )
     }
 }
 

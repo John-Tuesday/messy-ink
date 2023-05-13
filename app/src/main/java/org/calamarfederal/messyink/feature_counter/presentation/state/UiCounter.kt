@@ -25,6 +25,20 @@ data class UiCounter(
 )
 
 /**
+ * UI State holder to supply feedback when creating or editing a [UiCounter]
+ *
+ * @property[nameInput] current text the user has entered; NOT the saved copy in [UiCounter]
+ * @property[nameHelp] support text to show to the user
+ * @property[nameError] should this be shown as an error (i.e. disallow saving, show in red, etc.)
+ */
+@Stable
+data class UiCounterSupport(
+    val nameInput: String = "",
+    val nameHelp: String? = null,
+    val nameError: Boolean = nameHelp.isNullOrBlank()
+)
+
+/**
  * # Ui State holder for Ticks
  *
  * ticks are modification events to a counter.
