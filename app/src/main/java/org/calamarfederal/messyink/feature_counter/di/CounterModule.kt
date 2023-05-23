@@ -9,11 +9,14 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.TimeZone.Companion
 import org.calamarfederal.messyink.data.CounterDao
 import org.calamarfederal.messyink.data.MessyInkDb
 import org.calamarfederal.messyink.feature_counter.data.CountersRepoImpl
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
+import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.BINARY
 
@@ -23,6 +26,13 @@ import kotlin.annotation.AnnotationRetention.BINARY
 @Qualifier
 @Retention(BINARY)
 annotation class CurrentTime
+
+/**
+ * Specify provided time zone represents current time zone
+ */
+@Qualifier
+@Retention(BINARY)
+annotation class CurrentTimeZone
 
 /**
  * Bindings for each Counter-feature ViewModel
@@ -63,5 +73,10 @@ object CounterModuleProvider {
      */
     @CurrentTime
     @Provides
-    fun provideCurrentTimeGetter(): GetTime = GetTime{ Clock.System.now() }
+    fun provideCurrentTimeGetter(): GetTime = GetTime { Clock.System.now() }
+
+    @CurrentTimeZone
+    @Provides
+    fun provideCurrentTimeZoneGetter(): GetTimeZone =
+        GetTimeZone { TimeZone.currentSystemDefault() }
 }

@@ -18,7 +18,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 /**
  * # Game Counter Navigation Node
  */
-internal object GameCounterNode : CounterNavNode() {
+internal object GameCounterNode : CounterNavNode {
     private const val BASE_ROUTE = "game_counter"
     private const val COUNTER_ID = GameCounterViewModel.COUNTER_ID
 
@@ -45,10 +45,16 @@ internal object GameCounterNode : CounterNavNode() {
 
             val counter by viewModel.counter.collectAsState()
             val tickSum by viewModel.tickSum.collectAsState()
+            val primaryIncrement by viewModel.primaryIncrement.collectAsState()
+            val secondaryIncrement by viewModel.secondaryIncrement.collectAsState()
 
             GameCounterScreen(
                 counter = counter,
                 tickSum = tickSum,
+                primaryIncrement = primaryIncrement,
+                onChangePrimaryIncrement = viewModel::changePrimaryIncrement,
+                secondaryIncrement = secondaryIncrement,
+                onChangeSecondaryIncrement = viewModel::changeSecondaryIncrement,
                 onAddTick = viewModel::addTick,
                 onUndo = viewModel::undoTick,
                 onRedo = viewModel::redoTick,

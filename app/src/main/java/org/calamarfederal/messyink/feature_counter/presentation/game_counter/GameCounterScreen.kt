@@ -1,6 +1,17 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +25,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,45 +42,46 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntOffset.Companion
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import org.calamarfederal.messyink.feature_counter.presentation.common.EditCounterLayout
+import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
+import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
+import kotlin.math.absoluteValue
 
-@Preview
-@Composable
-private fun GameCounterPreview() {
-    MessyInkTheme {
-        GameCounterScreen(
-            counter = previewUiCounters.first(),
-            tickSum = 5.00,
-            onAddTick = {},
-            onReset = {},
-            onUndo = {},
-            onRedo = {},
-        )
-    }
-}
 
 /**
  *  # Game Counter Screen
  *
  *  ## Display mode designed for tracking mainly simple integer data. (e.g. health in Magic the Gathering)
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameCounterScreen(
     counter: UiCounter,
     tickSum: Double,
+    primaryIncrement: Double,
+    onChangePrimaryIncrement: (Double) -> Unit,
+    secondaryIncrement: Double,
+    onChangeSecondaryIncrement: (Double) -> Unit,
     onAddTick: (Double) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var editCounter by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
     ) { padding ->
@@ -80,53 +94,102 @@ fun GameCounterScreen(
             GameCounterLayout(
                 counter = counter,
                 tickSum = tickSum,
+                primaryIncrement = primaryIncrement,
+                onChangePrimaryIncrement = onChangePrimaryIncrement,
+                secondaryIncrement = secondaryIncrement,
+                onChangeSecondaryIncrement = onChangeSecondaryIncrement,
                 onAddTick = onAddTick,
                 onRedo = onRedo,
                 onReset = onReset,
                 onUndo = onUndo,
-                modifier = Modifier.padding(16.dp)
+                onEditCounter = { editCounter = true },
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
+    AnimatedVisibility(visible = editCounter) {
+        var support by remember(editCounter) { mutableStateOf(UiCounterSupport(nameInput = counter.name)) }
+        EditCounterLayout(
+            counter = counter,
+            counterSupport = support,
+            onChange = {
+                support = UiCounterSupport(
+                    nameInput = it.name,
+                    nameHelp = if (it.name.isBlank()) "name must have at least one non-whitespace character" else null,
+                )
+            },
+            onClose = { editCounter = false },
+        )
+    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GameCounterLayout(
     counter: UiCounter,
     tickSum: Double,
+    primaryIncrement: Double,
+    onChangePrimaryIncrement: (Double) -> Unit,
+    secondaryIncrement: Double,
+    onChangeSecondaryIncrement: (Double) -> Unit,
     onAddTick: (Double) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
+    onEditCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showAmountPrompt by rememberSaveable { mutableStateOf(false) }
+    var customIncrementPrompt by rememberSaveable { mutableStateOf(false) }
+    var editIncrementOf by rememberSaveable(primaryIncrement, secondaryIncrement) {
+        mutableStateOf<TickButton?>(null)
+    }
     CompactTickButtons(
         modifier = modifier.fillMaxSize(),
         centerSlot = {
             CounterCenter(
                 counter = counter,
                 tickSum = tickSum,
-                onAddCustomTick = { showAmountPrompt = true },
+                onAddCustomTick = { customIncrementPrompt = true },
                 onUndo = onUndo,
                 onRedo = onRedo,
                 onReset = onReset,
+                onEditCounter = onEditCounter,
             )
         },
         onAddTick = onAddTick,
+        onEditIncrement = { editIncrementOf = it },
+        primaryAmount = primaryIncrement,
+        secondaryAmount = secondaryIncrement,
     )
-    CustomTickEntryDialog(
-        visible = showAmountPrompt,
-        onDismiss = { showAmountPrompt = false },
-        onAddTick = onAddTick,
-    )
+    AnimatedVisibility(
+        visible = customIncrementPrompt,
+        label = "custom tick"
+    ) {
+        EditIncrementDialog(
+            currentAmount = 0.00,
+            onChangeAmount = onAddTick,
+            onDismissRequest = { customIncrementPrompt = false })
+    }
+    AnimatedContent(
+        targetState = editIncrementOf,
+        label = "edit tick amount"
+    ) { tickButton ->
+        if (tickButton != null) {
+            EditIncrementDialog(
+                currentAmount = if (tickButton == Primary) primaryIncrement else secondaryIncrement,
+                onChangeAmount = if (tickButton == Primary) onChangePrimaryIncrement else onChangeSecondaryIncrement,
+                onDismissRequest = { editIncrementOf = null })
+        }
+    }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CounterCenter(
     counter: UiCounter,
     tickSum: Double,
     onAddCustomTick: () -> Unit,
+    onEditCounter: () -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
@@ -135,9 +198,17 @@ private fun CounterCenter(
     enableRedo: Boolean = false,
     enableReset: Boolean = false,
 ) {
+    val haptic = LocalHapticFeedback.current
     Surface(
-        modifier = modifier,
-        onClick = onAddCustomTick,
+        modifier = modifier
+            .combinedClickable(
+                onClick = { onAddCustomTick() },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onEditCounter()
+                }
+            ),
+        shape = MaterialTheme.shapes.medium,
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -206,5 +277,27 @@ private fun AnimatedEditActions(
                 }
             }
         }
+    }
+}
+
+/**
+ * ## Preview
+ */
+@Preview
+@Composable
+private fun GameCounterPreview() {
+    MessyInkTheme {
+        GameCounterScreen(
+            counter = previewUiCounters.first(),
+            tickSum = 5.00,
+            primaryIncrement = 5.00,
+            onChangePrimaryIncrement = {},
+            secondaryIncrement = 1.00,
+            onChangeSecondaryIncrement = {},
+            onAddTick = {},
+            onReset = {},
+            onUndo = {},
+            onRedo = {},
+        )
     }
 }

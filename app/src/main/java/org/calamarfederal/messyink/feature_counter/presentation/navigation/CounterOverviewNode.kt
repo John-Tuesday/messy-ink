@@ -17,7 +17,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
  *
  * high level view of all counters and summary stats
  */
-internal object CounterOverviewNode : CounterNavNode() {
+internal object CounterOverviewNode : CounterNavNode {
     override val route: String = "counter_overview"
 
     fun NavHostController.navigateToCounterOverview(navOptions: NavOptions = navOptions { launchSingleTop = true }) {
@@ -28,6 +28,7 @@ internal object CounterOverviewNode : CounterNavNode() {
         navController: NavHostController,
         onNavigateToCounterDetails: (Long) -> Unit,
         onNavigateToCreateCounter: () -> Unit,
+        onNavigateToCounterGameMode: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
@@ -46,6 +47,7 @@ internal object CounterOverviewNode : CounterNavNode() {
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
                 onCreateCounter = { onNavigateToCreateCounter() },
                 onNavigateToCounterDetails = onNavigateToCounterDetails,
+                onNavigateToCounterGameMode = onNavigateToCounterGameMode,
             )
         }
     }

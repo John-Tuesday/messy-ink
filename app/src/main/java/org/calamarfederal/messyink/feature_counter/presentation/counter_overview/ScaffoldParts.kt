@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -31,10 +32,11 @@ internal fun CounterOverviewFAB(
 @Composable
 internal fun CounterOverviewAppBar(
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         modifier = modifier,
         title = { Text("Overview") },
-        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        scrollBehavior = scrollBehavior,
     )
 }

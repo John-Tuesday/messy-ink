@@ -5,4 +5,4 @@ import org.calamarfederal.messyink.common.navigation.SubNavNode
 /**
  * # Sealed base class for Navigation Points for use with [CounterNavHost]
  */
-sealed class CounterNavNode : SubNavNode
+sealed interface CounterNavNode : SubNavNode

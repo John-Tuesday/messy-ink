@@ -8,7 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -70,7 +72,6 @@ class GameCounterViewModel @Inject constructor(
 
     private val counterIdState = savedStateHandle.getStateFlow(COUNTER_ID, NOID)
 
-
     /**
      * counter being examined; idk how to handle when DNE.
      */
@@ -85,6 +86,34 @@ class GameCounterViewModel @Inject constructor(
     val tickSum = counterIdState
         .flatMapLatest { _getTicksSumOfFlow(it) }
         .stateInIo(0.00)
+
+    private val _primaryIncrement = MutableStateFlow(5.00)
+
+    /**
+     * Change primary increment
+     */
+    fun changePrimaryIncrement(inc: Double) {
+        _primaryIncrement.value = inc
+    }
+
+    /**
+     * Quick Larger increment
+     */
+    val primaryIncrement = _primaryIncrement.asStateFlow()
+
+    private val _secondaryIncrement = MutableStateFlow(1.00)
+
+    /**
+     * Change secondary increment
+     */
+    fun changeSecondaryIncrement(inc: Double) {
+        _secondaryIncrement.value = inc
+    }
+
+    /**
+     * Quick Smaller increment
+     */
+    val secondaryIncrement = _secondaryIncrement.asStateFlow()
 
     /**
      * change [counter] name to [name]

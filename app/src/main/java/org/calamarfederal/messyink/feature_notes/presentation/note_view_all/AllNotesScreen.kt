@@ -27,8 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.feature_notes.presentation.state.UiNoteBrief
 import org.calamarfederal.messyink.feature_notes.presentation.state.uiNoteBriefPreviews
+import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
-import org.calamarfederal.messyink.ui.theme.TonalElevation
+import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
 @Preview
 @Composable
@@ -171,7 +172,8 @@ private fun NoteListItem(
 
     ListItem(
         tonalElevation = LocalAbsoluteTonalElevation.current.let {
-            if (isSelected) TonalElevation.heightOfNext(it, minimumLayer = 3) else it
+            if (isSelected) it.toMaterialLevelCiel().coerceAtLeast(MaterialLevel(3)).elevation
+            else it
         },
         modifier = modifier.combinedClickable(
             onLongClick = {

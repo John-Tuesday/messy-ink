@@ -22,10 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalAbsoluteTonalElevation
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -44,11 +41,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.TimeZone.Companion
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.ui.theme.TonalElevation
+import org.calamarfederal.messyink.ui.theme.MaterialLevel
+import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -108,7 +105,7 @@ private fun TickListItem(
             )
         },
         supportingContent = {
-            val localTime by remember { derivedStateOf { tick.timeForData.toLocalDateTime(timeZone) }}
+            val localTime by remember { derivedStateOf { tick.timeForData.toLocalDateTime(timeZone) } }
             Text(
                 text = "${localTime.date} @${localTime.hour}:${localTime.minute}:${localTime.second}",
                 style = MaterialTheme.typography.titleSmall.let {
@@ -123,7 +120,7 @@ private fun TickListItem(
             )
         },
         tonalElevation = LocalAbsoluteTonalElevation.current.let {
-            if (selected) TonalElevation.heightOfNext(it, minimumLayer = 3)
+            if (selected) it.toMaterialLevelCiel().coerceAtLeast(MaterialLevel(3)).elevation
             else it
         }
     )
@@ -158,7 +155,11 @@ private fun TickOptions(
                         label = { Text("Edit") },
                         leadingIcon = { Icon(Icons.Filled.Edit, "edit tick") }
                     )
-                    Divider(Modifier.fillMaxHeight().padding(vertical = 4.dp).width(1.dp))
+                    Divider(
+                        Modifier
+                            .fillMaxHeight()
+                            .padding(vertical = 4.dp)
+                            .width(1.dp))
                     InputChip(
                         selected = false,
                         onClick = onDelete,
