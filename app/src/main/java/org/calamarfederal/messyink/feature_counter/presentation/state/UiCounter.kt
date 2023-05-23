@@ -1,8 +1,9 @@
 package org.calamarfederal.messyink.feature_counter.presentation.state
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.input.key.Key.Companion.I
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.days
 
 /**
  * Constant value to represent an unset ID
@@ -35,7 +36,7 @@ data class UiCounter(
 data class UiCounterSupport(
     val nameInput: String = "",
     val nameHelp: String? = null,
-    val nameError: Boolean = nameHelp.isNullOrBlank()
+    val nameError: Boolean = nameHelp.isNullOrBlank(),
 )
 
 /**
@@ -65,22 +66,28 @@ data class UiTick(
  *
  * used to generate self-labeled UiCounters for preview and testing purposes.
  */
-val previewUiCounters: Sequence<UiCounter> get() = (1..Int.MAX_VALUE).asSequence().map {
-    UiCounter(
-        name = "name $it",
-        id = it.toLong(),
-    )
-}
+val previewUiCounters: Sequence<UiCounter>
+    get() = (1 .. Int.MAX_VALUE).asSequence().map {
+        UiCounter(
+            name = "name $it",
+            id = it.toLong(),
+        )
+    }
 
 /**
  * # Preview Generator
  *
  * used to generate self-labeled UiTicks for preview and testing purposes.
  */
-fun previewUiTicks(parentId: Long): Sequence<UiTick> = (1..Int.MAX_VALUE).asSequence().filterNot { it.toLong() == parentId }.map {
-    UiTick(
-        amount = it.toDouble(),
-        parentId = parentId,
-        id = it.toLong(),
-    )
-}
+fun previewUiTicks(parentId: Long): Sequence<UiTick> =
+    (1 .. Int.MAX_VALUE).asSequence().filterNot { it.toLong() == parentId }.map {
+        val time = Clock.System.now() + it.days
+        UiTick(
+            amount = it.toDouble(),
+            timeModified = time,
+            timeCreated = time,
+            timeForData = time,
+            parentId = parentId,
+            id = it.toLong(),
+        )
+    }
