@@ -1,12 +1,15 @@
 package org.calamarfederal.messyink.common.compose.charts
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -95,7 +98,7 @@ data class GraphColor constructor(
  * [lineGraphPoints] are expected to be distinct data points in order
  */
 @Composable
-fun LineGraph(
+fun BasicLineGraph(
     lineGraphPoints: List<PointByPercent<*>>,
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(),
@@ -138,30 +141,23 @@ fun LineGraph(
             }
             // Draw lines
             drawPoints(
-                points = lineGraphPoints
-                    .asSequence()
-                    .flatMap { listOf(it, it) }
-                    .drop(1)
-                    .map {
-                        Offset(
-                            x = it.x.toFloat() * size.width,
-                            y = it.y.toFloat() * size.height
-                        )
-                    }
-                    .toList(),
+                points = lineGraphPoints.asSequence().flatMap { listOf(it, it) }.drop(1).map {
+                    Offset(
+                        x = it.x.toFloat() * size.width, y = it.y.toFloat() * size.height
+                    )
+                }.toList(),
                 pointMode = PointMode.Lines,
                 color = graphColors.lineColor,
                 strokeWidth = graphSize.lineSize.toPx(),
             )
             // Draw points
             drawPoints(
-                points = lineGraphPoints
-                    .map {
-                        Offset(
-                            x = it.x.toFloat() * size.width,
-                            y = it.y.toFloat() * size.height,
-                        )
-                    },
+                points = lineGraphPoints.map {
+                    Offset(
+                        x = it.x.toFloat() * size.width,
+                        y = it.y.toFloat() * size.height,
+                    )
+                },
                 pointMode = PointMode.Points,
                 cap = StrokeCap.Round,
                 color = graphColors.pointColor,
@@ -198,12 +194,58 @@ fun LineGraph(
     })
 }
 
+/**
+ * Line Graph with slots for labeling
+ *
+ * [rangeChunkLabel] and [domainChunkLabel] provide Zero-indexed labels for gridlines
+ */
+@Composable
+fun LineGraph(
+    lineGraphPoints: List<PointByPercent<*>>,
+    modifier: Modifier = Modifier,
+    title: @Composable () -> Unit = {},
+    domainLabel: @Composable () -> Unit = {},
+    rangeLabel: @Composable () -> Unit = {},
+    rangeChunkLabel: (Int) -> (@Composable () -> Unit) = { _ -> {} },
+    domainChunkLabel: (Int) -> (@Composable () -> Unit) = { _ -> {} },
+    size: GraphSize2d = GraphSize2d(),
+    colors: GraphColor = GraphColor(),
+) {
+    Column(modifier = modifier) {
+        CompositionLocalProvider(
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleLarge
+        ) {
+            title()
+        }
+        BasicLineGraph(
+            lineGraphPoints = lineGraphPoints,
+            graphSize = size,
+            graphColors = colors,
+            modifier = Modifier
+                .weight(1f)
+                .padding(size.pointSize / 2) // perfect padding for when points are on the edge
+                .fillMaxWidth(),
+        )
+        CompositionLocalProvider(
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.labelSmall
+        ) {
+            for (c in 0 until size.xAxisChunks)
+                domainChunkLabel(c)
+        }
+        CompositionLocalProvider(
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleMedium
+        ) {
+            domainLabel()
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun GraphPreview() {
     MessyInkTheme {
         Surface {
-            LineGraph(
+            BasicLineGraph(
                 lineGraphPoints = mapOf(
                     .3f to .2f,
                     .5f to .4f,

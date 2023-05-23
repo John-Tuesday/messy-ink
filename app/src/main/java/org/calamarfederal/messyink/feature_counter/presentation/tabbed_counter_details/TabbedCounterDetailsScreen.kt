@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,9 +44,8 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.GameCounter
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TestScreen
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
+import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickGraphs
 
 /**
  * # Tabbed Counter Details Screen
@@ -75,7 +73,7 @@ fun TabbedCounterDetailsScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState(pageCount = ticks::size)
+    val pagerState = rememberPagerState(pageCount = CounterDetailsTab::size)
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
     val tabScope = rememberCoroutineScope()
 
@@ -106,7 +104,7 @@ fun TabbedCounterDetailsScreen(
             )
         },
     ) { padding ->
-        DetailsLayout(
+        TabbedLayout(
             counter = counter,
             ticks = ticks,
             tickSum = tickSum,
@@ -126,7 +124,7 @@ fun TabbedCounterDetailsScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DetailsLayout(
+private fun TabbedLayout(
     counter: UiCounter,
     ticks: List<UiTick>,
     tickSum: Double?,
@@ -136,7 +134,7 @@ private fun DetailsLayout(
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
-    state: PagerState = rememberPagerState(pageCount = ticks::size),
+    state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
     userScrollEnabled: Boolean = true,
 ) {
     HorizontalPager(
@@ -158,19 +156,10 @@ private fun DetailsLayout(
                     onEdit = {},
                 )
 
-                GameCounter -> GameCounterTab(
-                    counter = counter,
-                    tickSum = tickSum,
-                    onAddTick = onAddTick,
-                    onResetCounter = onResetCounter,
-                    onCounterChange = onCounterChange,
+                TickGraphs  -> TicksOverTimeLayout(
+                    ticks = ticks,
                 )
 
-                TestScreen  -> {
-                    Surface() {
-                        Text("Testing :P")
-                    }
-                }
             }
         }
     )
