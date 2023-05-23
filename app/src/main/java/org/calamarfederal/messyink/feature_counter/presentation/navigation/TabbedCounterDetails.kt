@@ -32,26 +32,23 @@ internal object TabbedCounterDetails : CounterNavNode {
         subNavNode { entry ->
             onEntry(entry)
 
-            val counterId = entry.arguments?.getLong(COUNTER_ID)
-                ?: NOID.also { println("tabbed nav arg: counter id not found") }
-
             val viewModel: CounterDetailsViewModel = hiltViewModel(entry)
 
             val counter by viewModel.counter.collectAsState()
             val ticks by viewModel.ticks.collectAsState()
             val tickSum by viewModel.tickSum.collectAsState()
             val tickAverage by viewModel.tickAverage.collectAsState()
-
-            LaunchedEffect(counterId, counter.id) {
-                println("viewModel counter id: ${counter.id}")
-                println("nav arg counter id: $counterId")
-            }
+            val graphDomain by viewModel.graphDomain.collectAsState()
+            val graphDomainOptions = viewModel.graphDomainOptions
 
             TabbedCounterDetailsScreen(
                 counter = counter,
                 ticks = ticks,
                 tickSum = tickSum,
                 tickAverage = tickAverage,
+                graphDomain = graphDomain,
+                graphDomainOptions = graphDomainOptions.toList(),
+                changeGraphDomain = { viewModel.changeGraphDomain(it) },
                 onAddTick = viewModel::addTick,
                 onDeleteTick = viewModel::deleteTick,
                 onResetCounter = viewModel::resetCounter,

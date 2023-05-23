@@ -40,6 +40,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
@@ -66,6 +69,9 @@ fun TabbedCounterDetailsScreen(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    graphDomain: TimeDomain,
+    graphDomainOptions: List<TimeDomainTemplate>,
+    changeGraphDomain: (TimeDomain) -> Unit,
     onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
@@ -114,6 +120,9 @@ fun TabbedCounterDetailsScreen(
             onResetCounter = onResetCounter,
             state = pagerState,
             onCounterChange = onCounterChange,
+            graphDomain = graphDomain,
+            graphDomainOptions = graphDomainOptions,
+            changeGraphDomain = changeGraphDomain,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -133,6 +142,9 @@ private fun TabbedLayout(
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
+    graphDomain: TimeDomain,
+    graphDomainOptions: List<TimeDomainTemplate>,
+    changeGraphDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
     userScrollEnabled: Boolean = true,
@@ -158,6 +170,9 @@ private fun TabbedLayout(
 
                 TickGraphs  -> TicksOverTimeLayout(
                     ticks = ticks,
+                    domain = graphDomain,
+                    domainOptions = graphDomainOptions,
+                    changeDomain = changeGraphDomain,
                 )
 
             }
@@ -213,6 +228,9 @@ private fun TabbedPreview() {
         ticks = ticks,
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
+        graphDomain = TimeDomain.AbsoluteAllTime,
+        graphDomainOptions = listOf(),
+        changeGraphDomain = {},
         onAddTick = {},
         onDeleteTick = {},
         onResetCounter = {},
