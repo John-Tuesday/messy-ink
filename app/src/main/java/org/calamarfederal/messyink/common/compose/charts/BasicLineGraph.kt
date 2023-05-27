@@ -1,7 +1,9 @@
 package org.calamarfederal.messyink.common.compose.charts
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,20 +11,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.AndroidPath
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,24 +35,39 @@ import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
  * Drawn size of a graph
- *
- * @property[xAxisWidth] the stroke width of the drawn horizontal axis
- * @property[yAxisWidth] the stroke width of the drawn vertical axis
- * @property[xAxisGridWidth] the stroke width of the drawn horizontal grid lines
- * @property[yAxisGridWidth] the stroke width of the drawn vertical grid lines
- * @property[xAxisChunks] the number of divisions along the x axis (for grid lines)
- * @property[yAxisChunks] the number of divisions along the y axis (for grid lines)
- * @property[lineSize] the stroke width of the drawn line
- * @property[pointSize] the stroke width (i.e. diameter) of a point
  */
 data class GraphSize2d(
+    /**
+     * the stroke width of the drawn horizontal axis
+     */
     val xAxisWidth: Dp = 2.dp,
+    /**
+     * the stroke width of the drawn vertical axis
+     */
     val yAxisWidth: Dp = 2.dp,
+    /**
+     * the stroke width of the drawn horizontal grid lines
+     */
     val xAxisGridWidth: Dp = Dp.Hairline,
+    /**
+     * the stroke width of the drawn vertical grid lines
+     */
     val yAxisGridWidth: Dp = Dp.Hairline,
+    /**
+     * the number of divisions along the x axis (for grid lines)
+     */
     val xAxisChunks: Int = 10,
+    /**
+     * the number of divisions along the y axis (for grid lines)
+     */
     val yAxisChunks: Int = 10,
+    /**
+     * the stroke width of the drawn line
+     */
     val lineSize: Dp = 4.dp,
+    /**
+     * the stroke width (i.e. diameter) of a point
+     */
     val pointSize: Dp = 12.dp,
 )
 
@@ -168,8 +188,8 @@ fun BasicLineGraph(
                         strokeWidth = graphSize.lineSize.toPx(),
                     )
                     // Draw fill region
-                    val leftOrigin = lineGraphPoints.first().x.toFloat() * size.width
-                    val topOrigin = lineGraphPoints.first().y.toFloat() * size.height
+                    val leftOrigin = size.width * lineGraphPoints.first().x.toFloat()
+                    val topOrigin = size.height * lineGraphPoints.first().y.toFloat()
                     val totalSize = size
                     inset(
                         left = leftOrigin,
@@ -214,8 +234,7 @@ fun BasicLineGraph(
                 )
                 drawContent()
             }
-        }
-    )
+        })
 }
 
 /**
@@ -236,27 +255,38 @@ fun LineGraph(
     size: GraphSize2d = GraphSize2d(),
     colors: GraphColor = GraphColor(),
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(horizontal = size.pointSize / 2)) {
         CompositionLocalProvider(
-            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleLarge
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.headlineMedium
         ) {
-            title()
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                title()
+            }
         }
         BasicLineGraph(
             lineGraphPoints = lineGraphPoints,
             graphSize = size,
             graphColors = colors,
             modifier = graphModifier
-                .padding(size.pointSize / 2) // perfect padding for when points are on the edge
+                .padding(vertical = size.pointSize / 2) // perfect padding for when points are on the edge
                 .fillMaxWidth()
         )
         CompositionLocalProvider(
-            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.labelSmall
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleMedium
         ) {
-            for (c in 0 until size.xAxisChunks) domainChunkLabel(c)
+            Row {
+                for (c in 0 until size.xAxisChunks) {
+                    domainChunkLabel(c)()
+                }
+            }
         }
         CompositionLocalProvider(
-            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleMedium
+            LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Medium
+            )
         ) {
             domainLabel()
         }
@@ -265,7 +295,7 @@ fun LineGraph(
 
 @Preview
 @Composable
-private fun GraphPreview() {
+private fun BasicGraphPreview() {
     MessyInkTheme {
         Surface {
             BasicLineGraph(
@@ -276,6 +306,24 @@ private fun GraphPreview() {
                 modifier = Modifier
                     .size(300.dp)
                     .padding(16.dp),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun LabeledGraphPreview() {
+    MessyInkTheme {
+        Surface {
+            LineGraph(
+                lineGraphPoints = sequenceOf(
+                    -1f to .5f, 0f to 0f, .5f to .5f, .75f to .2f, 1f to 1f, 1.124 to .5f
+                ).map { PointByPercent(it) }.toList(),
+                title = { Text("Title :)") },
+                domainLabel = { Text("Domain") },
+                domainChunkLabel = { i -> { Text("preview index: $i") } },
+                modifier = Modifier,
             )
         }
     }

@@ -113,8 +113,15 @@ class CounterDetailsViewModel @Inject constructor(
         .stateInViewModel(null)
 
     private val _graphDomain = MutableStateFlow(TimeDomain.AbsoluteAllTime)
+
+    /**
+     * Domain for all graphs
+     */
     val graphDomain = _graphDomain.asStateFlow()
 
+    /**
+     * All (and only?) quick options to change [graphDomain]
+     */
     val graphDomainOptions = listOf(
         TimeDomainTemplate.YearAgo,
         TimeDomainTemplate.MonthAgo,
@@ -124,10 +131,16 @@ class CounterDetailsViewModel @Inject constructor(
         TimeDomainTemplate.HourAgo,
     )
 
+    /**
+     * Request to change the domain from the UI
+     */
     fun changeGraphDomain(domain: TimeDomain) {
         _graphDomain.value = domain
     }
 
+    /**
+     * Add a tick from the UI
+     */
     fun addTick(amount: Double) {
         ioScope.launch {
             _createTickFrom(
@@ -140,18 +153,30 @@ class CounterDetailsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Request change to counter from UI
+     */
     fun changeCounter(counter: UiCounter) {
         ioScope.launch { _updateCounter(counter) }
     }
 
+    /**
+     * Request change to a Tick from UI
+     */
     fun changeTick(tick: UiTick) {
         ioScope.launch { _updateTick(tick) }
     }
 
+    /**
+     * Delete tick with matching [id]
+     */
     fun deleteTick(id: Long) {
         ioScope.launch { _deleteTick(id) }
     }
 
+    /**
+     * Deletes all ticks
+     */
     fun resetCounter() {
         ioScope.launch { _deleteTicksOf(counterIdState.value) }
     }

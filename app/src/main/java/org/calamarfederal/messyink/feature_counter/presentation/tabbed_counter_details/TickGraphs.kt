@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
-import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -97,7 +95,7 @@ internal fun TicksOverTimeLayout(
 }
 
 @Composable
-fun TickAmountOverTime(
+internal fun TickAmountOverTime(
     ticks: List<UiTick>,
     modifier: Modifier = Modifier,
     graphModifier: Modifier = Modifier,
