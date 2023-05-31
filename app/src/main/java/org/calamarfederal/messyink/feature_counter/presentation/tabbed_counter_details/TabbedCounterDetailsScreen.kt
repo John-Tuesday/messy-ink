@@ -160,8 +160,8 @@ private fun TabbedLayout(
         pageSize = PageSize.Fill,
         flingBehavior = PagerDefaults.flingBehavior(state = state),
         key = { it },
-        pageContent = {
-            when (CounterDetailsTab.fromIndex(it)) {
+        pageContent = { index ->
+            when (CounterDetailsTab.fromIndex(index)) {
                 TickDetails -> TickDetailsLayout(
                     ticks = ticks,
                     onDelete = onDeleteTick,
@@ -170,6 +170,7 @@ private fun TabbedLayout(
 
                 TickGraphs  -> TicksOverTimeLayout(
                     ticks = ticks,
+                    range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount},
                     domain = graphDomain,
                     domainOptions = graphDomainOptions,
                     changeDomain = changeGraphDomain,

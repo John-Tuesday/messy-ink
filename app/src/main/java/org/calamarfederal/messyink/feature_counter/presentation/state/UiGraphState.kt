@@ -13,16 +13,16 @@ data class TimeDomain(
     /**
      * Lower bound, inclusive
      */
-    val min: Instant,
+    override val start: Instant,
     /**
      * Upper bound, inclusive
      */
-    val max: Instant,
+    override val endInclusive: Instant,
     /**
      * Name for UI
      */
     val label: String,
-) {
+) : ClosedRange<Instant> {
     companion object {}
 }
 
@@ -31,8 +31,8 @@ data class TimeDomain(
  */
 val TimeDomain.Companion.AbsoluteAllTime: TimeDomain
     get() = TimeDomain(
-        min = Instant.DISTANT_PAST,
-        max = Instant.DISTANT_FUTURE,
+        start = Instant.DISTANT_PAST,
+        endInclusive = Instant.DISTANT_FUTURE,
         label = "Absolute All Time",
     )
 
@@ -55,8 +55,8 @@ class TimeDomainTemplate(
     val domain: TimeDomain
         get() = CurrentTimeGetter().let {
             TimeDomain(
-                max = it,
-                min = it - duration,
+                endInclusive = it,
+                start = it - duration,
                 label = label
             )
         }

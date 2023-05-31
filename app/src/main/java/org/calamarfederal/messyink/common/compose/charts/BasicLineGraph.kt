@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -124,7 +125,7 @@ data class GraphColor constructor(
  */
 @Composable
 fun BasicLineGraph(
-    lineGraphPoints: List<PointByPercent<*>>,
+    lineGraphPoints: List<PointByPercent>,
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(),
     graphColors: GraphColor = GraphColor(),
@@ -171,42 +172,38 @@ fun BasicLineGraph(
                             strokeWidth = graphSize.yAxisGridWidth.toPx(),
                         )
                     }
+                    // Draw line
                     drawPoints(
                         points = lineGraphPoints
                             .asSequence()
                             .flatMap { listOf(it, it) }
                             .drop(1)
-                            .map {
-                                Offset(
-                                    x = size.width * it.x.toFloat(),
-                                    y = size.height * it.y.toFloat(),
-                                )
-                            }
+                            .map { it.toScale(size.width, size.height).toOffset() }
                             .toList(),
                         pointMode = PointMode.Lines,
                         color = graphColors.lineColor,
                         strokeWidth = graphSize.lineSize.toPx(),
                     )
                     // Draw fill region
-                    val leftOrigin = size.width * lineGraphPoints.first().x.toFloat()
-                    val topOrigin = size.height * lineGraphPoints.first().y.toFloat()
+                    val startPoint = lineGraphPoints
+                        .first()
+                        .toScale(size.width, size.height)
+                        .toFloat()
                     val totalSize = size
-                    inset(
-                        left = leftOrigin,
-                        top = topOrigin,
-                        right = 0f,
-                        bottom = 0f,
+                    translate(
+                        left = startPoint.x,
+                        top = startPoint.y,
                     ) {
                         val path = AndroidPath()
                         lineGraphPoints.onEach {
                             path.lineTo(
-                                x = it.x.toFloat() * totalSize.width - leftOrigin,
-                                y = it.y.toFloat() * totalSize.height - topOrigin,
+                                x = it.x.toFloat() * totalSize.width - startPoint.x,
+                                y = it.y.toFloat() * totalSize.height - startPoint.y,
                             )
                         }
                         path.lineTo(
-                            x = lineGraphPoints.last().x.toFloat() * totalSize.width - leftOrigin,
-                            y = size.height
+                            x = lineGraphPoints.last().x.toFloat() * totalSize.width - startPoint.x,
+                            y = size.height,
                         )
                         path.lineTo(x = 0f, y = size.height)
                         drawPath(
@@ -217,16 +214,9 @@ fun BasicLineGraph(
                 }
                 // Draw points
                 drawPoints(
-                    points = lineGraphPoints.mapNotNull bounds@{
-                        Offset(
-                            x = size.width * it.x
-                                .toFloat()
-                                .also { x -> if (x !in 0f .. 1f) return@bounds null },
-                            y = size.height * it.y
-                                .toFloat()
-                                .also { y -> if (y !in 0f .. 1f) return@bounds null },
-                        )
-                    },
+                    points = lineGraphPoints
+                        .filter { it.x in 0.00 .. 1.00 && it.y in 0.00 .. 1.00 }
+                        .map { it.toScale(size.width, size.height).toOffset() },
                     pointMode = PointMode.Points,
                     cap = StrokeCap.Round,
                     color = graphColors.pointColor,
@@ -244,7 +234,7 @@ fun BasicLineGraph(
  */
 @Composable
 fun LineGraph(
-    lineGraphPoints: List<PointByPercent<*>>,
+    lineGraphPoints: List<PointByPercent>,
     modifier: Modifier = Modifier,
     graphModifier: Modifier = Modifier,
     title: @Composable () -> Unit = {},
@@ -300,8 +290,8 @@ private fun BasicGraphPreview() {
         Surface {
             BasicLineGraph(
                 lineGraphPoints = mapOf(
-                    .3f to .2f,
-                    .5f to .4f,
+                    .3 to .2,
+                    .5 to .4,
                 ).map { PointByPercent(it.key, it.value) },
                 modifier = Modifier
                     .size(300.dp)
@@ -318,7 +308,9 @@ private fun LabeledGraphPreview() {
         Surface {
             LineGraph(
                 lineGraphPoints = sequenceOf(
-                    -1f to .5f, 0f to 0f, .5f to .5f, .75f to .2f, 1f to 1f, 1.124 to .5f
+                    1.00 to 1.00,
+                    0.50 to 0.50,
+                    0.25 to 0.75,
                 ).map { PointByPercent(it) }.toList(),
                 title = { Text("Title :)") },
                 domainLabel = { Text("Domain") },
