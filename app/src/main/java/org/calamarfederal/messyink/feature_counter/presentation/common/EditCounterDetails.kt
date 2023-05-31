@@ -116,10 +116,7 @@ fun EditCounterDetailsCard(
                 onSubmit = { onChange(counter.copy(name = it)) },
             )
             Text(
-                text = counter.timeCreated.toDbgString(
-                    tz = TimeZone.currentSystemDefault(),
-                    now = { System.now() },
-                )
+                text = counter.timeCreated.toDbgString()
             )
         }
     }

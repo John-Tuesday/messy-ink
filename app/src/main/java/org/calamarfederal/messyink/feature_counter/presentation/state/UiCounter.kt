@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.presentation.state
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -21,7 +22,7 @@ const val NOID: Long = 0L
 data class UiCounter(
     val name: String = "",
     val timeCreated: Instant = Instant.DISTANT_FUTURE,
-    val timeModified: Instant = Instant.DISTANT_FUTURE,
+    val timeModified: Instant = timeCreated,
     val id: Long,
 )
 
@@ -54,9 +55,9 @@ data class UiCounterSupport(
 @Stable
 data class UiTick(
     val amount: Double = 0.0,
-    val timeModified: Instant = Instant.DISTANT_FUTURE,
     val timeCreated: Instant = Instant.DISTANT_FUTURE,
-    val timeForData: Instant = Instant.DISTANT_FUTURE,
+    val timeModified: Instant = timeCreated,
+    val timeForData: Instant = timeCreated,
     val parentId: Long,
     val id: Long,
 )
@@ -81,7 +82,7 @@ val previewUiCounters: Sequence<UiCounter>
  */
 fun previewUiTicks(parentId: Long): Sequence<UiTick> =
     (1 .. Int.MAX_VALUE).asSequence().filterNot { it.toLong() == parentId }.map {
-        val time = Clock.System.now() + it.days
+        val time = CurrentTimeGetter() + it.days
         UiTick(
             amount = it.toDouble(),
             timeModified = time,

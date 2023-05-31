@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,13 +40,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.GameCounter
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TestScreen
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
+import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickGraphs
 
 /**
  * # Tabbed Counter Details Screen
@@ -68,6 +69,9 @@ fun TabbedCounterDetailsScreen(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    graphDomain: TimeDomain,
+    graphDomainOptions: List<TimeDomainTemplate>,
+    changeGraphDomain: (TimeDomain) -> Unit,
     onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
@@ -75,7 +79,7 @@ fun TabbedCounterDetailsScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState(pageCount = ticks::size)
+    val pagerState = rememberPagerState(pageCount = CounterDetailsTab::size)
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
     val tabScope = rememberCoroutineScope()
 
@@ -106,7 +110,7 @@ fun TabbedCounterDetailsScreen(
             )
         },
     ) { padding ->
-        DetailsLayout(
+        TabbedLayout(
             counter = counter,
             ticks = ticks,
             tickSum = tickSum,
@@ -116,6 +120,9 @@ fun TabbedCounterDetailsScreen(
             onResetCounter = onResetCounter,
             state = pagerState,
             onCounterChange = onCounterChange,
+            graphDomain = graphDomain,
+            graphDomainOptions = graphDomainOptions,
+            changeGraphDomain = changeGraphDomain,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -126,7 +133,7 @@ fun TabbedCounterDetailsScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DetailsLayout(
+private fun TabbedLayout(
     counter: UiCounter,
     ticks: List<UiTick>,
     tickSum: Double?,
@@ -135,8 +142,11 @@ private fun DetailsLayout(
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
+    graphDomain: TimeDomain,
+    graphDomainOptions: List<TimeDomainTemplate>,
+    changeGraphDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
-    state: PagerState = rememberPagerState(pageCount = ticks::size),
+    state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
     userScrollEnabled: Boolean = true,
 ) {
     HorizontalPager(
@@ -150,27 +160,22 @@ private fun DetailsLayout(
         pageSize = PageSize.Fill,
         flingBehavior = PagerDefaults.flingBehavior(state = state),
         key = { it },
-        pageContent = {
-            when (CounterDetailsTab.fromIndex(it)) {
+        pageContent = { index ->
+            when (CounterDetailsTab.fromIndex(index)) {
                 TickDetails -> TickDetailsLayout(
                     ticks = ticks,
                     onDelete = onDeleteTick,
                     onEdit = {},
                 )
 
-                GameCounter -> GameCounterTab(
-                    counter = counter,
-                    tickSum = tickSum,
-                    onAddTick = onAddTick,
-                    onResetCounter = onResetCounter,
-                    onCounterChange = onCounterChange,
+                TickGraphs  -> TicksOverTimeLayout(
+                    ticks = ticks,
+                    range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount},
+                    domain = graphDomain,
+                    domainOptions = graphDomainOptions,
+                    changeDomain = changeGraphDomain,
                 )
 
-                TestScreen  -> {
-                    Surface() {
-                        Text("Testing :P")
-                    }
-                }
             }
         }
     )
@@ -224,6 +229,9 @@ private fun TabbedPreview() {
         ticks = ticks,
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
+        graphDomain = TimeDomain.AbsoluteAllTime,
+        graphDomainOptions = listOf(),
+        changeGraphDomain = {},
         onAddTick = {},
         onDeleteTick = {},
         onResetCounter = {},

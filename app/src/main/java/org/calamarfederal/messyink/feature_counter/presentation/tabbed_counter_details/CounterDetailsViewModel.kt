@@ -8,9 +8,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.SharingStarted.Companion
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -25,10 +26,14 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -107,6 +112,35 @@ class CounterDetailsViewModel @Inject constructor(
         .flatMapLatest { _getTicksAverageOfFlow(it) }
         .stateInViewModel(null)
 
+    private val _graphDomain = MutableStateFlow(TimeDomain.AbsoluteAllTime)
+
+    /**
+     * Domain for all graphs
+     */
+    val graphDomain = _graphDomain.asStateFlow()
+
+    /**
+     * All (and only?) quick options to change [graphDomain]
+     */
+    val graphDomainOptions = listOf(
+        TimeDomainTemplate.YearAgo,
+        TimeDomainTemplate.MonthAgo,
+        TimeDomainTemplate.WeekAgo,
+        TimeDomainTemplate.DayAgo,
+        TimeDomainTemplate("6 Hours ago", 6.hours),
+        TimeDomainTemplate.HourAgo,
+    )
+
+    /**
+     * Request to change the domain from the UI
+     */
+    fun changeGraphDomain(domain: TimeDomain) {
+        _graphDomain.value = domain
+    }
+
+    /**
+     * Add a tick from the UI
+     */
     fun addTick(amount: Double) {
         ioScope.launch {
             _createTickFrom(
@@ -119,18 +153,30 @@ class CounterDetailsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Request change to counter from UI
+     */
     fun changeCounter(counter: UiCounter) {
         ioScope.launch { _updateCounter(counter) }
     }
 
+    /**
+     * Request change to a Tick from UI
+     */
     fun changeTick(tick: UiTick) {
         ioScope.launch { _updateTick(tick) }
     }
 
+    /**
+     * Delete tick with matching [id]
+     */
     fun deleteTick(id: Long) {
         ioScope.launch { _deleteTick(id) }
     }
 
+    /**
+     * Deletes all ticks
+     */
     fun resetCounter() {
         ioScope.launch { _deleteTicksOf(counterIdState.value) }
     }
