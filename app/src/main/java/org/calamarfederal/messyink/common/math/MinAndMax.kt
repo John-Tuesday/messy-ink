@@ -22,12 +22,10 @@ data class MinMax<T : Comparable<T>>(
 fun <T, R : Comparable<R>> Iterable<T>.minAndMaxOfOrNull(selector: (T) -> R): MinMax<R>? =
     fold<T, MinMax<R>?>(null) { acc, item ->
         val value = selector(item)
-        when {
-            acc == null     -> MinMax(value, value)
-            value > acc.min -> acc.copy(min = value)
-            value < acc.max -> acc.copy(max = value)
-            else            -> acc
-        }
+        acc?.copy(
+            min = minOf(acc.min, value),
+            max = maxOf(acc.max, value),
+        ) ?: MinMax(value, value)
     }
 
 /**

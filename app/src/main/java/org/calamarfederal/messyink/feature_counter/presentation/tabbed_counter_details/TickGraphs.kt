@@ -1,21 +1,18 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize.Max
-import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -38,12 +35,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toInstant
@@ -69,19 +67,65 @@ internal fun TicksOverTimeLayout(
     domainOptions: List<TimeDomainTemplate>,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
+    graphSize: GraphSize2d = GraphSize2d(),
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            var setDomainMin by remember { mutableStateOf(false) }
-            var setDomainMax by remember { mutableStateOf(false) }
+            var showPointInfo by remember { mutableStateOf(false) }
 
-            AmountVsTimeLineGraph(
-                ticks = ticks,
-                domain = domain,
-                range = range,
-                modifier = Modifier.weight(1f),
+            /**
+             * # Graph
+             * ## Amount v Time
+             */
+            LineGraph(
+                modifier = Modifier
+                    .weight(1f)
+                    .pointerInput(Unit) {
+                        detectTapGestures { showPointInfo = !showPointInfo }
+                    },
+                lineGraphPoints = ticks.map {
+                    PointByPercent(
+                        x = (it.timeForData - domain.start) / (domain.endInclusive - domain.start),
+                        y = (it.amount - range.start) / (range.endInclusive - range.start),
+                    )
+                },
+                pointInfo = {
+                    if (showPointInfo) ticks[it].amount.toString() else null
+                },
+                size = graphSize,
+                title = {
+                    Text(
+                        text = "Amount vs Time",
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                },
+                rangeSlotIndexed = {
+                    if (it == 0 || it == graphSize.yAxisChunks - 1) {
+                        Text(
+                            text = if (it == 0) "${range.start}" else "${range.endInclusive}",
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .wrapContentHeight(align = if (it == 0) Alignment.Bottom else Alignment.Top)
+                        )
+                    }
+                }
             )
 
+            /**
+             * ## Show current domain min and max and allow edit
+             */
+            DomainBoundsAndPicker(
+                domain = domain,
+                changeDomain = changeDomain,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            /**
+             * ## Incomplete
+             * ## 2 value Slider to quickly adjust the domain
+             *
+             * should be bounded by and iterate through the real data points
+             */
             RangeSlider(
                 value = 0f .. 1f,
                 onValueChange = {},
@@ -93,87 +137,90 @@ internal fun TicksOverTimeLayout(
                 modifier = Modifier.safeGesturesPadding()
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                TextButton(onClick = { setDomainMax = true }) {
-                    Text(text = domain.endInclusive.relativeTime().toString())
-                }
-                TextButton(onClick = { setDomainMin = true }) {
-                    Text(domain.start.relativeTime().toString())
-                }
-            }
-            TimeDomainPicker(
-                visible = setDomainMax || setDomainMin,
-                initial = with(CurrentTimeZoneGetter()) {
-                    if (setDomainMax)
-                        domain.endInclusive.toLocalDateTime()
-                    else
-                        domain.start.toLocalDateTime()
-                },
-                onCancel = { setDomainMax = false; setDomainMin = false },
-                onSubmit = {
-                    val bound = it.toInstant(CurrentTimeZoneGetter())
-                    if (setDomainMax)
-                        changeDomain(domain.copy(endInclusive = bound))
-                    else
-                        changeDomain(domain.copy(start = bound))
-                    setDomainMax = false
-                    setDomainMin = false
-                },
+            /**
+             * ## Domain Dropdown
+             */
+            DomainDropdownMenu(
+                domainLabel = domain.label,
+                domainOptions = domainOptions,
+                onClick = { changeDomain(it.domain()) },
+                modifier = Modifier.align(Alignment.End),
             )
-
-            Box(Modifier.align(Alignment.End)) {
-                var expanded by remember { mutableStateOf(false) }
-                TextButton(onClick = { expanded = true }) {
-                    Icon(
-                        if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-//                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(domain.label)
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    for (opt in domainOptions) {
-                        DropdownMenuItem(
-                            text = { Text(opt.label) },
-                            onClick = { changeDomain(opt.domain()); expanded = false },
-                        )
-                    }
-                }
-            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun AmountVsTimeLineGraph(
-    ticks: List<UiTick>,
+private fun DomainBoundsAndPicker(
     domain: TimeDomain,
-    range: ClosedRange<Double>,
+    changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
-    graphModifier: Modifier = Modifier,
 ) {
-
-    val domainSize = domain.endInclusive - domain.start
-    val rangeSize = range.endInclusive - range.start
-
-    LineGraph(
+    var setDomainMin by remember { mutableStateOf(false) }
+    var setDomainMax by remember { mutableStateOf(false) }
+    Row(
         modifier = modifier,
-        graphModifier = graphModifier,
-        lineGraphPoints = ticks.map {
-            PointByPercent(
-                x = (it.timeForData - domain.start) / domainSize,
-                y = (it.amount - range.start) / rangeSize,
-            )
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        TextButton(onClick = { setDomainMin = true }) {
+            Text(domain.start.relativeTime().toString())
+        }
+        TextButton(onClick = { setDomainMax = true }) {
+            Text(text = domain.endInclusive.relativeTime().toString())
+        }
+    }
+    TimeDomainPicker(
+        visible = setDomainMax || setDomainMin,
+        initial = with(CurrentTimeZoneGetter()) {
+            if (setDomainMax)
+                domain.endInclusive.toLocalDateTime()
+            else
+                domain.start.toLocalDateTime()
         },
-        title = { Text(text = "Amount vs Time", modifier = Modifier.padding(bottom = 8.dp)) },
+        onCancel = { setDomainMax = false; setDomainMin = false },
+        onSubmit = {
+            val bound = it.toInstant(CurrentTimeZoneGetter())
+            if (setDomainMax)
+                changeDomain(domain.copy(endInclusive = bound))
+            else
+                changeDomain(domain.copy(start = bound))
+            setDomainMax = false
+            setDomainMin = false
+        },
     )
+}
+
+@Composable
+private fun DomainDropdownMenu(
+    domainLabel: String,
+    domainOptions: List<TimeDomainTemplate>,
+    onClick: (TimeDomainTemplate) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        var expanded by remember { mutableStateOf(false) }
+        TextButton(onClick = { expanded = true }) {
+            Icon(
+                if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                null,
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+//                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(domainLabel)
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            for (opt in domainOptions) {
+                DropdownMenuItem(
+                    text = { Text(opt.label) },
+                    onClick = { onClick(opt); expanded = false },
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -224,7 +271,7 @@ private fun TickAmountOverTimePreview() {
         Surface {
             val ticks = previewUiTicks(1L).take(10).toList()
             val domain = TimeDomain(
-                domain = ticks.first().timeForData .. ticks.last().timeForData,
+                domain = ticks.last().timeForData .. ticks.first().timeForData,
                 label = "Squeeze"
             )
             TicksOverTimeLayout(

@@ -15,7 +15,7 @@ import androidx.compose.ui.geometry.Offset
  * @property[x] - horizontal axis
  * @property[y] - vertical axis
  */
-private interface Point2d<T : Number> {
+interface Point2d<T : Number> {
     val x: T
     val y: T
 }
@@ -50,12 +50,12 @@ data class PointByPercent(
     /**
      * Percentage of total width
      */
-    val x: Double,
+    override val x: Double,
     /**
      * Percentage of total height
      */
-    val y: Double,
-) {
+    override val y: Double,
+) : Point2d<Double> {
     constructor(pair: Pair<Number, Number>) : this(pair.first.toDouble(), pair.second.toDouble())
 
     /**
@@ -79,6 +79,33 @@ data class PointByPercent(
      * `(x / n, y / n)`
      */
     operator fun div(n: Number) = PointByPercent(x = x / n.toDouble(), y = y / n.toDouble())
+
+    /**
+     * simply add by dimension
+     *
+     * `[x] + [xDelta], [y] + [yDelta]`
+     */
+    fun translate(xDelta: Number = 0, yDelta: Number = 0) = PointByPercent(
+        x = x + xDelta.toDouble(),
+        y = y + yDelta.toDouble(),
+    )
+
+    /**
+     * add to each dimension
+     *
+     * `[x] + [delta], [y] + [delta]`
+     */
+    fun translate(delta: Number) = translate(delta, delta)
+
+    /**
+     * translate per [delta] offsets
+     */
+    operator fun plus(delta: Point2d<*>) = translate(delta.x, delta.y)
+
+    /**
+     * translate backwards per [delta]
+     */
+    operator fun minus(delta: Point2d<*>) = translate(-delta.x.toDouble(), -delta.y.toDouble())
 }
 
 /**
@@ -110,12 +137,12 @@ data class FloatPointByPercent(
     /**
      * Percentage of total width
      */
-    val x: Float,
+    override val x: Float,
     /**
      * Percentage of total height
      */
-    val y: Float,
-) {
+    override val y: Float,
+) : Point2d<Float> {
     constructor(pair: Pair<Number, Number>) : this(pair.first.toFloat(), pair.second.toFloat())
 
     /**

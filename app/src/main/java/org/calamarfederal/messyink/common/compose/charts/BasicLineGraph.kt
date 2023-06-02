@@ -21,14 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.AndroidPath
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -94,6 +99,11 @@ data class GraphColor constructor(
      * Color of the points on the line drawn
      */
     val pointColor: Color,
+
+    val signColor: Color,
+
+    val signTextColor: Color,
+
     /**
      * Color of filled area
      */
@@ -109,12 +119,16 @@ data class GraphColor constructor(
             grid: Color = MaterialTheme.colorScheme.outlineVariant,
             line: Color = MaterialTheme.colorScheme.primary,
             point: Color = MaterialTheme.colorScheme.primary,
+            sign: Color = MaterialTheme.colorScheme.primaryContainer,
+            text: Color = MaterialTheme.colorScheme.onPrimaryContainer,
             fill: Color = line.copy(alpha = 0.25f),
         ) = GraphColor(
             axisColor = axis,
             gridColor = grid,
             lineColor = line,
             pointColor = point,
+            signColor = sign,
+            signTextColor = text,
             fillColor = fill
         )
     }
@@ -132,6 +146,8 @@ fun BasicLineGraph(
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(),
     graphColors: GraphColor = GraphColor(),
+    pointInfo: (Int) -> String? = { null },
+    textMeasurer: TextMeasurer = rememberTextMeasurer(),
 ) {
     Canvas(
         contentDescription = "Line Graph representing changes to data",
@@ -142,6 +158,9 @@ fun BasicLineGraph(
             )
             .fillMaxSize(),
     ) {
+        val adjustedGraphPoints = lineGraphPoints.asSequence()
+            .map { it.copy(y = 1 - it.y).toScale(size.width, size.height) }.toList()
+
         clipRect {
             // Draw Axes
             drawLine(
@@ -177,39 +196,27 @@ fun BasicLineGraph(
             }
             // Draw line
             drawPoints(
-                points = lineGraphPoints
-                    .asSequence()
-                    .flatMap { listOf(it, it) }
-                    .drop(1)
-                    .map {
-                        it
-                            .toScale(size.width, size.height)
-                            .toOffset()
-                    }
-                    .toList(),
+                points = adjustedGraphPoints.asSequence().flatMap { listOf(it, it) }.drop(1)
+                    .map { it.toOffset() }.toList(),
                 pointMode = PointMode.Lines,
                 color = graphColors.lineColor,
                 strokeWidth = graphSize.lineSize.toPx(),
             )
             // Draw fill region
-            val startPoint = lineGraphPoints
-                .firstOrNull()
-                ?.toScale(size.width, size.height)
-                ?.toFloat() ?: return@clipRect
-            val totalSize = size
+            val startPoint = adjustedGraphPoints.firstOrNull()?.toFloat() ?: return@clipRect
             translate(
                 left = startPoint.x,
                 top = startPoint.y,
             ) {
                 val path = AndroidPath()
-                lineGraphPoints.onEach {
+                adjustedGraphPoints.onEach {
                     path.lineTo(
-                        x = it.x.toFloat() * totalSize.width - startPoint.x,
-                        y = it.y.toFloat() * totalSize.height - startPoint.y,
+                        x = it.x.toFloat() - startPoint.x,
+                        y = it.y.toFloat() - startPoint.y,
                     )
                 }
                 path.lineTo(
-                    x = lineGraphPoints.last().x.toFloat() * totalSize.width - startPoint.x,
+                    x = adjustedGraphPoints.last().x.toFloat() - startPoint.x,
                     y = size.height,
                 )
                 path.lineTo(x = 0f, y = size.height)
@@ -221,18 +228,45 @@ fun BasicLineGraph(
         }
         // Draw points
         drawPoints(
-            points = lineGraphPoints
-                .filter { it.x in 0.00 .. 1.00 && it.y in 0.00 .. 1.00 }
-                .map {
-                    it
-                        .toScale(size.width, size.height)
-                        .toOffset()
-                },
+            points = adjustedGraphPoints.filterIndexed { index, _ ->
+                lineGraphPoints[index].x in 0.00 .. 1.00 && lineGraphPoints[index].y in 0.00 .. 1.00
+            }.map { it.toOffset() },
             pointMode = PointMode.Points,
             cap = StrokeCap.Round,
             color = graphColors.pointColor,
             strokeWidth = graphSize.pointDiameter.toPx(),
         )
+
+        for (i in lineGraphPoints.indices) {
+            val result = textMeasurer.measure(
+                text = pointInfo(i) ?: continue,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+                maxLines = 1,
+            )
+            val resultTopLeft = adjustedGraphPoints[i]
+                .translate(
+                    xDelta = -result.size.width / 2f,
+                    yDelta = -result.size.height / 2f,
+                )
+                .toOffset()
+            val verticalPadding: Float = 1.dp.toPx()
+            val horizontalPadding: Float = 2.dp.toPx()
+            drawRoundRect(
+                color = graphColors.signColor,
+                topLeft = resultTopLeft + Offset(-horizontalPadding, -verticalPadding),
+                size = Size(
+                    width = result.size.width.toFloat() + 2 * horizontalPadding,
+                    height = result.size.height.toFloat() + 2 * verticalPadding,
+                ),
+                cornerRadius = CornerRadius(2.dp.toPx()),
+            )
+            drawText(
+                textLayoutResult = result,
+                topLeft = resultTopLeft,
+                color = graphColors.signTextColor,
+            )
+        }
     }
 }
 
@@ -247,11 +281,12 @@ fun LineGraph(
     lineGraphPoints: List<PointByPercent>,
     modifier: Modifier = Modifier,
     graphModifier: Modifier = Modifier,
+    pointInfo: (Int) -> String? = { null },
     title: @Composable () -> Unit = {},
     domainSlot: @Composable () -> Unit = {},
     rangeSlot: @Composable () -> Unit = {},
-    rangeSlotIndexed: (Int) -> (@Composable () -> Unit) = { _ -> {} },
-    domainSlotIndexed: (Int) -> (@Composable () -> Unit) = { _ -> {} },
+    rangeSlotIndexed: @Composable (Int) -> Unit = {},
+    domainSlotIndexed: @Composable (Int) -> Unit = {},
     size: GraphSize2d = GraphSize2d(),
     colors: GraphColor = GraphColor(),
 ) {
@@ -280,34 +315,31 @@ fun LineGraph(
              */
             BasicLineGraph(
                 lineGraphPoints = lineGraphPoints,
+                pointInfo = pointInfo,
                 graphSize = size,
                 graphColors = colors,
-                modifier = graphModifier
-                    .constrainAs(graphBox) {
-                        val radius = size.pointDiameter / 2
-                        top.linkTo(parent.top, radius)
-                        bottom.linkTo(xAxisLabel.top, radius)
-                        start.linkTo(yAxisLabel.end, radius)
-                        end.linkTo(parent.end, radius)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.fillToConstraints
-                    }
-            )
+                modifier = graphModifier.constrainAs(graphBox) {
+                    val radius = size.pointDiameter / 2
+                    top.linkTo(parent.top, radius)
+                    bottom.linkTo(xAxisLabel.top, radius)
+                    start.linkTo(yAxisLabel.end, radius)
+                    end.linkTo(parent.end, radius)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                })
 
             /**
              * ## X Axis label
              */
-            Column(
-                modifier = Modifier
-                    .height(Min)
-                    .constrainAs(xAxisLabel) {
-                        top.linkTo(graphBox.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(graphBox.start)
-                        end.linkTo(graphBox.end)
-                        width = Dimension.fillToConstraints
-                    }
-            ) {
+            Column(modifier = Modifier
+                .height(Min)
+                .constrainAs(xAxisLabel) {
+                    top.linkTo(graphBox.bottom)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(graphBox.start)
+                    end.linkTo(graphBox.end)
+                    width = Dimension.fillToConstraints
+                }) {
                 Row {
                     CompositionLocalProvider(
                         LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.labelMedium
@@ -317,7 +349,7 @@ fun LineGraph(
                                 contentAlignment = Alignment.TopCenter,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                domainSlotIndexed(c)()
+                                domainSlotIndexed(c)
                             }
                         }
                     }
@@ -328,28 +360,25 @@ fun LineGraph(
             /**
              * ## Y Axis label
              */
-            Row(
-                modifier = Modifier
-                    .height(Min)
-                    .constrainAs(yAxisLabel) {
-                        start.linkTo(parent.start)
-                        end.linkTo(graphBox.start)
-                        top.linkTo(graphBox.top)
-                        bottom.linkTo(graphBox.bottom)
-                        height = Dimension.fillToConstraints
-                    }
-            ) {
+            Row(modifier = Modifier
+                .height(Min)
+                .constrainAs(yAxisLabel) {
+                    start.linkTo(parent.start)
+                    end.linkTo(graphBox.start)
+                    top.linkTo(graphBox.top)
+                    bottom.linkTo(graphBox.bottom)
+                    height = Dimension.fillToConstraints
+                }) {
                 Box { rangeSlot() }
-                Column {
-                    for (c in 0 until size.yAxisChunks) {
+                Column(horizontalAlignment = Alignment.End) {
+                    for (c in size.yAxisChunks - 1 downTo 0) {
                         Box(
-                            contentAlignment = Alignment.CenterEnd,
-                            modifier = Modifier.weight(1f)
+                            contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(1f)
                         ) {
                             CompositionLocalProvider(
                                 LocalTextStyle provides LocalTextStyle.current + MaterialTheme.typography.labelMedium
                             ) {
-                                rangeSlotIndexed(c)()
+                                rangeSlotIndexed(c)
                             }
                         }
                     }
@@ -382,23 +411,20 @@ private fun BasicGraphPreview() {
 private fun LabeledGraphPreview() {
     MessyInkTheme {
         Surface {
+            val points = sequenceOf(
+                1.00 to 1.00,
+                0.50 to 0.50,
+                0.25 to 0.75,
+                0.00 to 0.00,
+            ).map { PointByPercent(it) }.toList()
             LineGraph(
-                lineGraphPoints = sequenceOf(
-                    1.00 to 1.00,
-                    0.50 to 0.50,
-                    0.25 to 0.75,
-                ).map { PointByPercent(it) }.toList(),
+                lineGraphPoints = points,
+                pointInfo = { "${points[it].y}" },
                 title = { Text("Title :)") },
                 domainSlot = { Text("Domain") },
-                domainSlotIndexed = { i ->
-                    {
-                        Text(
-                            text = "ddddd$i",
-                        )
-                    }
-                },
+                domainSlotIndexed = { Text(text = "ddddd$it") },
                 rangeSlot = { Text("Range") },
-                rangeSlotIndexed = { i -> { Text("r$i") } },
+                rangeSlotIndexed = { i -> Text("r$i") },
                 modifier = Modifier,
             )
         }
