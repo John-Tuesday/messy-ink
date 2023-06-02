@@ -58,7 +58,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiT
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TicksOverTimeLayout(
     ticks: List<UiTick>,
