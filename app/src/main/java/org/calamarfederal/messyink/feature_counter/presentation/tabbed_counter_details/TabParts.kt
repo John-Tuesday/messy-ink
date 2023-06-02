@@ -70,15 +70,15 @@ internal enum class CounterDetailsTab(
     private val activeIcon: () -> ImageVector,
     private val inactiveIcon: () -> ImageVector,
 ) {
-    TickDetails(
-        displayName = "Tick Details",
-        activeIcon = { Icons.Filled.DataExploration },
-        inactiveIcon = { Icons.Outlined.DataExploration },
-    ),
     TickGraphs(
         displayName = "Tick Graphs",
         activeIcon = { Icons.Filled.Analytics },
         inactiveIcon = { Icons.Outlined.Analytics }
+    ),
+    TickDetails(
+        displayName = "Tick Details",
+        activeIcon = { Icons.Filled.DataExploration },
+        inactiveIcon = { Icons.Outlined.DataExploration },
     ),
     ;
 

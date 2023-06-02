@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -69,6 +70,7 @@ fun TabbedCounterDetailsScreen(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
     graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
@@ -123,6 +125,7 @@ fun TabbedCounterDetailsScreen(
             graphDomain = graphDomain,
             graphDomainOptions = graphDomainOptions,
             changeGraphDomain = changeGraphDomain,
+            graphRange = graphRange,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -145,6 +148,7 @@ private fun TabbedLayout(
     graphDomain: TimeDomain,
     graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
+    graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
     userScrollEnabled: Boolean = true,
@@ -170,7 +174,7 @@ private fun TabbedLayout(
 
                 TickGraphs  -> TicksOverTimeLayout(
                     ticks = ticks,
-                    range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount},
+                    range = graphRange,
                     domain = graphDomain,
                     domainOptions = graphDomainOptions,
                     changeDomain = changeGraphDomain,
@@ -223,12 +227,14 @@ private fun TabbedPreview() {
     val ticks = previewUiTicks(counter.id).take(7).apply {
         tickSum = sumOf { it.amount }
     }.toList()
+    val range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount }
 
     TabbedCounterDetailsScreen(
         counter = counter,
         ticks = ticks,
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
+        graphRange = range,
         graphDomain = TimeDomain.AbsoluteAllTime,
         graphDomainOptions = listOf(),
         changeGraphDomain = {},

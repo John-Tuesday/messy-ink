@@ -38,6 +38,7 @@ internal object TabbedCounterDetails : CounterNavNode {
             val ticks by viewModel.ticks.collectAsState()
             val tickSum by viewModel.tickSum.collectAsState()
             val tickAverage by viewModel.tickAverage.collectAsState()
+            val graphRange by viewModel.graphRange.collectAsState()
             val graphDomain by viewModel.graphDomain.collectAsState()
             val graphDomainOptions = viewModel.graphDomainOptions
 
@@ -46,6 +47,7 @@ internal object TabbedCounterDetails : CounterNavNode {
                 ticks = ticks,
                 tickSum = tickSum,
                 tickAverage = tickAverage,
+                graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainOptions = graphDomainOptions.toList(),
                 changeGraphDomain = { viewModel.changeGraphDomain(it) },
