@@ -108,7 +108,7 @@ class UpdateCounterSupportImpl @Inject constructor(private val repo: CountersRep
     override suspend fun invoke(changed: UiCounterSupport): UiCounterSupport {
 
         return changed.copy(
-            nameHelp = changed.nameInput.ifBlank { "Add a non-whitespace character" },
+            nameHelp = if (changed.nameInput.isBlank()) "Add a non-whitespace character" else null,
             nameError = changed.nameInput.isBlank(),
         )
     }

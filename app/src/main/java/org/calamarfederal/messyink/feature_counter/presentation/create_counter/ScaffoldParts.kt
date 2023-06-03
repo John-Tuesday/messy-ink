@@ -17,6 +17,7 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +29,7 @@ internal fun CreateCounterAppBar(
     onClose: () -> Unit,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     enableDone: Boolean = false,
 ) {
     MediumTopAppBar(
@@ -48,6 +50,7 @@ internal fun CreateCounterAppBar(
             FilledTonalIconButton(onClick = onDone, enabled = enableDone) {
                 Icon(Icons.Filled.Done, "finalize counter")
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }

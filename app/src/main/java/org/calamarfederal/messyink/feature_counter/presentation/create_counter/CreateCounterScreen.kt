@@ -5,31 +5,38 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeAction.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
-
-private val UiCounterSupport.error: Boolean get() = nameError
 
 /**
  * # Create a new Counter
  *
  * Designed to be used as a full-screen Dialog
  */
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCounterScreen(
     counterSupport: UiCounterSupport,
@@ -37,14 +44,17 @@ fun CreateCounterScreen(
     onCancel: () -> Unit,
     onDone: () -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         topBar = {
             CreateCounterAppBar(
                 onClose = onCancel,
                 onDone = onDone,
-                enableDone = counterSupport.error,
+                enableDone = !counterSupport.error,
+                scrollBehavior = scrollBehavior,
             )
         },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { padding ->
         Surface(
             modifier = Modifier
@@ -54,6 +64,7 @@ fun CreateCounterScreen(
             CreateCounterLayout(
                 counterSupport = counterSupport,
                 onNameChange = onNameChange,
+                onDone = onDone,
             )
         }
     }
@@ -63,6 +74,7 @@ fun CreateCounterScreen(
 private fun CreateCounterLayout(
     counterSupport: UiCounterSupport,
     onNameChange: (String) -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -74,6 +86,7 @@ private fun CreateCounterLayout(
             title = counterSupport.nameInput,
             titleInput = counterSupport.nameInput,
             onTitleChange = onNameChange,
+            onDone = { if (!counterSupport.error) onDone() },
             isError = counterSupport.nameError,
             helpText = counterSupport.nameHelp,
         )
@@ -87,6 +100,7 @@ private fun EditTitleField(
     title: String,
     titleInput: String,
     onTitleChange: (String) -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     helpText: String? = null,
@@ -113,6 +127,8 @@ private fun EditTitleField(
             supportingText = { helpText?.let { Text(it) } },
             textStyle = MaterialTheme.typography.titleLarge,
             singleLine = true,
+            keyboardActions = KeyboardActions { onDone() },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
     }
 }
