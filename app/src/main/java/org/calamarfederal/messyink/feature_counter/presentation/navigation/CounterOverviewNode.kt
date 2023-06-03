@@ -20,7 +20,11 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 internal object CounterOverviewNode : CounterNavNode {
     override val route: String = "counter_overview"
 
-    fun NavHostController.navigateToCounterOverview(navOptions: NavOptions = navOptions { launchSingleTop = true }) {
+    fun NavHostController.navigateToCounterOverview(
+        navOptions: NavOptions = navOptions {
+            launchSingleTop = true
+        }
+    ) {
         navigate(this@CounterOverviewNode.route, navOptions)
     }
 

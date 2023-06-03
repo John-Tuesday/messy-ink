@@ -37,7 +37,8 @@ internal fun CreateCounterAppBar(
                 text = "Create Counter",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-            ) },
+            )
+        },
         navigationIcon = {
             IconButton(onClick = onClose) {
                 Icon(Icons.Filled.Close, "close")

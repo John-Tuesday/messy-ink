@@ -65,8 +65,8 @@ class CounterOverviewViewModel @Inject constructor(
     val ticksSumState = _getTicksSumByFlow().stateInViewModel(mapOf())
 
     private val _selectedCounterId = MutableStateFlow<Long?>(null)
-    val selectedCounter = countersState.combine(_selectedCounterId) {counters, selectId ->
-        counters.find{ it.id == selectId }
+    val selectedCounter = countersState.combine(_selectedCounterId) { counters, selectId ->
+        counters.find { it.id == selectId }
     }.stateInViewModel(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)

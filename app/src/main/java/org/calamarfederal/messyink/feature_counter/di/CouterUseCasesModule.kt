@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
@@ -23,7 +23,7 @@ import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateCounterImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickFromImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateTickImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksFromImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksImpl
@@ -80,7 +80,7 @@ abstract class CounterUseCasesModule {
      * Binds Implementation to interface
      */
     @Binds
-    abstract fun bindCreateTickFrom(impl: CreateTickFromImpl): CreateTickFrom
+    abstract fun bindCreateTickFrom(impl: DuplicateTickImpl): DuplicateTick
 
     /**
      * Binds Default Implementation

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.math.minAndMaxOf
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
@@ -51,7 +51,7 @@ class CounterDetailsViewModel @Inject constructor(
     private val _getTicksOfFlow: GetTicksOfFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
-    private val _createTickFrom: CreateTickFrom,
+    private val _duplicateTick: DuplicateTick,
     private val _updateTick: UpdateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
@@ -59,7 +59,7 @@ class CounterDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     companion object {
         /**
-         * Key for getting and setting [counter.value.id] in [savedStateHandle]
+         * Key for getting and setting [UiCounter.id] in [savedStateHandle]
          */
         const val COUNTER_ID = "counter_id"
     }
@@ -155,7 +155,7 @@ class CounterDetailsViewModel @Inject constructor(
      */
     fun addTick(amount: Double) {
         ioScope.launch {
-            _createTickFrom(
+            _duplicateTick(
                 UiTick(
                     amount = amount,
                     parentId = counterIdState.value,

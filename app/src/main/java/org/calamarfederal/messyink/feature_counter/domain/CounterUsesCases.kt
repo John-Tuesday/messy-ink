@@ -77,7 +77,7 @@ fun interface CreateCounterFromSupport {
  *
  * @see invoke
  */
-fun interface CreateTickFrom {
+fun interface DuplicateTick {
     /**
      * Use [sample] as the basis for a new tick to be saved and returned
      */
@@ -98,7 +98,13 @@ fun interface UpdateCounter {
     suspend operator fun invoke(changed: UiCounter): Boolean
 }
 
+/**
+ * Receive [UiCounterSupport], set its error & help appropriately
+ */
 fun interface UpdateCounterSupport {
+    /**
+     * Receive [changed], set its error & help appropriately
+     */
     suspend operator fun invoke(changed: UiCounterSupport): UiCounterSupport
 }
 

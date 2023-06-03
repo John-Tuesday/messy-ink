@@ -54,7 +54,7 @@ class CountersRepoImpl @Inject constructor(
         dao.ticksOfFlow(parentId).distinctUntilChanged().map { data -> data.map { it.toTick() } }
 
 
-    override suspend fun createCounterFrom(counter: Counter): Counter {
+    override suspend fun duplicateCounter(counter: Counter): Counter {
         val time = getCurrentTime()
         return counter.copy(
             timeCreated = time,
@@ -63,7 +63,7 @@ class CountersRepoImpl @Inject constructor(
         ).also { dao.insertCounter(it.toEntity()) }
     }
 
-    override suspend fun createTickFrom(tick: Tick): Tick {
+    override suspend fun duplicateTick(tick: Tick): Tick {
         require(tick.parentId != NOID)
 
         val time = getCurrentTime()

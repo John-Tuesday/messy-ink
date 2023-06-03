@@ -159,7 +159,8 @@ private fun TickOptions(
                         Modifier
                             .fillMaxHeight()
                             .padding(vertical = 4.dp)
-                            .width(1.dp))
+                            .width(1.dp)
+                    )
                     InputChip(
                         selected = false,
                         onClick = onDelete,

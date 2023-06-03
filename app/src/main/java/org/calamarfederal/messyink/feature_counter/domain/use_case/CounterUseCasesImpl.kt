@@ -7,11 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
-import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
@@ -67,7 +66,7 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : G
  */
 class DuplicateCounterImpl @Inject constructor(private val repo: CountersRepo) : DuplicateCounter {
     override suspend fun invoke(sample: UiCounter): UiCounter =
-        repo.createCounterFrom(sample.copy(id = NOID).toCounter()).toUI()
+        repo.duplicateCounter(sample.copy(id = NOID).toCounter()).toUI()
 }
 
 /**
@@ -78,7 +77,7 @@ class CreateCounterFromSupportImpl @Inject constructor(private val repo: Counter
     override suspend fun invoke(support: UiCounterSupport): UiCounter? {
         if (support.error) return null
 
-        return repo.createCounterFrom(
+        return repo.duplicateCounter(
             UiCounter(name = support.nameInput, id = NOID).toCounter()
         ).toUI()
     }
@@ -87,10 +86,10 @@ class CreateCounterFromSupportImpl @Inject constructor(private val repo: Counter
 /**
  * Default Implementation
  */
-class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : CreateTickFrom {
+class DuplicateTickImpl @Inject constructor(private val repo: CountersRepo) : DuplicateTick {
     override suspend fun invoke(sample: UiTick): UiTick {
         require(sample.parentId != NOID)
-        return repo.createTickFrom(sample.copy(id = NOID).toTick()).toUi()
+        return repo.duplicateTick(sample.copy(id = NOID).toTick()).toUi()
     }
 }
 
@@ -101,6 +100,9 @@ class UpdateCounterImpl @Inject constructor(private val repo: CountersRepo) : Up
     override suspend fun invoke(changed: UiCounter) = repo.updateCounter(changed.toCounter())
 }
 
+/**
+ * Default Implementation
+ */
 class UpdateCounterSupportImpl @Inject constructor(private val repo: CountersRepo) :
     UpdateCounterSupport {
     override suspend fun invoke(changed: UiCounterSupport): UiCounterSupport {
