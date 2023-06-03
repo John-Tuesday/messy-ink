@@ -12,7 +12,7 @@ import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterViewModel
 
-object CreateCounterNode : CounterNavNode {
+internal object CreateCounterNode : CounterNavNode {
     override val route: String = "create_counter"
 
     /**
@@ -30,21 +30,19 @@ object CreateCounterNode : CounterNavNode {
         navController: NavHostController,
         onCancel: () -> Unit,
         onDone: () -> Unit,
-        onDelete: () -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
             onEntry(entry)
 
             val viewModel: CreateCounterViewModel = hiltViewModel(entry)
-            val counter by viewModel.counterState.collectAsState()
+            val counterSupport by viewModel.counterSupport.collectAsState()
 
             CreateCounterScreen(
-                counter = counter,
+                counterSupport = counterSupport,
                 onNameChange = viewModel::changeName,
-                onCancel = onCancel,
-                onDone = onDone,
-                onDelete = { viewModel.deleteCounter(); onDelete() },
+                onCancel = { viewModel.discardCounter(); onCancel() },
+                onDone = { viewModel.finalizeCounter(); onDone() },
             )
         }
     }

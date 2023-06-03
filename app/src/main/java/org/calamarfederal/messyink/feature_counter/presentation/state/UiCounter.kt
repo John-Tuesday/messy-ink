@@ -41,6 +41,11 @@ data class UiCounterSupport(
 )
 
 /**
+ * Returns true if any error
+ */
+val UiCounterSupport.error: Boolean get() = nameError
+
+/**
  * # Ui State holder for Ticks
  *
  * ticks are modification events to a counter.

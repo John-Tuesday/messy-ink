@@ -43,7 +43,6 @@ fun CounterFeatureEntry(
                 navController,
                 onCancel = { navController.popBackStack() },
                 onDone = { navController.popBackStack() },
-                onDelete = { navController.popBackStack() },
             )
         }
     }

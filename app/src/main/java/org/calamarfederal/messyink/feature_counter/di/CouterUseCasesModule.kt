@@ -4,7 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
+import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
 import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
@@ -18,8 +19,10 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
+import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromSupportImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickFromImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksFromImpl
@@ -33,6 +36,7 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumBy
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UndoTicksImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateCounterImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateCounterSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateTickImpl
 
 /**
@@ -64,7 +68,13 @@ abstract class CounterUseCasesModule {
      * Binds Implementation to interface
      */
     @Binds
-    abstract fun bindCreateCounterFrom(impl: CreateCounterFromImpl): CreateCounterFrom
+    abstract fun bindDuplicateCounter(impl: DuplicateCounterImpl): DuplicateCounter
+
+    /**
+     * Binds Implementation to interface
+     */
+    @Binds
+    abstract fun bindCreateCounterFromSupport(impl: CreateCounterFromSupportImpl): CreateCounterFromSupport
 
     /**
      * Binds Implementation to interface
@@ -77,6 +87,12 @@ abstract class CounterUseCasesModule {
      */
     @Binds
     abstract fun bindUpdateCounter(impl: UpdateCounterImpl): UpdateCounter
+
+    /**
+     * Binds Default Implementation
+     */
+    @Binds
+    abstract fun bindUpdateCounterSupport(impl: UpdateCounterSupportImpl): UpdateCounterSupport
 
     /**
      * Binds Default Implementation

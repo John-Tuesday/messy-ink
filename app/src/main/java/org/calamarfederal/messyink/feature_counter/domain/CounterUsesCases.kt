@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import kotlin.time.Duration
 
@@ -50,11 +51,25 @@ fun interface GetTicksOfFlow {
  *
  * @see invoke
  */
-fun interface CreateCounterFrom {
+fun interface DuplicateCounter {
     /**
      * Use [sample] as the basis for a new counter to be saved and returned
      */
     suspend operator fun invoke(sample: UiCounter): UiCounter
+}
+
+/**
+ * Convert [UiCounterSupport] to a [Counter], save it, and return the saved version
+ *
+ * if [UiCounterSupport] has errors or otherwise cannot be saved as a valid [Counter] return null
+ */
+fun interface CreateCounterFromSupport {
+    /**
+     * Convert [UiCounterSupport] to a [Counter], save it, and return the saved version
+     *
+     * if [UiCounterSupport] has errors or otherwise cannot be saved as a valid [Counter] return null
+     */
+    suspend operator fun invoke(support: UiCounterSupport): UiCounter?
 }
 
 /**
@@ -83,6 +98,10 @@ fun interface UpdateCounter {
     suspend operator fun invoke(changed: UiCounter): Boolean
 }
 
+fun interface UpdateCounterSupport {
+    suspend operator fun invoke(changed: UiCounterSupport): UiCounterSupport
+}
+
 /**
  * SAM to Update Tick
  *
@@ -106,12 +125,14 @@ fun interface UndoTicks {
      * delete up to [limit], or all if [limit] is null, [Tick] modified within [duration] ago
      */
     suspend operator fun invoke(parentId: Long, limit: Int?, duration: Duration)
+
     /**
      * [invoke] with no limit
      *
      * overload because I cant use default values
      */
-    suspend operator fun invoke(parentId: Long, duration: Duration) = invoke(parentId, limit = null, duration)
+    suspend operator fun invoke(parentId: Long, duration: Duration) =
+        invoke(parentId, limit = null, duration)
 }
 
 /**
@@ -132,6 +153,7 @@ fun interface DeleteTicks {
      * Delete each [Tick] specified by [ids]
      */
     suspend operator fun invoke(ids: List<Long>)
+
     /**
      * Convenience for single tick deletion
      * @see [invoke]
