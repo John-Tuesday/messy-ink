@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -44,6 +45,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
@@ -172,4 +174,14 @@ private fun TickOptions(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun TickHistoryPreview() {
+    TickDetailsLayout(
+        ticks = previewUiTicks(1L).take(15).toList(),
+        onDelete = {},
+        onEdit = {},
+    )
 }

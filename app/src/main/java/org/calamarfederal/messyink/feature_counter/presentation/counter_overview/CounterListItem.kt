@@ -114,69 +114,6 @@ internal fun CounterListCard(
         }
     }
 }
-
-@Composable
-private fun CounterListItem(
-    counter: UiCounter,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit,
-    modifier: Modifier = Modifier,
-    summaryNumber: Double? = null,
-    expanded: Boolean = false,
-    selected: Boolean = false,
-    multiSelect: Boolean = false,
-    textStyle: TextStyle = MaterialTheme.typography.headlineLarge,
-) {
-    Column {
-        ListItem(
-            modifier = modifier,
-            headlineContent = {
-                Text(
-                    text = counter.name,
-                    style = if (selected) textStyle.merge(
-                        TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Italic
-                        )
-                    ) else textStyle,
-                )
-            },
-            supportingContent = {
-                if (expanded) {
-                    IncButtons(
-                        onIncrement = { /*TODO*/ },
-                        onDecrement = { /*TODO*/ },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .safeGesturesPadding(),
-                    )
-                }
-            },
-            trailingContent = {
-                Text(
-                    text = summaryNumber?.toStringAllowShorten() ?: "--",
-                    style = if (selected) textStyle.merge(
-                        TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Italic
-                        )
-                    ) else textStyle,
-                )
-            },
-            leadingContent = {
-//                if (expanded) Icon(Icons.Filled.ExpandLess, "hide increment buttons")
-//                else Icon(Icons.Filled.ExpandMore, "show increment buttons")
-            },
-            tonalElevation = if (!selected)
-                LocalAbsoluteTonalElevation.current
-            else
-                LocalAbsoluteTonalElevation.current
-                    .toMaterialLevelCiel()
-                    .coerceAtLeast(MaterialLevel(3)).elevation,
-        )
-    }
-}
-
 @Composable
 private fun RowScope.ExtendedOptions(
     onSettings: () -> Unit,

@@ -25,18 +25,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 
-@Preview
-@Composable
-private fun PreviewDetails() {
-    val counter = previewUiCounters.first()
-    val ticks = previewUiTicks(1L).take(15).toList()
-    val ticksSum = ticks.sumOf { it.amount }
-    CounterDetails(
-        counter = counter,
-        ticks = ticks,
-        ticksSum = ticksSum,
-    )
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -98,5 +86,18 @@ private fun TickListItem(
                 )
             }
         },
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewDetails() {
+    val counter = previewUiCounters.first()
+    val ticks = previewUiTicks(1L).take(15).toList()
+    val ticksSum = ticks.sumOf { it.amount }
+    CounterDetails(
+        counter = counter,
+        ticks = ticks,
+        ticksSum = ticksSum,
     )
 }
