@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -79,9 +80,7 @@ internal fun TicksOverTimeLayout(
             LineGraph(
                 modifier = Modifier
                     .weight(1f)
-                    .pointerInput(Unit) {
-                        detectTapGestures { showPointInfo = !showPointInfo }
-                    },
+                    .clickable { showPointInfo = !showPointInfo },
                 lineGraphPoints = ticks.map {
                     PointByPercent(
                         x = (it.timeForData - domain.start) / (domain.endInclusive - domain.start),
