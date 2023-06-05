@@ -79,12 +79,10 @@ fun GameCounterScreen(
     onUndo: () -> Unit,
     onRedo: () -> Unit,
     onReset: () -> Unit,
+    onEditCounter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var editCounter by remember { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier,
-    ) { padding ->
+    Scaffold(modifier = modifier) { padding ->
         Surface(
             modifier = Modifier
                 .padding(padding)
@@ -102,24 +100,10 @@ fun GameCounterScreen(
                 onRedo = onRedo,
                 onReset = onReset,
                 onUndo = onUndo,
-                onEditCounter = { editCounter = true },
+                onEditCounter = onEditCounter,
                 modifier = Modifier.padding(16.dp),
             )
         }
-    }
-    AnimatedVisibility(visible = editCounter) {
-        var support by remember(editCounter) { mutableStateOf(UiCounterSupport(nameInput = counter.name)) }
-        EditCounterLayout(
-            counter = counter,
-            counterSupport = support,
-            onChange = {
-                support = UiCounterSupport(
-                    nameInput = it.name,
-                    nameHelp = if (it.name.isBlank()) "name must have at least one non-whitespace character" else null,
-                )
-            },
-            onClose = { editCounter = false },
-        )
     }
 }
 
@@ -297,6 +281,7 @@ private fun GameCounterPreview() {
             onAddTick = {},
             onReset = {},
             onUndo = {},
+            onEditCounter = {},
             onRedo = {},
         )
     }

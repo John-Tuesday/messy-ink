@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 
 /**
@@ -59,6 +60,7 @@ internal object GameCounterNode : CounterNavNode {
                 onUndo = viewModel::undoTick,
                 onRedo = viewModel::redoTick,
                 onReset = viewModel::restartCounter,
+                onEditCounter = { navHostController.navigateToEditCounter(counter.id) },
             )
         }
     }
