@@ -148,7 +148,6 @@ private fun CounterOverviewLayout(
                     onEdit = { onEditCounter(counter); showOptions = false; },
                     onDelete = { onDeleteCounter(counter); showOptions = false },
                     onClear = { onClearCounterTicks(counter); showOptions = false },
-                    modifier = Modifier.safeContentPadding(),
                 )
             }
         }

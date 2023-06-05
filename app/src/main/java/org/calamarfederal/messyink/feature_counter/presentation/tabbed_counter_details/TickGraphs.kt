@@ -125,16 +125,16 @@ internal fun TicksOverTimeLayout(
              *
              * should be bounded by and iterate through the real data points
              */
-            RangeSlider(
-                value = 0f .. 1f,
-                onValueChange = {},
-                enabled = false,
-                colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.tertiary,
-                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                ),
-                modifier = Modifier.safeGesturesPadding()
-            )
+//            RangeSlider(
+//                value = 0f .. 1f,
+//                onValueChange = {},
+//                enabled = false,
+//                colors = SliderDefaults.colors(
+//                    thumbColor = MaterialTheme.colorScheme.tertiary,
+//                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
+//                ),
+//                modifier = Modifier.safeGesturesPadding()
+//            )
 
             /**
              * ## Domain Dropdown
