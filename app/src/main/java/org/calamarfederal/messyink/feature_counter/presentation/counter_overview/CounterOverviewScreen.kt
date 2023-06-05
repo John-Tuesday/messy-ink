@@ -7,33 +7,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FabPosition.Companion
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,9 +32,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
@@ -59,11 +47,14 @@ import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 fun CounterOverviewScreen(
     counters: List<UiCounter>,
     tickSums: Map<Long, Double>,
+    onCounterIncrement: (UiCounter) -> Unit,
+    onCounterDecrement: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
     onClearCounterTicks: (UiCounter) -> Unit,
     onCreateCounter: () -> Unit,
     onNavigateToCounterDetails: (Long) -> Unit,
     onNavigateToCounterGameMode: (Long) -> Unit,
+    onNavigateToCounterEdit: (Long) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 //    var fabExpand by remember(scrollBehavior.state.collapsedFraction ) { mutableStateOf(counters.isEmpty() || tickSums.isEmpty()) }
@@ -75,10 +66,10 @@ fun CounterOverviewScreen(
         floatingActionButton = {
             CounterOverviewFAB(
                 expanded = fabExpand,
-                onCreateCounter = onCreateCounter
+                onCreateCounter = onCreateCounter,
             )
         },
-        floatingActionButtonPosition = if (fabExpand) FabPosition.Center else FabPosition.End,
+        floatingActionButtonPosition = FabPosition.End,
     ) { padding ->
         Surface(
             modifier = Modifier
@@ -88,8 +79,11 @@ fun CounterOverviewScreen(
             CounterOverviewLayout(
                 counters = counters,
                 tickSums = tickSums,
-                onCounterDetails = { onNavigateToCounterDetails(it.id) },
-                onCounterGameMode = { onNavigateToCounterGameMode(it.id) },
+                onCounterIncrement = onCounterIncrement,
+                onCounterDecrement = onCounterDecrement,
+                onViewHistory = { onNavigateToCounterDetails(it.id) },
+                onViewInFull = { onNavigateToCounterGameMode(it.id) },
+                onEditCounter = { onNavigateToCounterEdit(it.id) },
                 onDeleteCounter = onDeleteCounter,
                 onClearCounterTicks = onClearCounterTicks,
                 modifier = Modifier.fillMaxSize()
@@ -103,40 +97,55 @@ fun CounterOverviewScreen(
 private fun CounterOverviewLayout(
     counters: List<UiCounter>,
     tickSums: Map<Long, Double>,
+    onCounterIncrement: (UiCounter) -> Unit,
+    onCounterDecrement: (UiCounter) -> Unit,
     onClearCounterTicks: (UiCounter) -> Unit,
-    onCounterDetails: (UiCounter) -> Unit,
-    onCounterGameMode: (UiCounter) -> Unit,
     onDeleteCounter: (UiCounter) -> Unit,
+    onViewHistory: (UiCounter) -> Unit,
+    onViewInFull: (UiCounter) -> Unit,
+    onEditCounter: (UiCounter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var expandIndex by remember { mutableLongStateOf(-1L) }
+
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         items(items = counters, key = { it.id }) { counter ->
-            Box {
+            Box(Modifier.padding(horizontal = 16.dp)) {
                 var showOptions by remember { mutableStateOf(false) }
                 val haptic = LocalHapticFeedback.current
 
-                CounterListItem(
+                CounterListCard(
                     counter = counter,
-                    summaryNumber = tickSums[counter.id],
-                    selected = showOptions,
+                    amount = tickSums[counter.id],
+//                    expanded = expandIndex == counter.id,
+                    onIncrement = { onCounterIncrement(counter) },
+                    onDecrement = { onCounterDecrement(counter) },
+                    onHistory = { onViewHistory(counter) },
+                    onEditCounter = { onEditCounter(counter) },
+                    onViewInFull = { onViewInFull(counter) },
                     modifier = Modifier.combinedClickable(
                         onLongClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             showOptions = true
+                            expandIndex = counter.id
                         },
-                        onClick = { onCounterDetails(counter) },
+                        onClick = {
+                            expandIndex = if (expandIndex == counter.id) -1 else counter.id
+                        },
+                        onDoubleClick = { onViewHistory(counter) }
                     )
                 )
 
                 CounterOptions(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
-                    onDetails = { onCounterDetails(counter); showOptions = false },
-                    onGameMode = { onCounterGameMode(counter); showOptions = false },
+                    onDetails = { onViewHistory(counter); showOptions = false },
+                    onGameMode = { onViewInFull(counter); showOptions = false },
+                    onEdit = { onEditCounter(counter); showOptions = false; },
                     onDelete = { onDeleteCounter(counter); showOptions = false },
                     onClear = { onClearCounterTicks(counter); showOptions = false },
                     modifier = Modifier.safeContentPadding(),
@@ -153,11 +162,14 @@ private fun CounterOverviewPreview() {
         CounterOverviewScreen(
             counters = previewUiCounters.take(5).toList(),
             tickSums = mapOf(),
+            onCounterIncrement = {},
+            onCounterDecrement = {},
             onDeleteCounter = {},
             onClearCounterTicks = {},
             onCreateCounter = {},
             onNavigateToCounterDetails = {},
             onNavigateToCounterGameMode = {},
+            onNavigateToCounterEdit = {},
         )
     }
 }

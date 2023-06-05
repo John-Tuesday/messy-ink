@@ -63,6 +63,9 @@ object CounterModuleProvider {
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
 
+    /**
+     * Dispatcher to move local database operations off UI thread
+     */
     @Provides
     @ViewModelScoped
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO

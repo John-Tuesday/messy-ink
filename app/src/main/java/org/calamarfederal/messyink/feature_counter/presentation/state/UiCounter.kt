@@ -32,12 +32,14 @@ data class UiCounter(
  * @property[nameInput] current text the user has entered; NOT the saved copy in [UiCounter]
  * @property[nameHelp] support text to show to the user
  * @property[nameError] should this be shown as an error (i.e. disallow saving, show in red, etc.)
+ * @property[id] the id of the [UiCounter] being edited, or null if it doesn't exist
  */
 @Stable
 data class UiCounterSupport(
     val nameInput: String = "",
     val nameHelp: String? = null,
     val nameError: Boolean = nameHelp.isNullOrBlank(),
+    val id: Long? = null,
 )
 
 /**

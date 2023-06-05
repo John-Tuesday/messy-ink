@@ -35,6 +35,13 @@ fun interface GetCountersFlow {
 }
 
 /**
+ * SAM Get Counter but return it as a [UiCounterSupport] instead of [UiCounter]
+ */
+fun interface GetCounterAsSupportOrNull {
+    suspend operator fun invoke(id: Long): UiCounterSupport?
+}
+
+/**
  * SAM
  *
  * @see invoke
@@ -96,6 +103,13 @@ fun interface UpdateCounter {
      * should it return the new value or `null` if not found
      */
     suspend operator fun invoke(changed: UiCounter): Boolean
+}
+
+/**
+ * SAM to Update Counter
+ */
+fun interface UpdateCounterFromSupport {
+    suspend operator fun invoke(support: UiCounterSupport): Boolean
 }
 
 /**

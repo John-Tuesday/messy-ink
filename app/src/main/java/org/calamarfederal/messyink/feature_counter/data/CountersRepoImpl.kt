@@ -41,6 +41,8 @@ class CountersRepoImpl @Inject constructor(
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
 
     override suspend fun getCounters(): List<Counter> = dao.counters().map { it.toCounter() }
+
+    override suspend fun getCounterOrNull(id: Long): Counter? = dao.counter(id)?.toCounter()
     override suspend fun getTicks(parentId: Long): List<Tick> =
         dao.ticksOf(parentId).map { it.toTick() }
 

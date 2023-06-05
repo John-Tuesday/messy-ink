@@ -13,6 +13,11 @@ interface CountersRepo {
     suspend fun getCounters(): List<Counter>
 
     /**
+     * Gets the counter if it exists, null otherwise
+     */
+    suspend fun getCounterOrNull(id: Long): Counter?
+
+    /**
      * One-shot get all ticks with parent_id
      *
      * @param[parentId] should be a valid Counter.id

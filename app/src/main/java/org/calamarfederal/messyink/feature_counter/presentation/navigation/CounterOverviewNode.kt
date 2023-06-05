@@ -30,9 +30,10 @@ internal object CounterOverviewNode : CounterNavNode {
 
     fun NavGraphBuilder.counterOverview(
         navController: NavHostController,
-        onNavigateToCounterDetails: (Long) -> Unit,
         onNavigateToCreateCounter: () -> Unit,
+        onNavigateToCounterDetails: (Long) -> Unit,
         onNavigateToCounterGameMode: (Long) -> Unit,
+        onNavigateToCounterEdit: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
@@ -41,17 +42,18 @@ internal object CounterOverviewNode : CounterNavNode {
             val viewModel: CounterOverviewViewModel = hiltViewModel()
             val counters by viewModel.countersState.collectAsState()
             val tickSums by viewModel.ticksSumState.collectAsState()
-            val selectedCounter by viewModel.selectedCounter.collectAsState()
-            val ticksOfSelected by viewModel.ticksOfSelectedCounter.collectAsState()
 
             CounterOverviewScreen(
                 counters = counters,
                 tickSums = tickSums,
+                onCounterIncrement = { viewModel.incrementCounter(it.id) },
+                onCounterDecrement = { viewModel.decrementCounter(it.id) },
                 onDeleteCounter = { viewModel.deleteCounter(it.id) },
                 onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
                 onCreateCounter = { onNavigateToCreateCounter() },
                 onNavigateToCounterDetails = onNavigateToCounterDetails,
                 onNavigateToCounterGameMode = onNavigateToCounterGameMode,
+                onNavigateToCounterEdit = onNavigateToCounterEdit,
             )
         }
     }
