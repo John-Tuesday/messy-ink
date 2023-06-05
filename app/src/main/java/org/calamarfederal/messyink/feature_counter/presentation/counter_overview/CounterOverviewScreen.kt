@@ -57,7 +57,6 @@ fun CounterOverviewScreen(
     onNavigateToCounterEdit: (Long) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-//    var fabExpand by remember(scrollBehavior.state.collapsedFraction ) { mutableStateOf(counters.isEmpty() || tickSums.isEmpty()) }
     val fabExpand by remember { derivedStateOf { scrollBehavior.state.collapsedFraction < 0.9f } }
 
     Scaffold(

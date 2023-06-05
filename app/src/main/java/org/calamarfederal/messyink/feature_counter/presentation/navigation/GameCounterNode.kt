@@ -21,7 +21,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
  */
 internal object GameCounterNode : CounterNavNode {
     private const val BASE_ROUTE = "game_counter"
-    private const val COUNTER_ID = GameCounterViewModel.COUNTER_ID
+    const val COUNTER_ID = "counter_id"
 
     override val arguments = listOf(
         navArgument(COUNTER_ID) { type = NavType.LongType; defaultValue = NOID },

@@ -30,8 +30,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails
-import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
@@ -76,7 +75,7 @@ class CounterDetailsViewModel @Inject constructor(
     private val ioScope: CoroutineScope = viewModelScope + SupervisorJob() + ioDispatcher
 
     private val counterIdState =
-        savedStateHandle.getStateFlow(TabbedCounterDetails.COUNTER_ID, NOID)
+        savedStateHandle.getStateFlow(CounterHistoryNode.COUNTER_ID, NOID)
 
     /**
      * Counter being examined.

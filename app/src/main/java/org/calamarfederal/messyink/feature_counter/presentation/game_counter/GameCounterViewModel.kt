@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
@@ -22,6 +23,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -39,6 +41,7 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val ioDispatcher: CoroutineDispatcher,
     private val _getCounterFlow: GetCounterFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _duplicateTick: DuplicateTick,
@@ -46,15 +49,6 @@ class GameCounterViewModel @Inject constructor(
     private val _deleteTicksOf: DeleteTicksOf,
     private val _undoTicks: UndoTicks,
 ) : ViewModel() {
-    companion object {
-        /**
-         * key for navigation argument & saving its counter id
-         */
-        const val COUNTER_ID = "counter_id"
-    }
-
-    private val ioScope = viewModelScope + SupervisorJob() + Dispatchers.IO
-
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
@@ -67,7 +61,9 @@ class GameCounterViewModel @Inject constructor(
         initial,
     )
 
-    private val counterIdState = savedStateHandle.getStateFlow(COUNTER_ID, NOID)
+    private val ioScope = viewModelScope + SupervisorJob() + ioDispatcher
+
+    private val counterIdState = savedStateHandle.getStateFlow(GameCounterNode.COUNTER_ID, NOID)
 
     /**
      * counter being examined; idk how to handle when DNE.

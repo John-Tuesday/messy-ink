@@ -1,7 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,12 +9,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.TabbedCounterDetailsScreen
 
-internal object TabbedCounterDetails : CounterNavNode {
-    private const val BASE_ROUTE = "tabbed_counter_details"
+internal object CounterHistoryNode : CounterNavNode {
+    private const val BASE_ROUTE = "counter_history"
 
     /**
      * Used as a key in navigation arguments or saved state handel
@@ -23,7 +21,7 @@ internal object TabbedCounterDetails : CounterNavNode {
     const val COUNTER_ID = "counter_id"
 
     override val arguments = listOf(navArgument(COUNTER_ID) { type = NavType.LongType })
-    override val route = "$BASE_ROUTE/${arguments.toArgPlaceholder()}"
+    override val route = "$BASE_ROUTE/{$COUNTER_ID}"
 
     fun NavHostController.navigateToTabbedDetails(counterId: Long) {
         navigate("$BASE_ROUTE/$counterId")
