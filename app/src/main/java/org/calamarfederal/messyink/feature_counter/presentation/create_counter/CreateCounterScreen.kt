@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.ImeAction.Companion
 import androidx.compose.ui.tooling.preview.Preview
+import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
@@ -52,6 +53,8 @@ fun CreateCounterScreen(
                 onDone = onDone,
                 enableDone = !counterSupport.error,
                 scrollBehavior = scrollBehavior,
+                title = if (counterSupport.id == null || counterSupport.id == NOID)
+                    "Create Counter" else "Edit Counter",
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

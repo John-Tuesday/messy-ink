@@ -31,12 +31,13 @@ internal fun CreateCounterAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     enableDone: Boolean = false,
+    title: String = "Create Counter",
 ) {
     MediumTopAppBar(
         modifier = modifier,
         title = {
             Text(
-                text = "Create Counter",
+                text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
