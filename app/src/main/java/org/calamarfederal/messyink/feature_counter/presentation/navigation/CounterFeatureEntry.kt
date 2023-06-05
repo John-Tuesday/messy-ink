@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.counterOverview
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.createCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToCreateCounter
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.navigateToGameCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.TabbedCounterDetails.navigateToTabbedDetails
@@ -35,7 +36,8 @@ fun CounterFeatureEntry(
                 navController,
                 onNavigateToCreateCounter = { navController.navigateToCreateCounter() },
                 onNavigateToCounterDetails = { navController.navigateToTabbedDetails(it) },
-                onNavigateToCounterGameMode = { navController.navigateToGameCounter(it) }
+                onNavigateToCounterGameMode = { navController.navigateToGameCounter(it) },
+                onNavigateToCounterEdit = { navController.navigateToEditCounter(it) }
             )
             gameCounterNode(navController)
             tabbedCounterDetails(navController)
@@ -43,7 +45,6 @@ fun CounterFeatureEntry(
                 navController,
                 onCancel = { navController.popBackStack() },
                 onDone = { navController.popBackStack() },
-                onDelete = { navController.popBackStack() },
             )
         }
     }

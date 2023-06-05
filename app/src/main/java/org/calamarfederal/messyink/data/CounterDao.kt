@@ -37,6 +37,12 @@ interface CounterDao {
     suspend fun counters(): List<CounterEntity>
 
     /**
+     * Return [CounterEntity] with [id] if it exits, else null
+     */
+    @Query("SELECT * FROM counters WHERE id = :id")
+    suspend fun counter(id: Long): CounterEntity?
+
+    /**
      * All [TickEntity] with matching [parentId] ordered by [TickEntity.timeForData]
      */
     @Query("SELECT * FROM counter_ticks WHERE parent_id = :parentId ORDER BY time_for_data")

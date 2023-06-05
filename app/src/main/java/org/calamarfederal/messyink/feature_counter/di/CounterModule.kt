@@ -7,6 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -60,6 +62,13 @@ object CounterModuleProvider {
     @Provides
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
+
+    /**
+     * Dispatcher to move local database operations off UI thread
+     */
+    @Provides
+    @ViewModelScoped
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     /**
      * Provide the current time of the system at initialization

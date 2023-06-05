@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Ballot
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.More
 import androidx.compose.material3.Divider
@@ -120,6 +121,7 @@ internal fun CounterOptions(
     onGameMode: () -> Unit,
     onDelete: () -> Unit,
     onClear: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
@@ -141,6 +143,11 @@ internal fun CounterOptions(
                     modifier = Modifier.clickable(onClick = onDetails),
                 )
                 Divider()
+                ListItem(
+                    headlineContent = { Text("Edit") },
+                    leadingContent = { Icon(Filled.Edit, "edit counter") },
+                    modifier = Modifier.clickable(onClick = onEdit),
+                )
                 ListItem(
                     headlineContent = { Text("Clear") },
                     leadingContent = { Icon(Filled.ClearAll, "clear all ticks") },

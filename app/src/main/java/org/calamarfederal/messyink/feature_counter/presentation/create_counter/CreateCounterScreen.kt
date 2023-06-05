@@ -1,78 +1,83 @@
 package org.calamarfederal.messyink.feature_counter.presentation.create_counter
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeAction.Companion
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.TimeZone.Companion
-import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * # Create a new Counter
+ *
+ * Designed to be used as a full-screen Dialog
+ */
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCounterScreen(
-    counter: UiCounter,
+    counterSupport: UiCounterSupport,
     onNameChange: (String) -> Unit,
     onCancel: () -> Unit,
     onDone: () -> Unit,
-    onDelete: () -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         topBar = {
             CreateCounterAppBar(
                 onClose = onCancel,
                 onDone = onDone,
-                onDelete = onDelete,
+                enableDone = !counterSupport.error,
+                scrollBehavior = scrollBehavior,
+                title = if (counterSupport.id == null || counterSupport.id == NOID)
+                    "Create Counter" else "Edit Counter",
             )
         },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { padding ->
         Surface(
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
         ) {
-            CreateCounterLayout(counter = counter, onNameChange = onNameChange)
+            CreateCounterLayout(
+                counterSupport = counterSupport,
+                onNameChange = onNameChange,
+                onDone = onDone,
+            )
         }
     }
 }
 
 @Composable
 private fun CreateCounterLayout(
-    counter: UiCounter,
+    counterSupport: UiCounterSupport,
     onNameChange: (String) -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -80,60 +85,54 @@ private fun CreateCounterLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        TextField(
-            value = counter.name,
-            onValueChange = onNameChange,
-            label = { Text("name") },
-            placeholder = { Text(counter.name) }
+        EditTitleField(
+            title = counterSupport.nameInput,
+            titleInput = counterSupport.nameInput,
+            onTitleChange = onNameChange,
+            onDone = { if (!counterSupport.error) onDone() },
+            isError = counterSupport.nameError,
+            helpText = counterSupport.nameHelp,
         )
 
-        var expand by remember { mutableStateOf(false) }
-        ExpandableDetail(
-            counter = counter,
-            expand = expand,
-            onShowLess = { expand = false },
-            onShowMore = { expand = true },
-        )
+        Divider()
     }
 }
 
-private fun Instant.toDateString(): String = "${toLocalDateTime(TimeZone.UTC).date}"
-
 @Composable
-private fun ExpandableDetail(
-    counter: UiCounter,
-    expand: Boolean,
-    onShowLess: () -> Unit,
-    onShowMore: () -> Unit,
+private fun EditTitleField(
+    title: String,
+    titleInput: String,
+    onTitleChange: (String) -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    helpText: String? = null,
 ) {
-    Box(modifier = modifier) {
-        AnimatedContent(
-            targetState = expand,
-            label = "show more details box animation",
-        ) { showMore ->
-            Column {
-                Row {
-                    Button(
-                        onClick = if (showMore) onShowLess else onShowMore,
-                    ) {
-                        Box(modifier.size(ButtonDefaults.IconSize)) {
-                            if (showMore)
-                                Icon(Icons.Filled.ExpandLess, "show less")
-                            else
-                                Icon(Icons.Filled.ExpandMore, "show more")
-                        }
-                        Spacer(modifier.size(ButtonDefaults.IconSpacing))
-                        Text("Details")
-                    }
-                }
+
+    Column(modifier = modifier) {
+        Text(
+            text = "Title:",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.Start)
+        )
+        OutlinedTextField(
+            value = titleInput,
+            onValueChange = onTitleChange,
+            placeholder = {
                 Text(
-                    text = "id: ${counter.id}\nmodified: ${counter.timeModified.toDateString()} created: ${counter.timeCreated.toDateString()}",
-                    maxLines = if (!showMore) 1 else Int.MAX_VALUE,
-                    overflow = TextOverflow.Ellipsis,
+                    text = title,
+//                        style = MaterialTheme.typography.titleLarge,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Light,
                 )
-            }
-        }
+            },
+            isError = isError,
+            supportingText = { helpText?.let { Text(it) } },
+            textStyle = MaterialTheme.typography.titleLarge,
+            singleLine = true,
+            keyboardActions = KeyboardActions { onDone() },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        )
     }
 }
 
@@ -142,9 +141,8 @@ private fun ExpandableDetail(
 private fun PreviewCreateScreen() {
     MessyInkTheme {
         CreateCounterScreen(
-            counter = previewUiCounters.first(),
+            counterSupport = UiCounterSupport(),
             onNameChange = {},
-            onDelete = {},
             onDone = {},
             onCancel = {},
         )

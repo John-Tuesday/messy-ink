@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import kotlin.time.Duration
 
@@ -34,6 +35,13 @@ fun interface GetCountersFlow {
 }
 
 /**
+ * SAM Get Counter but return it as a [UiCounterSupport] instead of [UiCounter]
+ */
+fun interface GetCounterAsSupportOrNull {
+    suspend operator fun invoke(id: Long): UiCounterSupport?
+}
+
+/**
  * SAM
  *
  * @see invoke
@@ -50,7 +58,7 @@ fun interface GetTicksOfFlow {
  *
  * @see invoke
  */
-fun interface CreateCounterFrom {
+fun interface DuplicateCounter {
     /**
      * Use [sample] as the basis for a new counter to be saved and returned
      */
@@ -58,11 +66,25 @@ fun interface CreateCounterFrom {
 }
 
 /**
+ * Convert [UiCounterSupport] to a [Counter], save it, and return the saved version
+ *
+ * if [UiCounterSupport] has errors or otherwise cannot be saved as a valid [Counter] return null
+ */
+fun interface CreateCounterFromSupport {
+    /**
+     * Convert [UiCounterSupport] to a [Counter], save it, and return the saved version
+     *
+     * if [UiCounterSupport] has errors or otherwise cannot be saved as a valid [Counter] return null
+     */
+    suspend operator fun invoke(support: UiCounterSupport): UiCounter?
+}
+
+/**
  * SAM
  *
  * @see invoke
  */
-fun interface CreateTickFrom {
+fun interface DuplicateTick {
     /**
      * Use [sample] as the basis for a new tick to be saved and returned
      */
@@ -81,6 +103,23 @@ fun interface UpdateCounter {
      * should it return the new value or `null` if not found
      */
     suspend operator fun invoke(changed: UiCounter): Boolean
+}
+
+/**
+ * SAM to Update Counter
+ */
+fun interface UpdateCounterFromSupport {
+    suspend operator fun invoke(support: UiCounterSupport): Boolean
+}
+
+/**
+ * Receive [UiCounterSupport], set its error & help appropriately
+ */
+fun interface UpdateCounterSupport {
+    /**
+     * Receive [changed], set its error & help appropriately
+     */
+    suspend operator fun invoke(changed: UiCounterSupport): UiCounterSupport
 }
 
 /**
@@ -106,12 +145,14 @@ fun interface UndoTicks {
      * delete up to [limit], or all if [limit] is null, [Tick] modified within [duration] ago
      */
     suspend operator fun invoke(parentId: Long, limit: Int?, duration: Duration)
+
     /**
      * [invoke] with no limit
      *
      * overload because I cant use default values
      */
-    suspend operator fun invoke(parentId: Long, duration: Duration) = invoke(parentId, limit = null, duration)
+    suspend operator fun invoke(parentId: Long, duration: Duration) =
+        invoke(parentId, limit = null, duration)
 }
 
 /**
@@ -132,6 +173,7 @@ fun interface DeleteTicks {
      * Delete each [Tick] specified by [ids]
      */
     suspend operator fun invoke(ids: List<Long>)
+
     /**
      * Convenience for single tick deletion
      * @see [invoke]

@@ -16,15 +16,12 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
-import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -44,7 +41,7 @@ class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val _getCounterFlow: GetCounterFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
-    private val _createTickFrom: CreateTickFrom,
+    private val _duplicateTick: DuplicateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
     private val _undoTicks: UndoTicks,
@@ -127,7 +124,7 @@ class GameCounterViewModel @Inject constructor(
      */
     fun addTick(amount: Double) {
         ioScope.launch {
-            _createTickFrom(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
+            _duplicateTick(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
         }
     }
 
@@ -138,6 +135,9 @@ class GameCounterViewModel @Inject constructor(
         ioScope.launch { _undoTicks(parentId = counterIdState.value, duration = 1.minutes) }
     }
 
+    /**
+     * UI Callback to redo an undo if possible
+     */
     fun redoTick() {
         println("redo")
         TODO("needs use case")

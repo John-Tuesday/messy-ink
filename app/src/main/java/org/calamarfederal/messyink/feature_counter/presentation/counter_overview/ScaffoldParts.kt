@@ -36,7 +36,7 @@ internal fun CounterOverviewAppBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text("Overview") },
+        title = { Text("Counters") },
         scrollBehavior = scrollBehavior,
     )
 }

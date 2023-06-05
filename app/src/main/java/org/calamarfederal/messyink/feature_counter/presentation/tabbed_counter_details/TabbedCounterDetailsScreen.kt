@@ -151,7 +151,7 @@ private fun TabbedLayout(
     graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
-    userScrollEnabled: Boolean = true,
+    userScrollEnabled: Boolean = false,
 ) {
     HorizontalPager(
         modifier = modifier,
@@ -196,21 +196,7 @@ private fun TabbedTopAppBar(
     TopAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
-        title = {
-            AnimatedContent(
-                targetState = selectedIndex,
-                label = "TabbedTopAppbarTitle",
-                transitionSpec = {
-                    slideInHorizontally {
-                        if (targetState > initialState) it else -it
-                    } togetherWith fadeOut() + slideOutHorizontally {
-                        if (targetState > initialState) -it else it
-                    }
-                },
-            ) {
-                Text(CounterDetailsTab.fromIndex(it).displayName)
-            }
-        },
+        title = { Text(CounterDetailsTab.fromIndex(selectedIndex).displayName) },
         navigationIcon = {
             IconButton(onClick = onNavigateUp) {
                 Icon(Icons.Filled.ArrowBack, "navigate up")

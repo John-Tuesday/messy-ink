@@ -37,7 +37,7 @@ private fun RowScope.NavBarItem(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    alwaysShowLabel: Boolean = false,
+    alwaysShowLabel: Boolean = true,
 ) {
     NavigationBarItem(
         modifier = modifier,

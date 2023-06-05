@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
-import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFrom
-import org.calamarfederal.messyink.feature_counter.domain.CreateTickFrom
+import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
+import org.calamarfederal.messyink.feature_counter.domain.GetCounterAsSupportOrNull
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
@@ -23,10 +25,14 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
+import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import javax.inject.Inject
 import kotlin.time.Duration
 
@@ -48,6 +54,18 @@ class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : 
         repo.getCountersFlow().mapLatest { it.map { item -> item.toUI() } }
 }
 
+class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo) :
+    GetCounterAsSupportOrNull {
+    override suspend fun invoke(id: Long): UiCounterSupport? = repo.getCounterOrNull(id)?.let {
+        UiCounterSupport(
+            nameInput = it.name,
+            id = it.id,
+            nameHelp = null,
+            nameError = false,
+        )
+    }
+}
+
 /**
  * Default Implementation
  */
@@ -60,18 +78,32 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : G
 /**
  * Default Implementation
  */
-class CreateCounterFromImpl @Inject constructor(private val repo: CountersRepo) : CreateCounterFrom {
+class DuplicateCounterImpl @Inject constructor(private val repo: CountersRepo) : DuplicateCounter {
     override suspend fun invoke(sample: UiCounter): UiCounter =
-        repo.createCounterFrom(sample.copy(id = NOID).toCounter()).toUI()
+        repo.duplicateCounter(sample.copy(id = NOID).toCounter()).toUI()
+}
+
+/**
+ * Default implementation - relies on [UiCounterSupport.error]
+ */
+class CreateCounterFromSupportImpl @Inject constructor(private val repo: CountersRepo) :
+    CreateCounterFromSupport {
+    override suspend fun invoke(support: UiCounterSupport): UiCounter? {
+        if (support.error) return null
+
+        return repo.duplicateCounter(
+            UiCounter(name = support.nameInput, id = NOID).toCounter()
+        ).toUI()
+    }
 }
 
 /**
  * Default Implementation
  */
-class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : CreateTickFrom {
+class DuplicateTickImpl @Inject constructor(private val repo: CountersRepo) : DuplicateTick {
     override suspend fun invoke(sample: UiTick): UiTick {
         require(sample.parentId != NOID)
-        return repo.createTickFrom(sample.copy(id = NOID).toTick()).toUi()
+        return repo.duplicateTick(sample.copy(id = NOID).toTick()).toUi()
     }
 }
 
@@ -80,6 +112,29 @@ class CreateTickFromImpl @Inject constructor(private val repo: CountersRepo) : C
  */
 class UpdateCounterImpl @Inject constructor(private val repo: CountersRepo) : UpdateCounter {
     override suspend fun invoke(changed: UiCounter) = repo.updateCounter(changed.toCounter())
+}
+
+class UpdateCounterFromSupportImpl @Inject constructor(private val repo: CountersRepo) :
+    UpdateCounterFromSupport {
+    override suspend fun invoke(support: UiCounterSupport): Boolean {
+        if (support.error || support.id == null) return false
+
+        return repo.updateCounter(UiCounter(name = support.nameInput, id = support.id).toCounter())
+    }
+}
+
+/**
+ * Default Implementation
+ */
+class UpdateCounterSupportImpl @Inject constructor(private val repo: CountersRepo) :
+    UpdateCounterSupport {
+    override suspend fun invoke(changed: UiCounterSupport): UiCounterSupport {
+
+        return changed.copy(
+            nameHelp = if (changed.nameInput.isBlank()) "Add a non-whitespace character" else null,
+            nameError = changed.nameInput.isBlank(),
+        )
+    }
 }
 
 /**

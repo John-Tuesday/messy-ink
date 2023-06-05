@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -58,7 +59,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiT
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TicksOverTimeLayout(
     ticks: List<UiTick>,
@@ -80,9 +80,7 @@ internal fun TicksOverTimeLayout(
             LineGraph(
                 modifier = Modifier
                     .weight(1f)
-                    .pointerInput(Unit) {
-                        detectTapGestures { showPointInfo = !showPointInfo }
-                    },
+                    .clickable { showPointInfo = !showPointInfo },
                 lineGraphPoints = ticks.map {
                     PointByPercent(
                         x = (it.timeForData - domain.start) / (domain.endInclusive - domain.start),
@@ -126,16 +124,16 @@ internal fun TicksOverTimeLayout(
              *
              * should be bounded by and iterate through the real data points
              */
-            RangeSlider(
-                value = 0f .. 1f,
-                onValueChange = {},
-                enabled = false,
-                colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.tertiary,
-                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                ),
-                modifier = Modifier.safeGesturesPadding()
-            )
+//            RangeSlider(
+//                value = 0f .. 1f,
+//                onValueChange = {},
+//                enabled = false,
+//                colors = SliderDefaults.colors(
+//                    thumbColor = MaterialTheme.colorScheme.tertiary,
+//                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
+//                ),
+//                modifier = Modifier.safeGesturesPadding()
+//            )
 
             /**
              * ## Domain Dropdown
