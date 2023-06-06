@@ -9,9 +9,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsViewModel
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.TabbedCounterDetailsScreen
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
 
+/**
+ * # History and Details
+ * ## of a Counter, including its ticks
+ */
 internal object CounterHistoryNode : CounterNavNode {
     private const val BASE_ROUTE = "counter_history"
 
@@ -23,18 +27,18 @@ internal object CounterHistoryNode : CounterNavNode {
     override val arguments = listOf(navArgument(COUNTER_ID) { type = NavType.LongType })
     override val route = "$BASE_ROUTE/{$COUNTER_ID}"
 
-    fun NavHostController.navigateToTabbedDetails(counterId: Long) {
+    fun NavHostController.navigateToCounterHistory(counterId: Long) {
         navigate("$BASE_ROUTE/$counterId")
     }
 
-    fun NavGraphBuilder.tabbedCounterDetails(
+    fun NavGraphBuilder.counterHistory(
         navController: NavHostController,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         subNavNode { entry ->
             onEntry(entry)
 
-            val viewModel: CounterDetailsViewModel = hiltViewModel(entry)
+            val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
             val counter by viewModel.counter.collectAsState()
             val ticks by viewModel.ticks.collectAsState()
@@ -44,7 +48,7 @@ internal object CounterHistoryNode : CounterNavNode {
             val graphDomain by viewModel.graphDomain.collectAsState()
             val graphDomainOptions = viewModel.graphDomainOptions
 
-            TabbedCounterDetailsScreen(
+            CounterHistoryScreen(
                 counter = counter,
                 ticks = ticks,
                 tickSum = tickSum,

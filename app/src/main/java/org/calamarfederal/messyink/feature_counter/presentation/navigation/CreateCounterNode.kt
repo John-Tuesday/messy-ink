@@ -16,6 +16,9 @@ import org.calamarfederal.messyink.feature_counter.presentation.create_counter.C
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 
+/**
+ * # Create / Edit Counter Node
+ */
 internal object CreateCounterNode : CounterNavNode {
     private const val BASE_ROUTE = "create_counter"
     const val INIT_COUNTER_ID = "init_counter_id"

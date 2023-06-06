@@ -15,9 +15,7 @@ import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
-import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -26,7 +24,8 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * # View Model for viewing summary information of all Counters
+ * # [UiCounter] Overview View Model
+ * ## provide summary details and simple actions
  */
 @HiltViewModel
 class CounterOverviewViewModel @Inject constructor(
@@ -62,10 +61,16 @@ class CounterOverviewViewModel @Inject constructor(
      */
     val ticksSumState = _getTicksSumByFlow().stateInViewModel(mapOf())
 
+    /**
+     * Add default increment tick; for no it's just `1.00`
+     */
     fun incrementCounter(id: Long) {
         ioScope.launch { _createTick(UiTick(amount = 1.00, parentId = id, id = NOID)) }
     }
 
+    /**
+     * Add default decrement tick; for now it's just `-1.00`
+     */
     fun decrementCounter(id: Long) {
         ioScope.launch { _createTick(UiTick(amount = -1.00, parentId = id, id = NOID)) }
     }
@@ -78,9 +83,7 @@ class CounterOverviewViewModel @Inject constructor(
     }
 
     /**
-     * Delete all ticks owned by [counterId]
-     *
-     * @param[counterId] valid [UiCounter.id]
+     * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
      */
     fun clearCounterTicks(counterId: Long) {
         ioScope.launch { _deleteTicksFrom(parentId = counterId) }

@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Undo
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,7 +89,6 @@ fun GameCounterScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GameCounterLayout(
     counter: UiCounter,
@@ -212,6 +210,9 @@ private fun CounterCenter(
     }
 }
 
+/**
+ * Currently always hidden because there is not support for Undo / Redo / Reset
+ */
 @Composable
 private fun AnimatedEditActions(
     onRedo: () -> Unit,

@@ -10,8 +10,8 @@ import org.calamarfederal.messyink.feature_counter.presentation.navigation.Creat
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.navigateToGameCounter
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToTabbedDetails
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.tabbedCounterDetails
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToCounterHistory
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.counterHistory
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
@@ -35,12 +35,12 @@ fun CounterFeatureEntry(
             counterOverview(
                 navController,
                 onNavigateToCreateCounter = { navController.navigateToCreateCounter() },
-                onNavigateToCounterDetails = { navController.navigateToTabbedDetails(it) },
+                onNavigateToCounterDetails = { navController.navigateToCounterHistory(it) },
                 onNavigateToCounterGameMode = { navController.navigateToGameCounter(it) },
                 onNavigateToCounterEdit = { navController.navigateToEditCounter(it) }
             )
             gameCounterNode(navController)
-            tabbedCounterDetails(navController)
+            counterHistory(navController)
             createCounter(
                 navController,
                 onCancel = { navController.popBackStack() },

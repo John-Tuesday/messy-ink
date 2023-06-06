@@ -15,7 +15,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 /**
  * # Counter Overview Node
  *
- * high level view of all counters and summary stats
+ * Provide high level summary of all Counters and act as a nexus for navigation
  */
 internal object CounterOverviewNode : CounterNavNode {
     override val route: String = "counter_overview"

@@ -1,7 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.state
 
 import androidx.compose.runtime.Stable
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
 import kotlin.time.Duration.Companion.days

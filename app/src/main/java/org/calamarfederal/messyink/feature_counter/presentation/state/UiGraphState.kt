@@ -7,20 +7,14 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 /**
- * Used to describe and specify the domain of a Time-based Graph, i.e. UiTick
+ * # Domain of an X vs Time graph
  */
 data class TimeDomain(
     /**
      * Name for UI
      */
     val label: String,
-    /**
-     * Lower bound, inclusive
-     */
     override val start: Instant,
-    /**
-     * Upper bound, inclusive
-     */
     override val endInclusive: Instant,
 ) : ClosedRange<Instant> {
     constructor(label: String, domain: ClosedRange<Instant>) : this(
@@ -29,7 +23,7 @@ data class TimeDomain(
         endInclusive = domain.endInclusive
     )
 
-    companion object {}
+    companion object
 }
 
 /**
@@ -43,7 +37,7 @@ val TimeDomain.Companion.AbsoluteAllTime: TimeDomain
     )
 
 /**
- * Provide quick, adaptable options for user to set domain
+ * Provide quick, adaptable options to set domain
  */
 interface TimeDomainTemplate {
     /**
@@ -74,21 +68,12 @@ data class TimeDomainLambdaTemplate(
 }
 
 /**
- * Template which can build a [TimeDomain]
+ * Template for building [TimeDomain] based on "time ago," i.e. [duration] form now
  */
 class TimeDomainAgoTemplate(
-    /**
-     * Name for UI
-     */
     override val label: String,
-    /**
-     * Duration from Current time i.e. min = Current - [duration]
-     */
     private val duration: Duration,
 ) : TimeDomainTemplate {
-    /**
-     * Builds and returns the resulting [TimeDomain]
-     */
     override fun domain() = CurrentTimeGetter().let {
         TimeDomain(
             endInclusive = it,

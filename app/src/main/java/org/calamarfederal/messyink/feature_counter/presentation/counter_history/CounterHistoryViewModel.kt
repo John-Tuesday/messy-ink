@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -47,7 +47,7 @@ import kotlin.time.Duration.Companion.seconds
  * track both summary stats and specific details of [counter]
  */
 @HiltViewModel
-class CounterDetailsViewModel @Inject constructor(
+class CounterHistoryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCounterFlow: GetCounterFlow,
@@ -80,7 +80,7 @@ class CounterDetailsViewModel @Inject constructor(
     /**
      * Counter being examined.
      *
-     * When no valid [UiCounter] can be found from [COUNTER_ID], start a new one?
+     * When no valid [UiCounter] can be found from [CounterHistoryNode.COUNTER_ID], start a new one?
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val counter: StateFlow<UiCounter> = counterIdState
