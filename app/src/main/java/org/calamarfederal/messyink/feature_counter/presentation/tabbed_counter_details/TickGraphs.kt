@@ -1,17 +1,15 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
@@ -23,9 +21,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,11 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
@@ -49,7 +42,7 @@ import kotlinx.datetime.toInstant
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
-import org.calamarfederal.messyink.common.compose.relativeTime
+import org.calamarfederal.messyink.common.compose.localToString
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
@@ -162,10 +155,10 @@ private fun DomainBoundsAndPicker(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         TextButton(onClick = { setDomainMin = true }) {
-            Text(domain.start.relativeTime().toString())
+            Text(domain.start.localToString())
         }
         TextButton(onClick = { setDomainMax = true }) {
-            Text(text = domain.endInclusive.relativeTime().toString())
+            Text(domain.endInclusive.localToString())
         }
     }
     TimeDomainPicker(
@@ -202,9 +195,8 @@ private fun DomainDropdownMenu(
             Icon(
                 if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 null,
-                modifier = Modifier.size(ButtonDefaults.IconSize)
             )
-//                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(domainLabel)
         }
         DropdownMenu(

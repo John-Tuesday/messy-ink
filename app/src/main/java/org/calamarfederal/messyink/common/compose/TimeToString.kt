@@ -1,86 +1,89 @@
 package org.calamarfederal.messyink.common.compose
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.formatWithSkeleton
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.calamarfederal.messyink.common.compose.TimeUnit.DAYS
-import org.calamarfederal.messyink.common.compose.TimeUnit.EMPTY
-import org.calamarfederal.messyink.common.compose.TimeUnit.ERR
-import org.calamarfederal.messyink.common.compose.TimeUnit.HOURS
-import org.calamarfederal.messyink.common.compose.TimeUnit.MINUTES
-import org.calamarfederal.messyink.common.compose.TimeUnit.MONTHS
-import org.calamarfederal.messyink.common.compose.TimeUnit.SECONDS
-import org.calamarfederal.messyink.common.compose.TimeUnit.SUBSECOND
-import org.calamarfederal.messyink.common.compose.TimeUnit.WEEKS
-import org.calamarfederal.messyink.common.compose.TimeUnit.YEARS
-import org.calamarfederal.messyink.feature_counter.di.CurrentTime
-import org.calamarfederal.messyink.feature_counter.di.CurrentTimeZone
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 /**
- * Localize Time to string, but
- * - [seconds] if less than 1 [minutes] from [now]
- * - [minutes] if less than 1 [hours] from [now]
- * - [hours] if less than 1 [days] from [now]
- * - otherwise use implementation provided by [toLocalDateTime]
+ * to string with the order Day Month Year
+ *
+ * am I using [formatWithSkeleton] wrong? use this until I figure it out
  */
-fun Instant.toDbgString(
-    tz: TimeZone = CurrentTimeZoneGetter(),
-    now: Instant = CurrentTimeGetter(),
+fun Instant.localDateToString(
+    year: Boolean = false,
+    monthName: Boolean = true,
+    separator: String = if (monthName) " " else "-",
 ): String {
-    val local = toLocalDateTime(tz)
-    val diff = now.minus(this).absoluteValue
-    if (1.minutes > diff) return "${diff.inWholeSeconds} seconds"
-    if (1.hours > diff) return "${diff.inWholeMinutes} minutes"
-    if (1.days > diff) return "${diff.inWholeHours} hours"
-    return local.toString()
-}
+    val dt = toLocalDateTime(CurrentTimeZoneGetter())
+    return buildString {
+        append(dt.dayOfMonth)
+        append(separator)
 
-enum class TimeUnit {
-    ERR, EMPTY, SUBSECOND, SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS,
-}
+        if (monthName)
+            append(dt.month.name.run { take(1).uppercase() + drop(1).lowercase() })
+        else
+            append(dt.monthNumber)
 
-data class TimeUnitValue(
-    val value: Long?,
-    val unit: TimeUnit,
-) {
-    override fun toString(): String {
-        when {
-            unit == EMPTY                -> return "Empty"
-            unit == SUBSECOND            -> return "right now"
-            unit == ERR || value == null -> return "ERROR"
-        }
-        return "$value ${
-            when (unit) {
-                SECONDS -> "s"
-                MINUTES -> "m"
-                HOURS   -> "h"
-                DAYS    -> "d"
-                WEEKS   -> "w"
-                MONTHS  -> "mo"
-                YEARS   -> "y"
-                else    -> return "ERROR"
-            }
-        }"
+        if (year) append(separator).append(dt.year)
     }
 }
 
-fun Duration.biggestTimeValue(): TimeUnitValue = when {
-    !isFinite()          -> TimeUnitValue(null, ERR)
-    inWholeDays != 0L    -> TimeUnitValue(inWholeDays, DAYS)
-    inWholeMinutes != 0L -> TimeUnitValue(inWholeMinutes, MINUTES)
-    inWholeSeconds != 0L -> TimeUnitValue(inWholeSeconds, SECONDS)
-    else                 -> TimeUnitValue(null, SUBSECOND)
+/**
+ * convert to string using a 24 hr clock, localized with [CurrentTimeZoneGetter]
+ *
+ * am I using [formatWithSkeleton] wrong? use this until I figure it out
+ */
+fun Instant.localTimeToString(second: Boolean = false, separator: String = ":"): String {
+    val dt = toLocalDateTime(CurrentTimeZoneGetter())
+    return buildString {
+        if (dt.hour < 10) append("0")
+        append(dt.hour)
+        append(separator)
+        if (dt.minute < 10) append("0")
+        append(dt.minute)
+        if (second) {
+            append(separator)
+            if (dt.second < 10) append("0")
+            append(dt.second)
+        }
+    }
 }
 
-fun Instant.relativeTime(origin: Instant = CurrentTimeGetter()) = minus(origin).biggestTimeValue()
+/**
+ * convenience function equivalent to [localToString] [divider] [localTimeToString]
+ *
+ * am I using [formatWithSkeleton] wrong? use this until I figure it out
+ */
+fun Instant.localToString(
+    divider: String = " ",
+    year: Boolean = false,
+    second: Boolean = false,
+): String = "${localDateToString(year)}$divider${localTimeToString(second)}"
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//fun Instant.formatToString(
+//    second: Boolean = false,
+//    minute: Boolean = true,
+//    hour: Boolean = true,
+//    day: Boolean = true,
+//    month: Boolean = false,
+//    year: Boolean = false,
+//    preferNames: Boolean = false,
+//): String = formatWithSkeleton(
+//    epochSeconds,
+//    buildString {
+//        if (year) append("yy")
+//
+//        if (month && !preferNames) append("M")
+//        else if (month && preferNames) append("MMMM")
+//
+//        if (day) append("d")
+//
+//        if (hour && !preferNames) append("h")
+//        else if (hour && preferNames) append("j")
+//
+//        if (minute) append("m")
+//
+//        if (second) append("s")
+//    },
+//)
