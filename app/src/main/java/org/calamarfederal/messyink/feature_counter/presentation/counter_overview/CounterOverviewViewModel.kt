@@ -15,9 +15,7 @@ import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
-import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter

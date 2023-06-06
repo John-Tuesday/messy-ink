@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

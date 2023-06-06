@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -17,8 +16,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
@@ -28,7 +27,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 

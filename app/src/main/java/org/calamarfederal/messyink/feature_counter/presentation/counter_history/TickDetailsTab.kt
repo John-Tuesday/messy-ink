@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -52,7 +52,7 @@ import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun TickDetailsLayout(
+internal fun TickLogsLayout(
     ticks: List<UiTick>,
     onDelete: (Long) -> Unit,
     onEdit: (Long) -> Unit,
@@ -178,8 +178,8 @@ private fun TickOptions(
 
 @Preview
 @Composable
-private fun TickHistoryPreview() {
-    TickDetailsLayout(
+private fun TickLogsScreenPreview() {
+    TickLogsLayout(
         ticks = previewUiTicks(1L).take(15).toList(),
         onDelete = {},
         onEdit = {},

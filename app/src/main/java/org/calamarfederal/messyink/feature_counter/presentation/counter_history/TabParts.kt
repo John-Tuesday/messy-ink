@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * - tab display names
  * - index of each tab
  */
-internal enum class CounterDetailsTab(
+internal enum class CounterHistoryTab(
     val displayName: String,
     private val activeIcon: () -> ImageVector,
     private val inactiveIcon: () -> ImageVector,
@@ -32,8 +32,8 @@ internal enum class CounterDetailsTab(
         activeIcon = { Icons.Filled.Analytics },
         inactiveIcon = { Icons.Outlined.Analytics }
     ),
-    TickDetails(
-        displayName = "Tick Details",
+    TickLogs(
+        displayName = "Tick Logs",
         activeIcon = { Icons.Filled.DataExploration },
         inactiveIcon = { Icons.Outlined.DataExploration },
     ),
@@ -66,33 +66,33 @@ internal enum class CounterDetailsTab(
          *
          * convenience method for: `CounterDetailsTab.values().size`
          */
-        val size: Int get() = CounterDetailsTab.values().size
+        val size: Int get() = CounterHistoryTab.values().size
 
         /**
-         * Get the corresponding [CounterDetailsTab] from [index] or `null`
+         * Get the corresponding [CounterHistoryTab] from [index] or `null`
          */
-        fun fromIndexOrNull(index: Int): CounterDetailsTab? = when (index) {
+        fun fromIndexOrNull(index: Int): CounterHistoryTab? = when (index) {
             TickGraphs.index -> TickGraphs
-            TickDetails.index -> TickDetails
-            else -> null
+            TickLogs.index   -> TickLogs
+            else             -> null
         }
 
         /**
-         * Get the corresponding [CounterDetailsTab] from [index] or throw [IndexOutOfBoundsException]
+         * Get the corresponding [CounterHistoryTab] from [index] or throw [IndexOutOfBoundsException]
          */
-        fun fromIndex(index: Int): CounterDetailsTab = fromIndexOrNull(index)
+        fun fromIndex(index: Int): CounterHistoryTab = fromIndexOrNull(index)
             ?: throw (IndexOutOfBoundsException("index: $index does not map to a valid object"))
     }
 }
 
 @Composable
-internal fun CounterDetailsNavBar(
+internal fun CounterHistoryNavBar(
     selectedIndex: Int,
     onChangeSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavigationBar(modifier = modifier) {
-        for (tab in CounterDetailsTab.values()) {
+        for (tab in CounterHistoryTab.values()) {
             NavBarItem(
                 tab = tab,
                 isSelected = selectedIndex == tab.index,
@@ -104,7 +104,7 @@ internal fun CounterDetailsNavBar(
 
 @Composable
 private fun RowScope.NavBarItem(
-    tab: CounterDetailsTab,
+    tab: CounterHistoryTab,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

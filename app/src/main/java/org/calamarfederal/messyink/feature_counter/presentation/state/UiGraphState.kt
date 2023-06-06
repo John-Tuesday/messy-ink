@@ -23,7 +23,7 @@ data class TimeDomain(
         endInclusive = domain.endInclusive
     )
 
-    companion object {}
+    companion object
 }
 
 /**

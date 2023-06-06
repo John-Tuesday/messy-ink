@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
@@ -23,13 +22,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.ImeAction.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**

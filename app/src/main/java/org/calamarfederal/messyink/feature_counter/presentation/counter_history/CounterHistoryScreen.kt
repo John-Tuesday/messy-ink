@@ -1,12 +1,7 @@
-package org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,17 +37,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickDetails
-import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsTab.TickGraphs
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 
 /**
- * # Tabbed Counter Details Screen
+ * # Counter History and Details Screen
  *
  * ## focus on [counter] and display its details at various levels of depth, as well as
  * ## offer tabs for basic interaction
@@ -65,7 +59,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_d
     ExperimentalMaterial3Api::class
 )
 @Composable
-fun TabbedCounterDetailsScreen(
+fun CounterHistoryScreen(
     counter: UiCounter,
     ticks: List<UiTick>,
     tickSum: Double?,
@@ -81,7 +75,7 @@ fun TabbedCounterDetailsScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState(pageCount = CounterDetailsTab::size)
+    val pagerState = rememberPagerState(pageCount = CounterHistoryTab::size)
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
     val tabScope = rememberCoroutineScope()
 
@@ -99,14 +93,14 @@ fun TabbedCounterDetailsScreen(
     Scaffold(
         modifier = modifier.nestedScroll(topBarScrollBehavior.nestedScrollConnection),
         topBar = {
-            TabbedTopAppBar(
+            HistoryTopBar(
                 selectedIndex = currentIndex,
                 onNavigateUp = onNavigateUp,
                 scrollBehavior = topBarScrollBehavior,
             )
         },
         bottomBar = {
-            CounterDetailsNavBar(
+            CounterHistoryNavBar(
                 selectedIndex = currentIndex,
                 onChangeSelect = { tabScope.launch { pagerState.animateScrollToPage(it) } },
             )
@@ -150,7 +144,7 @@ private fun TabbedLayout(
     changeGraphDomain: (TimeDomain) -> Unit,
     graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
-    state: PagerState = rememberPagerState(pageCount = CounterDetailsTab::size),
+    state: PagerState = rememberPagerState(pageCount = CounterHistoryTab::size),
     userScrollEnabled: Boolean = false,
 ) {
     HorizontalPager(
@@ -165,14 +159,14 @@ private fun TabbedLayout(
         flingBehavior = PagerDefaults.flingBehavior(state = state),
         key = { it },
         pageContent = { index ->
-            when (CounterDetailsTab.fromIndex(index)) {
-                TickDetails -> TickDetailsLayout(
+            when (CounterHistoryTab.fromIndex(index)) {
+                TickLogs -> TickLogsLayout(
                     ticks = ticks,
                     onDelete = onDeleteTick,
                     onEdit = {},
                 )
 
-                TickGraphs  -> TicksOverTimeLayout(
+                TickGraphs -> TicksOverTimeLayout(
                     ticks = ticks,
                     range = graphRange,
                     domain = graphDomain,
@@ -187,7 +181,7 @@ private fun TabbedLayout(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TabbedTopAppBar(
+private fun HistoryTopBar(
     selectedIndex: Int,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -196,7 +190,7 @@ private fun TabbedTopAppBar(
     TopAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
-        title = { Text(CounterDetailsTab.fromIndex(selectedIndex).displayName) },
+        title = { Text(CounterHistoryTab.fromIndex(selectedIndex).displayName) },
         navigationIcon = {
             IconButton(onClick = onNavigateUp) {
                 Icon(Icons.Filled.ArrowBack, "navigate up")
@@ -207,7 +201,7 @@ private fun TabbedTopAppBar(
 
 @Preview
 @Composable
-private fun TabbedPreview() {
+private fun CounterHistoryScreenPreview() {
     val counter = previewUiCounters.first()
     var tickSum: Double? = null
     val ticks = previewUiTicks(counter.id).take(7).apply {
@@ -215,7 +209,7 @@ private fun TabbedPreview() {
     }.toList()
     val range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount }
 
-    TabbedCounterDetailsScreen(
+    CounterHistoryScreen(
         counter = counter,
         ticks = ticks,
         tickSum = tickSum,

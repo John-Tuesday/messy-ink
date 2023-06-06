@@ -3,10 +3,8 @@ package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,10 +31,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion.LongPress
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.KeyboardType.Companion
 import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.common.compose.MoreClickButton
 import org.calamarfederal.messyink.common.compose.MoreClickFilledTonalButton
@@ -49,7 +43,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.game_counter.Tic
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 
 internal enum class TickButton {
-    Primary {},
+    Primary,
     Secondary
 }
 

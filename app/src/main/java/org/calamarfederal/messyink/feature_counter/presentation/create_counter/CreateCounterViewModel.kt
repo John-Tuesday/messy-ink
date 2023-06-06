@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterAsSupportOrNull
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
@@ -27,7 +25,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterS
 import javax.inject.Inject
 
 /**
- * # Create or Edit a [UiCounter]
+ * # Create or Edit a Counter
  * ## provide input feedback and validation; wait for confirmation before saving changes
  *
  * On Init
