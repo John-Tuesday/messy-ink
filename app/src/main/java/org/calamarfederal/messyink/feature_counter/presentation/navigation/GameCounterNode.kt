@@ -17,7 +17,8 @@ import org.calamarfederal.messyink.feature_counter.presentation.navigation.Creat
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 
 /**
- * # Game Counter Navigation Node
+ * # Game Mode Node
+ * ## designed to track stats in games like player health in MtG
  */
 internal object GameCounterNode : CounterNavNode {
     private const val BASE_ROUTE = "game_counter"

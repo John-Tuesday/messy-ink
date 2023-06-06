@@ -12,6 +12,10 @@ import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.CounterDetailsViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.tabbed_counter_details.TabbedCounterDetailsScreen
 
+/**
+ * # History and Details
+ * ## of a Counter, including its ticks
+ */
 internal object CounterHistoryNode : CounterNavNode {
     private const val BASE_ROUTE = "counter_history"
 

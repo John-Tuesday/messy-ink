@@ -27,9 +27,16 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterS
 import javax.inject.Inject
 
 /**
- * Create (or edit) a UiCounter using [UiCounterSupport]
+ * # Create or Edit a [UiCounter]
+ * ## provide input feedback and validation; wait for confirmation before saving changes
  *
- * if provided an id, it will start with those values, and try to save to the same id
+ * On Init
+ * 1. get counter id from [savedStateHandle] using [CreateCounterNode.INIT_COUNTER_ID]
+ * 2. use the id to load the initial counter state
+ * 3. use the id for all future updates: effectively Edit Mode
+ * 4. If id is `null` or the returned counter is `null` or invalid, Create a counter when changes are saved
+ *
+ * in other words, if provided an id, it will start with those values, and try to save to the same id
  * otherwise it will create a new Counter
  */
 @HiltViewModel
@@ -52,7 +59,6 @@ class CreateCounterViewModel @Inject constructor(
 
     init {
         val id: Long? = savedStateHandle[CreateCounterNode.INIT_COUNTER_ID]
-        println(id)
         if (id != null && id != NOID)
             ioScope.launch { _getCounter(id)?.let { _counterSupport.value = it } }
 
@@ -74,14 +80,18 @@ class CreateCounterViewModel @Inject constructor(
         _counterSupport.update { it.copy(nameInput = name) }
     }
 
-
     /**
-     * Reset the working copy
+     * resets [counterSupport] to blank including its id
      */
     fun discardCounter() {
         _counterSupport.update { UiCounterSupport() }
     }
 
+    /**
+     * Commit Update to Counter or Create Counter if it doesn't exist
+     *
+     * makes no checks for success, and discards the resulting counter
+     */
     fun finalizeCounter() {
         ioScope.launch {
             val support = counterSupport.value

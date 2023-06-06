@@ -52,11 +52,17 @@ import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
+/**
+ * Counter details for use in a (vertical) list
+ *
+ * Provide summary details and easy access to common features
+ *
+ * Having a hard time settling on the exact features to include and how it should be presented
+ */
 @Composable
 internal fun CounterListCard(
     counter: UiCounter,
     amount: Double?,
-//    expanded: Boolean,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
     onViewInFull: () -> Unit,
@@ -87,14 +93,6 @@ internal fun CounterListCard(
                     modifier = Modifier.alignByBaseline()
                 )
             }
-//            AnimatedVisibility(
-//                visible = expanded,
-//                enter = fadeIn() + expandVertically(),
-//                exit = fadeOut() + shrinkVertically(),
-//            ) {
-//                Column {
-//                }
-//            }
             IncButtons(
                 onIncrement = onIncrement,
                 onDecrement = onDecrement,
@@ -114,6 +112,7 @@ internal fun CounterListCard(
         }
     }
 }
+
 @Composable
 private fun RowScope.ExtendedOptions(
     onSettings: () -> Unit,
@@ -188,7 +187,6 @@ private fun PreviewCounterListCard() {
             onViewInFull = {},
             onEditCounter = {},
             onHistory = {},
-//            expanded = true,
         )
     }
 }

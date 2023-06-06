@@ -33,9 +33,10 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiC
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
- * # Create a new Counter
+ * # Create or Edit [UiCounter]
+ * ## Intended to be an m3 implementation of a Fullscreen Dialog
  *
- * Designed to be used as a full-screen Dialog
+ * [onCancel] should discard changes and [onDone] should save them.
  */
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +74,11 @@ fun CreateCounterScreen(
     }
 }
 
+/**
+ * Layout of all user-controlled  [UiCounter] attributes
+ *
+ * currently only [UiCounter.name]
+ */
 @Composable
 private fun CreateCounterLayout(
     counterSupport: UiCounterSupport,
@@ -121,7 +127,6 @@ private fun EditTitleField(
             placeholder = {
                 Text(
                     text = title,
-//                        style = MaterialTheme.typography.titleLarge,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Light,
                 )

@@ -66,10 +66,7 @@ internal fun TicksOverTimeLayout(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             var showPointInfo by remember { mutableStateOf(false) }
 
-            /**
-             * # Graph
-             * ## Amount v Time
-             */
+//          Graph: Amount v Time
             LineGraph(
                 modifier = Modifier
                     .weight(1f)
@@ -102,21 +99,16 @@ internal fun TicksOverTimeLayout(
                 }
             )
 
-            /**
-             * ## Show current domain min and max and allow edit
-             */
+//          Show current domain min and max and allow edit
             DomainBoundsAndPicker(
                 domain = domain,
                 changeDomain = changeDomain,
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            /**
-             * ## Incomplete
-             * ## 2 value Slider to quickly adjust the domain
-             *
-             * should be bounded by and iterate through the real data points
-             */
+//             Incomplete:
+//             * 2 value Slider to quickly adjust the domain
+//             * should be bounded by and iterate through the real data points
 //            RangeSlider(
 //                value = 0f .. 1f,
 //                onValueChange = {},
@@ -128,9 +120,6 @@ internal fun TicksOverTimeLayout(
 //                modifier = Modifier.safeGesturesPadding()
 //            )
 
-            /**
-             * ## Domain Dropdown
-             */
             DomainDropdownMenu(
                 domainLabel = domain.label,
                 domainOptions = domainOptions,

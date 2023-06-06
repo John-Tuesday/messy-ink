@@ -33,9 +33,8 @@ import kotlin.time.Duration.Companion.seconds
 
 
 /**
- * # Game Counter View Model
- *
- * Design to fill the purpose of a health counter in Magic the Gathering, or any simple value
+ * # Game Mode Counter View Model
+ * ## Design to fill the purpose of a health counter in Magic the Gathering, or any simple value
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -74,7 +73,7 @@ class GameCounterViewModel @Inject constructor(
         .stateInViewModel(UiCounter(name = "<init>", id = NOID))
 
     /**
-     * Sum of all [UiTick] with parent [counter]
+     * Sum all [UiTick] of parent [counter]
      */
     val tickSum = counterIdState
         .flatMapLatest { _getTicksSumOfFlow(it) }
@@ -83,18 +82,23 @@ class GameCounterViewModel @Inject constructor(
     private val _primaryIncrement = MutableStateFlow(5.00)
 
     /**
+     * Quick and usually larger increment
+     */
+    val primaryIncrement = _primaryIncrement.asStateFlow()
+
+    /**
      * Change primary increment
      */
     fun changePrimaryIncrement(inc: Double) {
         _primaryIncrement.value = inc
     }
 
-    /**
-     * Quick Larger increment
-     */
-    val primaryIncrement = _primaryIncrement.asStateFlow()
-
     private val _secondaryIncrement = MutableStateFlow(1.00)
+
+    /**
+     * Quick and usually smaller increment
+     */
+    val secondaryIncrement = _secondaryIncrement.asStateFlow()
 
     /**
      * Change secondary increment
@@ -104,12 +108,7 @@ class GameCounterViewModel @Inject constructor(
     }
 
     /**
-     * Quick Smaller increment
-     */
-    val secondaryIncrement = _secondaryIncrement.asStateFlow()
-
-    /**
-     * change [counter] name to [name]
+     * change [counter.name][UiCounter.name] to [name]
      */
     fun onChangeName(name: String) {
         ioScope.launch { _updateCounter(counter.value.copy(name = name)) }
@@ -125,24 +124,28 @@ class GameCounterViewModel @Inject constructor(
     }
 
     /**
-     * Delete any tick owned by [counter] and modified within
+     * # Not Implemented
+     *
+     * undo last action / action group / or actions within a time period such that it can be redone
      */
     fun undoTick() {
-        ioScope.launch { _undoTicks(parentId = counterIdState.value, duration = 1.minutes) }
+        TODO("needs to implemented properly, with corresponding redo")
+//        ioScope.launch { _undoTicks(parentId = counterIdState.value, duration = 1.minutes) }
     }
 
     /**
-     * UI Callback to redo an undo if possible
+     * # Not Implemented
+     *
+     * redo last action / action group / or actions within a time period such that it can be redone
      */
     fun redoTick() {
-        println("redo")
-        TODO("needs use case")
+        TODO("needs to implemented properly, with corresponding undo")
     }
 
     /**
-     * Deletes all ticks owned by [counter]
+     * Deletes all ticks owned by [counter], then adds on ticks with [amount]
      */
     fun restartCounter(amount: Double = 0.00) {
-        ioScope.launch { _deleteTicksOf(counterIdState.value) }
+        ioScope.launch { _deleteTicksOf(counterIdState.value); addTick(amount) }
     }
 }

@@ -90,7 +90,6 @@ fun GameCounterScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GameCounterLayout(
     counter: UiCounter,
@@ -212,6 +211,9 @@ private fun CounterCenter(
     }
 }
 
+/**
+ * Currently always hidden because there is not support for Undo / Redo / Reset
+ */
 @Composable
 private fun AnimatedEditActions(
     onRedo: () -> Unit,

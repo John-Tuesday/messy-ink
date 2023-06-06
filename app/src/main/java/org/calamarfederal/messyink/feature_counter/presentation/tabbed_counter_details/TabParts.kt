@@ -14,49 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
-@Composable
-internal fun CounterDetailsNavBar(
-    selectedIndex: Int,
-    onChangeSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    NavigationBar(modifier = modifier) {
-        for (tab in CounterDetailsTab.values()) {
-            NavBarItem(
-                tab = tab,
-                isSelected = selectedIndex == tab.index,
-                onClick = { onChangeSelect(tab.index) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.NavBarItem(
-    tab: CounterDetailsTab,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    alwaysShowLabel: Boolean = true,
-) {
-    NavigationBarItem(
-        modifier = modifier,
-        alwaysShowLabel = alwaysShowLabel,
-        selected = isSelected,
-        onClick = onClick,
-        label = { Text(tab.displayName) },
-        icon = {
-            Icon(
-                if (isSelected)
-                    tab.iconActive
-                else
-                    tab.iconInactive,
-                null,
-            )
-        },
-    )
-}
-
 /**
  * # Enum containing all tabs
  *
@@ -128,3 +85,45 @@ internal enum class CounterDetailsTab(
     }
 }
 
+@Composable
+internal fun CounterDetailsNavBar(
+    selectedIndex: Int,
+    onChangeSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    NavigationBar(modifier = modifier) {
+        for (tab in CounterDetailsTab.values()) {
+            NavBarItem(
+                tab = tab,
+                isSelected = selectedIndex == tab.index,
+                onClick = { onChangeSelect(tab.index) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.NavBarItem(
+    tab: CounterDetailsTab,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    alwaysShowLabel: Boolean = true,
+) {
+    NavigationBarItem(
+        modifier = modifier,
+        alwaysShowLabel = alwaysShowLabel,
+        selected = isSelected,
+        onClick = onClick,
+        label = { Text(tab.displayName) },
+        icon = {
+            Icon(
+                if (isSelected)
+                    tab.iconActive
+                else
+                    tab.iconInactive,
+                null,
+            )
+        },
+    )
+}
