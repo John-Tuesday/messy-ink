@@ -7,11 +7,6 @@ import kotlinx.datetime.Instant
  * Convert [Instant] to a room compatible type
  */
 class TimeTypeConverters {
-//    @TypeConverter
-//    fun fromInstantToTimeStamp(instant: Instant?): Long? = instant?.toEpochMilliseconds()
-//    @TypeConverter
-//    fun fromTimestampToInstant(stamp: Long?): Instant? = stamp?.let {Instant.fromEpochMilliseconds(it) }
-
     /**
      * Unix milliseconds -- not seconds
      */
