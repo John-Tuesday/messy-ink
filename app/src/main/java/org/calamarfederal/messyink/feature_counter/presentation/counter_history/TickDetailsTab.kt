@@ -50,6 +50,9 @@ import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
 
+/**
+ * Provide a description of each tick and enable modification on long press
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun TickLogsLayout(
