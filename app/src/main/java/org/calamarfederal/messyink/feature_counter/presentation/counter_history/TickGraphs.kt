@@ -44,11 +44,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.atTime
+import kotlinx.datetime.minus
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
@@ -58,9 +65,11 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @Composable
@@ -129,46 +138,6 @@ internal fun TicksOverTimeLayout(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DomainBoundsAndPicker(
-    domain: TimeDomain,
-    domainLimits: TimeDomain,
-    changeDomain: (TimeDomain) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var openDomainPicker by remember { mutableStateOf(false) }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        TextButton(onClick = { openDomainPicker = true }) {
-            Text(domain.start.localToString())
-        }
-        TextButton(onClick = { openDomainPicker = true }) {
-            Text(domain.endInclusive.localToString())
-        }
-    }
-    if (openDomainPicker) {
-        val domainState = rememberDateRangePickerState(
-            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
-            initialSelectedEndDateMillis = domain.endInclusive.toEpochMilliseconds(),
-            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
-//            selectableDates = domainLimits,
-            selectableDates = CurrentTimeZoneGetter().let {
-                domainLimits.toLocalTimeRange().run {
-                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
-                }
-            }
-        )
-        DomainPicker(
-            state = domainState,
-            onDismiss = { openDomainPicker = false },
-            onSubmit = { openDomainPicker = false },
-        )
-    }
-}
-
 @Composable
 private fun DomainDropdownMenu(
     domainLabel: String,
@@ -202,43 +171,95 @@ private fun DomainDropdownMenu(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeDomainPicker(
-    visible: Boolean,
-    initial: LocalDateTime,
-    onCancel: () -> Unit,
-    onSubmit: (LocalDateTime) -> Unit,
+private fun DomainBoundsAndPicker(
+    domain: TimeDomain,
+    domainLimits: TimeDomain,
+    changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
+) {
+    var openDomainPicker by remember { mutableStateOf(false) }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        TextButton(onClick = { openDomainPicker = true }) {
+            Text(domain.start.localToString())
+        }
+        TextButton(onClick = { openDomainPicker = true }) {
+            Text(domain.endInclusive.localToString())
+        }
+    }
+    if (openDomainPicker) {
+        val domainState = rememberDateRangePickerState(
+            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
+            initialSelectedEndDateMillis = domain.endInclusive.toEpochMilliseconds(),
+            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
+//            selectableDates = domainLimits,
+            selectableDates = CurrentTimeZoneGetter().let {
+                domainLimits.toLocalTimeRange().run {
+                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
+                }
+            }
+        )
+        DomainDatePicker(
+            state = domainState,
+            onDismiss = { openDomainPicker = false },
+            onSubmit = {
+                openDomainPicker = false
+                changeDomain(
+                    TimeDomain(
+                        first = it.start.atStartOfDayIn(CurrentTimeZoneGetter()),
+                        second = it.endInclusive.atStartOfDayIn(CurrentTimeZoneGetter()) + 1.days,
+                    )
+                )
+
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimeDomainPicker(
+    initial: LocalTime,
+    onSubmit: (LocalTime) -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+    limit: ClosedRange<LocalTime>? = null,
     title: String = "Set Time",
     state: TimePickerState = rememberTimePickerState(
         initialHour = initial.hour,
         initialMinute = initial.minute,
     ),
 ) {
-    if (visible) {
-        AlertDialog(
-            onDismissRequest = onCancel,
-            confirmButton = {
-                TextButton(onClick = {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        confirmButton = {
+            TextButton(
+                onClick = {
                     onSubmit(
-                        LocalDateTime(
-                            date = initial.date,
-                            time = LocalTime(hour = state.hour, minute = state.minute)
+                        LocalTime(
+                            hour = state.hour,
+                            minute = state.minute
                         )
                     )
-                }) {
-                    Text("Set")
-                }
-            },
-            dismissButton = { TextButton(onClick = onCancel) { Text("Cancel") } },
-            title = { Text(title) },
-            text = {
-                TimePicker(
-                    modifier = modifier,
-                    state = state
-                )
+                },
+                enabled = limit?.contains(LocalTime(hour = state.hour, minute = state.minute))
+                    ?: true
+            ) {
+                Text("Set")
             }
-        )
-    }
+        },
+        dismissButton = { TextButton(onClick = onCancel) { Text("Cancel") } },
+        title = { Text(title) },
+        text = {
+            TimePicker(
+                modifier = modifier,
+                state = state
+            )
+        }
+    )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -250,9 +271,9 @@ private fun SelectableDates.isValidSelection(utcMilliFirst: Long?, utcMilliSecon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DomainPicker(
+private fun DomainDatePicker(
     onDismiss: () -> Unit,
-    onSubmit: () -> Unit,
+    onSubmit: (ClosedRange<LocalDate>) -> Unit,
     state: DateRangePickerState = rememberDateRangePickerState(),
 ) {
     AlertDialog(
@@ -275,7 +296,13 @@ private fun DomainPicker(
                         Icon(Icons.Filled.Close, "Close")
                     }
                     TextButton(
-                        onClick = onSubmit,
+                        onClick = {
+                            onSubmit(
+                                epochMillisToDate(state.selectedStartDateMillis!!) .. epochMillisToDate(
+                                    state.selectedEndDateMillis!!
+                                )
+                            )
+                        },
                         enabled = state.selectableDates.isValidSelection(
                             state.selectedStartDateMillis,
                             state.selectedEndDateMillis

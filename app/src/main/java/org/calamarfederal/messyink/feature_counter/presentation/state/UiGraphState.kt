@@ -5,19 +5,17 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Instant.Companion
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-//fun Instant.floor(dateTimeUnit: DateTimeUnit, timeZone: TimeZone = CurrentTimeZoneGetter()): Instant {
-//    with(toLocalDateTime(timeZone)) {
-//        when (dateTimeUnit.) {
-//
-//        }
-//    }
-//}
+fun epochMillisToDate(millis: Long, timeZone: TimeZone = CurrentTimeZoneGetter()): LocalDate =
+    Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).date
+
 
 /**
  * Domain of Time but it adheres to Kotlin spec that [start] < [endInclusive]
