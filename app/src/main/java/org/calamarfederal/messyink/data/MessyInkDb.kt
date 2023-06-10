@@ -7,11 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.Update
 import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.Note
-import org.calamarfederal.messyink.data.entity.NoteItem
 import org.calamarfederal.messyink.data.entity.TickEntity
 
-private const val DB_VERSION: Int = 10
+private const val DB_VERSION: Int = 11
 
 /**
  * [RoomDatabase] for [CounterEntity] and [Note] types and related
@@ -19,18 +17,12 @@ private const val DB_VERSION: Int = 10
 @Database(
     version = DB_VERSION,
     entities = [
-        Note::class,
-        NoteItem::class,
         CounterEntity::class,
         TickEntity::class,
     ],
     exportSchema = false,
 )
 abstract class MessyInkDb : RoomDatabase() {
-    /**
-     * Dao for [Note] feature
-     */
-    abstract fun viewAllDoa(): ViewAllDao
 
     /**
      * Dao for [CounterEntity] feature
