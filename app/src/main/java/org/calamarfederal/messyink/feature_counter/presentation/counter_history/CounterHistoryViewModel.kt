@@ -31,10 +31,11 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
+import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainLambdaTemplate
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
@@ -119,14 +120,17 @@ class CounterHistoryViewModel @Inject constructor(
      */
     val graphDomain = _graphDomain.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val graphDomainLimits =
+        ticks.mapLatest { ticks ->
+            ticks.minAndMaxOfOrNull { it.timeForData }?.let { TimeDomain(it) } ?: TimeDomain.AllTime
+        }.stateInViewModel(TimeDomain.AllTime)
+
     /**
      * All (and only?) quick options to change [graphDomain]
      */
     val graphDomainOptions = listOf(
-        TimeDomainAgoTemplate.YearAgo,
-        TimeDomainAgoTemplate.MonthAgo,
-        TimeDomainAgoTemplate.WeekAgo,
-        TimeDomainAgoTemplate.DayAgo,
+        TimeDomainAgoTemplate("Day", 1.days),
         TimeDomainLambdaTemplate(
             label = "Fit",
             domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },

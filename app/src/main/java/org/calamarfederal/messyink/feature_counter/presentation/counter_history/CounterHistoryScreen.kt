@@ -35,8 +35,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.calamarfederal.messyink.feature_counter.presentation.state.AbsoluteAllTime
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -44,6 +42,8 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiC
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
+import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 
 /**
  * # Counter History and Details Screen
@@ -66,6 +66,7 @@ fun CounterHistoryScreen(
     tickAverage: Double?,
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
+    graphDomainLimits: TimeDomain,
     graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
     onAddTick: (Double) -> Unit,
@@ -117,6 +118,7 @@ fun CounterHistoryScreen(
             state = pagerState,
             onCounterChange = onCounterChange,
             graphDomain = graphDomain,
+            graphDomainLimits = graphDomainLimits,
             graphDomainOptions = graphDomainOptions,
             changeGraphDomain = changeGraphDomain,
             graphRange = graphRange,
@@ -140,6 +142,7 @@ private fun TabbedLayout(
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
     graphDomain: TimeDomain,
+    graphDomainLimits: TimeDomain,
     graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
     graphRange: ClosedRange<Double>,
@@ -170,6 +173,7 @@ private fun TabbedLayout(
                     ticks = ticks,
                     range = graphRange,
                     domain = graphDomain,
+                    domainLimits = graphDomainLimits,
                     domainOptions = graphDomainOptions,
                     changeDomain = changeGraphDomain,
                 )
@@ -215,7 +219,8 @@ private fun CounterHistoryScreenPreview() {
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
         graphRange = range,
-        graphDomain = TimeDomain.AbsoluteAllTime,
+        graphDomain = TimeDomain.AllTime,
+        graphDomainLimits = TimeDomain.AllTime,
         graphDomainOptions = listOf(),
         changeGraphDomain = {},
         onAddTick = {},

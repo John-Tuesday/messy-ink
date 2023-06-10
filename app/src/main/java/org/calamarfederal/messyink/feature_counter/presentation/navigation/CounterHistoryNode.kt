@@ -46,6 +46,7 @@ internal object CounterHistoryNode : CounterNavNode {
             val tickAverage by viewModel.tickAverage.collectAsState()
             val graphRange by viewModel.graphRange.collectAsState()
             val graphDomain by viewModel.graphDomain.collectAsState()
+            val graphDomainLimits by viewModel.graphDomainLimits.collectAsState()
             val graphDomainOptions = viewModel.graphDomainOptions
 
             CounterHistoryScreen(
@@ -55,6 +56,7 @@ internal object CounterHistoryNode : CounterNavNode {
                 tickAverage = tickAverage,
                 graphRange = graphRange,
                 graphDomain = graphDomain,
+                graphDomainLimits = graphDomainLimits,
                 graphDomainOptions = graphDomainOptions.toList(),
                 changeGraphDomain = { viewModel.changeGraphDomain(it) },
                 onAddTick = viewModel::addTick,

@@ -10,22 +10,29 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,20 +43,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
 import org.calamarfederal.messyink.common.compose.localToString
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
+import kotlin.time.Duration.Companion.days
 
 
 @Composable
@@ -57,6 +68,7 @@ internal fun TicksOverTimeLayout(
     ticks: List<UiTick>,
     range: ClosedRange<Double>,
     domain: TimeDomain,
+    domainLimits: TimeDomain,
     domainOptions: List<TimeDomainTemplate>,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
@@ -101,27 +113,14 @@ internal fun TicksOverTimeLayout(
 
 //          Show current domain min and max and allow edit
             DomainBoundsAndPicker(
-                domain = domain,
+                domain = TimeDomain(domain),
+                domainLimits = domainLimits,
                 changeDomain = changeDomain,
                 modifier = Modifier.fillMaxWidth(),
             )
 
-//             Incomplete:
-//             * 2 value Slider to quickly adjust the domain
-//             * should be bounded by and iterate through the real data points
-//            RangeSlider(
-//                value = 0f .. 1f,
-//                onValueChange = {},
-//                enabled = false,
-//                colors = SliderDefaults.colors(
-//                    thumbColor = MaterialTheme.colorScheme.tertiary,
-//                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
-//                ),
-//                modifier = Modifier.safeGesturesPadding()
-//            )
-
             DomainDropdownMenu(
-                domainLabel = domain.label,
+                domainLabel = "Domain",
                 domainOptions = domainOptions,
                 onClick = { changeDomain(it.domain()) },
                 modifier = Modifier.align(Alignment.End),
@@ -134,41 +133,40 @@ internal fun TicksOverTimeLayout(
 @Composable
 private fun DomainBoundsAndPicker(
     domain: TimeDomain,
+    domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var setDomainMin by remember { mutableStateOf(false) }
-    var setDomainMax by remember { mutableStateOf(false) }
+    var openDomainPicker by remember { mutableStateOf(false) }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        TextButton(onClick = { setDomainMin = true }) {
+        TextButton(onClick = { openDomainPicker = true }) {
             Text(domain.start.localToString())
         }
-        TextButton(onClick = { setDomainMax = true }) {
+        TextButton(onClick = { openDomainPicker = true }) {
             Text(domain.endInclusive.localToString())
         }
     }
-    TimeDomainPicker(
-        visible = setDomainMax || setDomainMin,
-        initial = with(CurrentTimeZoneGetter()) {
-            if (setDomainMax)
-                domain.endInclusive.toLocalDateTime()
-            else
-                domain.start.toLocalDateTime()
-        },
-        onCancel = { setDomainMax = false; setDomainMin = false },
-        onSubmit = {
-            val bound = it.toInstant(CurrentTimeZoneGetter())
-            if (setDomainMax)
-                changeDomain(domain.copy(endInclusive = bound))
-            else
-                changeDomain(domain.copy(start = bound))
-            setDomainMax = false
-            setDomainMin = false
-        },
-    )
+    if (openDomainPicker) {
+        val domainState = rememberDateRangePickerState(
+            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
+            initialSelectedEndDateMillis = domain.endInclusive.toEpochMilliseconds(),
+            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
+//            selectableDates = domainLimits,
+            selectableDates = CurrentTimeZoneGetter().let {
+                domainLimits.toLocalTimeRange().run {
+                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
+                }
+            }
+        )
+        DomainPicker(
+            state = domainState,
+            onDismiss = { openDomainPicker = false },
+            onSubmit = { openDomainPicker = false },
+        )
+    }
 }
 
 @Composable
@@ -243,21 +241,79 @@ private fun TimeDomainPicker(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+private fun SelectableDates.isValidSelection(utcMilliFirst: Long?, utcMilliSecond: Long?): Boolean {
+    return isSelectableDate(utcMilliFirst ?: return false) && isSelectableDate(
+        utcMilliSecond ?: return false
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DomainPicker(
+    onDismiss: () -> Unit,
+    onSubmit: () -> Unit,
+    state: DateRangePickerState = rememberDateRangePickerState(),
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier
+            .fillMaxSize()
+            .safeGesturesPadding(),
+    ) {
+        Surface {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Filled.Close, "Close")
+                    }
+                    TextButton(
+                        onClick = onSubmit,
+                        enabled = state.selectableDates.isValidSelection(
+                            state.selectedStartDateMillis,
+                            state.selectedEndDateMillis
+                        )
+                    ) {
+                        Text(text = "Save")
+                    }
+                }
+                DateRangePicker(
+                    state = state,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun TickAmountOverTimePreview() {
     MessyInkTheme {
         Surface {
             val ticks = previewUiTicks(1L).take(10).toList()
-            val domain = TimeDomain(
-                domain = ticks.last().timeForData .. ticks.first().timeForData,
-                label = "Squeeze"
-            )
+            val domain = TimeDomain(ticks.last().timeForData .. ticks.first().timeForData)
             TicksOverTimeLayout(
                 ticks = ticks,
                 range = ticks.first().amount .. ticks.last().amount,
                 domain = domain,
-                domainOptions = TimeDomainAgoTemplate.Defaults,
+                domainLimits = with(CurrentTimeZoneGetter()) {
+                    TimeDomain(
+                        domain.start.toLocalDateTime().date.atStartOfDayIn(this),
+                        domain.endInclusive.toLocalDateTime().date.atStartOfDayIn(this)
+                    )
+                },
+                domainOptions = listOf(
+                    TimeDomainAgoTemplate("Day", 1.days),
+                    TimeDomainAgoTemplate("Week", 7.days),
+                ),
                 changeDomain = {},
             )
         }

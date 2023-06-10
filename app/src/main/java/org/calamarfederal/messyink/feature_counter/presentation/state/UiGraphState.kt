@@ -1,40 +1,63 @@
 package org.calamarfederal.messyink.feature_counter.presentation.state
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SelectableDates
+import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
+import kotlinx.datetime.TimeZone
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
+import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+
+//fun Instant.floor(dateTimeUnit: DateTimeUnit, timeZone: TimeZone = CurrentTimeZoneGetter()): Instant {
+//    with(toLocalDateTime(timeZone)) {
+//        when (dateTimeUnit.) {
+//
+//        }
+//    }
+//}
 
 /**
- * # Domain of an X vs Time graph
+ * Domain of Time but it adheres to Kotlin spec that [start] < [endInclusive]
  */
-data class TimeDomain(
-    /**
-     * Name for UI
-     */
-    val label: String,
-    override val start: Instant,
-    override val endInclusive: Instant,
-) : ClosedRange<Instant> {
-    constructor(label: String, domain: ClosedRange<Instant>) : this(
-        label = label,
-        start = domain.start,
-        endInclusive = domain.endInclusive
-    )
+@Stable
+@OptIn(ExperimentalMaterial3Api::class)
+class TimeDomain(first: Instant, second: Instant) : ClosedRange<Instant>, SelectableDates {
+    constructor(other: ClosedRange<Instant>) : this(other.start, other.endInclusive)
+
+    override fun equals(other: Any?): Boolean =
+        other is TimeDomain && start == other.start && endInclusive == other.endInclusive
+
+    override val start: Instant = minOf(first, second)
+    override val endInclusive: Instant = maxOf(first, second)
+
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+        utcTimeMillis.milliseconds.inWholeDays in (start.toEpochMilliseconds().milliseconds.inWholeDays .. endInclusive.toEpochMilliseconds().milliseconds.inWholeDays)
+
+    override fun isSelectableYear(year: Int): Boolean = with(CurrentTimeZoneGetter()) {
+        year in start.toLocalDateTime().year .. endInclusive.toLocalDateTime().year
+    }
+
+    fun toLocalTimeRange(timeZone: TimeZone = CurrentTimeZoneGetter()) = with(timeZone) {
+        start.toLocalDateTime() .. endInclusive.toLocalDateTime()
+    }
+
+    override fun hashCode(): Int {
+        var result = start.hashCode()
+        result = 31 * result + endInclusive.hashCode()
+        return result
+    }
 
     companion object
 }
 
 /**
- * Domain spanning all possible representable time
+ * Widest Possible range of time
  */
-val TimeDomain.Companion.AbsoluteAllTime: TimeDomain
-    get() = TimeDomain(
-        start = Instant.DISTANT_PAST,
-        endInclusive = Instant.DISTANT_FUTURE,
-        label = "Absolute All Time",
-    )
+val TimeDomain.Companion.AllTime: TimeDomain
+    get() = TimeDomain(Instant.DISTANT_PAST, Companion.DISTANT_FUTURE)
 
 /**
  * Provide quick, adaptable options to set domain
@@ -49,12 +72,6 @@ interface TimeDomainTemplate {
      * build/get the domain
      */
     fun domain(): TimeDomain
-
-    /**
-     * auto use the label for the template for the domain
-     */
-    operator fun TimeDomain.Companion.invoke(domain: ClosedRange<Instant>) =
-        TimeDomain(label = label, domain = domain)
 }
 
 /**
@@ -74,44 +91,6 @@ class TimeDomainAgoTemplate(
     override val label: String,
     private val duration: Duration,
 ) : TimeDomainTemplate {
-    override fun domain() = CurrentTimeGetter().let {
-        TimeDomain(
-            endInclusive = it,
-            start = it - duration,
-            label = label
-        )
-    }
-
-    companion object {
-        /**
-         * 365 days ago until now
-         */
-        val YearAgo get() = TimeDomainAgoTemplate("Year ago", 365.days)
-
-        /**
-         * 30 days ago until now
-         */
-        val MonthAgo get() = TimeDomainAgoTemplate("Month ago", 30.days)
-
-        /**
-         * 7 days ago until now
-         */
-        val WeekAgo get() = TimeDomainAgoTemplate("Week ago", 7.days)
-
-        /**
-         * 1 days ago until now
-         */
-        val DayAgo get() = TimeDomainAgoTemplate("Day ago", 1.days)
-
-        /**
-         * 1 hours ago until now
-         */
-        val HourAgo get() = TimeDomainAgoTemplate("Hour ago", 1.hours)
-
-        /**
-         * All of the predefined defaults
-         */
-        val Defaults = listOf(YearAgo, MonthAgo, DayAgo, HourAgo)
-    }
+    override fun domain() = CurrentTimeGetter().let { TimeDomain((it - duration) .. it) }
 }
 
