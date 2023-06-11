@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Ballot
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.More
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,23 +50,23 @@ internal fun CounterOptions(
                     modifier = Modifier.clickable(onClick = onGameMode),
                 )
                 ListItem(
-                    headlineContent = { Text("Details") },
-                    leadingContent = { Icon(Filled.More, "show details") },
+                    headlineContent = { Text("History") },
+                    leadingContent = { Icon(Filled.History, "show details") },
                     modifier = Modifier.clickable(onClick = onDetails),
+                )
+                ListItem(
+                    headlineContent = { Text("Clear All Ticks") },
+                    leadingContent = { Icon(Filled.ClearAll, "clear all ticks") },
+                    modifier = Modifier.clickable(onClick = onClear),
                 )
                 Divider()
                 ListItem(
-                    headlineContent = { Text("Edit") },
+                    headlineContent = { Text("Edit Counter") },
                     leadingContent = { Icon(Filled.Edit, "edit counter") },
                     modifier = Modifier.clickable(onClick = onEdit),
                 )
                 ListItem(
-                    headlineContent = { Text("Clear") },
-                    leadingContent = { Icon(Filled.ClearAll, "clear all ticks") },
-                    modifier = Modifier.clickable(onClick = onClear),
-                )
-                ListItem(
-                    headlineContent = { Text("Delete") },
+                    headlineContent = { Text("Delete Counter") },
                     leadingContent = { Icon(Filled.DeleteForever, "delete counter") },
                     modifier = Modifier.clickable(onClick = onDelete),
                 )
