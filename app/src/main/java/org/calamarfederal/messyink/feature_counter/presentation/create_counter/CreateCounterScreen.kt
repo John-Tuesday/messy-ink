@@ -16,8 +16,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -88,6 +92,8 @@ private fun CreateCounterLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        val titleFocusRequester = remember { FocusRequester() }
+
         EditTitleField(
             title = counterSupport.nameInput,
             titleInput = counterSupport.nameInput,
@@ -95,9 +101,12 @@ private fun CreateCounterLayout(
             onDone = { if (!counterSupport.error) onDone() },
             isError = counterSupport.nameError,
             helpText = counterSupport.nameHelp,
+            focusRequester = titleFocusRequester,
         )
 
         Divider()
+
+        LaunchedEffect(Unit) { titleFocusRequester.requestFocus() }
     }
 }
 
@@ -110,6 +119,7 @@ private fun EditTitleField(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     helpText: String? = null,
+    focusRequester: FocusRequester = FocusRequester(),
 ) {
 
     Column(modifier = modifier) {
@@ -134,6 +144,7 @@ private fun EditTitleField(
             singleLine = true,
             keyboardActions = KeyboardActions { onDone() },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            modifier = Modifier.focusRequester(focusRequester)
         )
     }
 }
