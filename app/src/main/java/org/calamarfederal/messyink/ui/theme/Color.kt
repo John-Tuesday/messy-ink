@@ -4,11 +4,11 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.colorspace.ColorSpaces
 
-fun Color.withLabL(percent: Int): Color {
+private fun Color.withLabL(percent: Int): Color {
     return convert(ColorSpaces.CieLab).copy(red = percent.toFloat()).convert(colorSpace)
 }
 
-fun buildM3ColorScheme(
+internal fun buildM3ColorScheme(
     primary: Color,
     secondary: Color,
     tertiary: Color,
