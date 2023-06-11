@@ -14,9 +14,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.math.minAndMaxOf
@@ -136,6 +140,14 @@ class CounterHistoryViewModel @Inject constructor(
             domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },
         ),
     )
+
+    init {
+        ioScope.launch {
+            ticks.drop(1).take(1).collect {
+                if (it.isNotEmpty()) changeGraphDomain(graphDomainOptions.last().domain())
+            }
+        }
+    }
 
     /**
      * UI State holder which determines the Y value minimum and maximum in the graph
