@@ -4,49 +4,42 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import org.calamarfederal.messyink.ui.theme.catppuccin.colorScheme
-import org.calamarfederal.messyink.ui.theme.catppuccin.palette.Palette
 
-//private val DarkColorScheme = darkColorScheme(
-//    primary = Purple80,
-//    secondary = PurpleGrey80,
-//    tertiary = Pink80
-//)
-//
-//private val LightColorScheme = lightColorScheme(
-//    primary = Purple40,
-//    secondary = PurpleGrey40,
-//    tertiary = Pink40
-//
-//    /* Other default colors to override
-//    background = Color(0xFFFFFBFE),
-//    surface = Color(0xFFFFFBFE),
-//    onPrimary = Color.White,
-//    onSecondary = Color.White,
-//    onTertiary = Color.White,
-//    onBackground = Color(0xFF1C1B1F),
-//    onSurface = Color(0xFF1C1B1F),
-//    */
-//)
+private val primary: Color = Color(148, 226, 213)
+private val secondary: Color = Color(137, 220, 235)
+private val tertiary: Color = Color(249, 226, 175)
+private val errorColor: Color = Color(243, 139, 168)
+private val neutral: Color = Color(49, 50, 68)
+private val neutralVariant: Color = Color(108, 112, 134)
 
-private val DarkColorScheme: ColorScheme = Palette.Mocha.colorScheme
-private val LightColorScheme: ColorScheme = Palette.Latte.colorScheme
+private val DarkColorScheme: ColorScheme = buildM3ColorScheme(
+    primary = primary,
+    secondary = secondary,
+    tertiary = tertiary,
+    error = errorColor,
+    neutral = neutral,
+    neutralVariant = neutralVariant,
+    isLight = false,
+)
+private val LightColorScheme: ColorScheme = buildM3ColorScheme(
+    primary = primary,
+    secondary = secondary,
+    tertiary = tertiary,
+    error = errorColor,
+    neutral = neutral,
+    neutralVariant = neutralVariant,
+    isLight = true,
+)
 
 /**
  * Base theme for the app
