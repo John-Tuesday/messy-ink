@@ -189,17 +189,6 @@ private fun DomainBoundsAndPicker(
             initialSelectedEndDateMillis = domain.end.toEpochMilliseconds(),
             selectableDates = selectable,
         )
-//        val domainState = rememberDateRangePickerState(
-//            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
-//            initialSelectedEndDateMillis = domain.end.toEpochMilliseconds(),
-//            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
-////            selectableDates = domainLimits,
-//            selectableDates = CurrentTimeZoneGetter().let {
-//                domainLimits.toLocalTimeRange().run {
-//                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
-//                }
-//            }
-//        )
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },

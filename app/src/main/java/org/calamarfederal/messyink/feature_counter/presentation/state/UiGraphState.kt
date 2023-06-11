@@ -14,12 +14,16 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZo
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Convenience function to convert [millis] to a date using [timeZone]
+ */
 fun epochMillisToDate(millis: Long, timeZone: TimeZone = CurrentTimeZoneGetter()): LocalDate =
     Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).date
 
 /**
  * Domain of time for a graph
  */
+@Stable
 class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
     /**
      * Lowest / earliest point
@@ -78,6 +82,16 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
                 it in localStart.year ..< localEnd.year
             } else { it -> it in localStart.year .. localEnd.year }
         )
+    }
+
+    override fun equals(other: Any?): Boolean =
+        if (other is TimeDomain) other.start == start && other.end == end && other.inclusiveEnd == inclusiveEnd else false
+
+    override fun hashCode(): Int {
+        var result = start.hashCode()
+        result = 31 * result + end.hashCode()
+        result = 31 * result + inclusiveEnd.hashCode()
+        return result
     }
 
     companion object
