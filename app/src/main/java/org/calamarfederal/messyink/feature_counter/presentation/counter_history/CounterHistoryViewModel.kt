@@ -124,6 +124,9 @@ class CounterHistoryViewModel @Inject constructor(
      */
     val graphDomain = _graphDomain.asStateFlow()
 
+    /**
+     * Maximum limits the domain should ever be
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     val graphDomainLimits =
         ticks.mapLatest { ticks ->

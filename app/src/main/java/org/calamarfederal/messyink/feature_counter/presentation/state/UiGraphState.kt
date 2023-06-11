@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Instant.Companion
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
@@ -16,46 +17,92 @@ import kotlin.time.Duration.Companion.milliseconds
 fun epochMillisToDate(millis: Long, timeZone: TimeZone = CurrentTimeZoneGetter()): LocalDate =
     Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).date
 
-
 /**
- * Domain of Time but it adheres to Kotlin spec that [start] < [endInclusive]
+ * Domain of time for a graph
  */
-@Stable
-@OptIn(ExperimentalMaterial3Api::class)
-class TimeDomain(first: Instant, second: Instant) : ClosedRange<Instant>, SelectableDates {
-    constructor(other: ClosedRange<Instant>) : this(other.start, other.endInclusive)
+class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
+    /**
+     * Lowest / earliest point
+     */
+    val start: Instant = minOf(first, second)
 
-    override fun equals(other: Any?): Boolean =
-        other is TimeDomain && start == other.start && endInclusive == other.endInclusive
+    /**
+     * Highest / latest point, inclusion depends on [inclusiveEnd]
+     */
+    val end: Instant = maxOf(first, second)
 
-    override val start: Instant = minOf(first, second)
-    override val endInclusive: Instant = maxOf(first, second)
+    /**
+     * Determines if [end] should be included
+     */
+    val inclusiveEnd: Boolean = inclusive
 
-    override fun isSelectableDate(utcTimeMillis: Long): Boolean =
-        utcTimeMillis.milliseconds.inWholeDays in (start.toEpochMilliseconds().milliseconds.inWholeDays .. endInclusive.toEpochMilliseconds().milliseconds.inWholeDays)
+    constructor(closedRange: ClosedRange<Instant>) : this(
+        first = closedRange.start,
+        second = closedRange.endInclusive,
+        inclusive = true
+    )
 
-    override fun isSelectableYear(year: Int): Boolean = with(CurrentTimeZoneGetter()) {
-        year in start.toLocalDateTime().year .. endInclusive.toLocalDateTime().year
-    }
+    @OptIn(ExperimentalStdlibApi::class)
+    constructor(openEndRange: OpenEndRange<Instant>) : this(
+        first = openEndRange.start,
+        second = openEndRange.endExclusive,
+        inclusive = false
+    )
 
-    fun toLocalTimeRange(timeZone: TimeZone = CurrentTimeZoneGetter()) = with(timeZone) {
-        start.toLocalDateTime() .. endInclusive.toLocalDateTime()
-    }
+    /**
+     * True if [other] is within bounds
+     *
+     * when [inclusiveEnd] `[start] <= [other] <= [end]` otherwise `[start] <= [other] < [end]`
+     */
+    operator fun contains(other: Instant): Boolean =
+        other >= start && if (inclusiveEnd) other <= end else other < end
 
-    override fun hashCode(): Int {
-        var result = start.hashCode()
-        result = 31 * result + endInclusive.hashCode()
-        return result
+    /**
+     * Create a [SelectableDates] that tests true on dates within bounds
+     */
+    @OptIn(ExperimentalStdlibApi::class, ExperimentalMaterial3Api::class)
+    fun toSelectableDates(timeZone: TimeZone = CurrentTimeZoneGetter()): SelectableDates {
+        val localStart = start.toLocalDateTime(timeZone)
+        val localEnd = end.toLocalDateTime(timeZone)
+        return SelectableTimeDomain(
+            containsDate = if (inclusiveEnd) { it -> it in localStart.date .. localEnd.date }
+            else { it -> it in localStart.date ..< localEnd.date },
+            containsYear = if (!inclusiveEnd && localEnd == LocalDateTime(
+                    year = localEnd.year,
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            ) { it ->
+                it in localStart.year ..< localEnd.year
+            } else { it -> it in localStart.year .. localEnd.year }
+        )
     }
 
     companion object
 }
 
 /**
- * Widest Possible range of time
+ * Domain spanning all time possible (inclusive)
  */
-val TimeDomain.Companion.AllTime: TimeDomain
-    get() = TimeDomain(Instant.DISTANT_PAST, Companion.DISTANT_FUTURE)
+val TimeDomain.Companion.AllTime: TimeDomain get() = TimeDomain(Instant.DISTANT_PAST .. Instant.DISTANT_FUTURE)
+
+/**
+ * More easily define [SelectableDates] implementations
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+class SelectableTimeDomain(
+    private val containsDate: (LocalDate) -> Boolean,
+    private val containsYear: (Int) -> Boolean,
+) : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+        containsDate(
+            Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.UTC).date
+        )
+
+    override fun isSelectableYear(year: Int): Boolean = containsYear(year)
+}
 
 /**
  * Provide quick, adaptable options to set domain

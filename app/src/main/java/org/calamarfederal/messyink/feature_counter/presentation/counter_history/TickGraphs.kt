@@ -45,31 +45,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.atTime
-import kotlinx.datetime.minus
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.plus
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
 import org.calamarfederal.messyink.common.compose.localToString
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 
 @Composable
@@ -94,7 +87,7 @@ internal fun TicksOverTimeLayout(
                     .clickable { showPointInfo = !showPointInfo },
                 lineGraphPoints = ticks.map {
                     PointByPercent(
-                        x = (it.timeForData - domain.start) / (domain.endInclusive - domain.start),
+                        x = (it.timeForData - domain.start) / (domain.end - domain.start),
                         y = (it.amount - range.start) / (range.endInclusive - range.start),
                     )
                 },
@@ -122,7 +115,7 @@ internal fun TicksOverTimeLayout(
 
 //          Show current domain min and max and allow edit
             DomainBoundsAndPicker(
-                domain = TimeDomain(domain),
+                domain = domain,
                 domainLimits = domainLimits,
                 changeDomain = changeDomain,
                 modifier = Modifier.fillMaxWidth(),
@@ -169,7 +162,7 @@ private fun DomainDropdownMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalStdlibApi::class)
 @Composable
 private fun DomainBoundsAndPicker(
     domain: TimeDomain,
@@ -186,33 +179,39 @@ private fun DomainBoundsAndPicker(
             Text(domain.start.localToString())
         }
         TextButton(onClick = { openDomainPicker = true }) {
-            Text(domain.endInclusive.localToString())
+            Text(domain.end.localToString())
         }
     }
     if (openDomainPicker) {
+        val selectable = domainLimits.toSelectableDates()
         val domainState = rememberDateRangePickerState(
             initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
-            initialSelectedEndDateMillis = domain.endInclusive.toEpochMilliseconds(),
-            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
-//            selectableDates = domainLimits,
-            selectableDates = CurrentTimeZoneGetter().let {
-                domainLimits.toLocalTimeRange().run {
-                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
-                }
-            }
+            initialSelectedEndDateMillis = domain.end.toEpochMilliseconds(),
+            selectableDates = selectable,
         )
+//        val domainState = rememberDateRangePickerState(
+//            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
+//            initialSelectedEndDateMillis = domain.end.toEpochMilliseconds(),
+//            yearRange = domainLimits.toLocalTimeRange().run { start.year .. endInclusive.year },
+////            selectableDates = domainLimits,
+//            selectableDates = CurrentTimeZoneGetter().let {
+//                domainLimits.toLocalTimeRange().run {
+//                    TimeDomain(start.date.atTime(0, 0).toInstant(it), domainLimits.endInclusive)
+//                }
+//            }
+//        )
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
             onSubmit = {
-                openDomainPicker = false
+                val tz = CurrentTimeZoneGetter()
                 changeDomain(
                     TimeDomain(
-                        first = it.start.atStartOfDayIn(CurrentTimeZoneGetter()),
-                        second = it.endInclusive.atStartOfDayIn(CurrentTimeZoneGetter()) + 1.days,
+                        it.start.atStartOfDayIn(tz) ..< it.endInclusive.plus(DatePeriod(days = 1))
+                            .atStartOfDayIn(tz)
                     )
                 )
-
+                openDomainPicker = false
             },
         )
     }
@@ -298,8 +297,14 @@ private fun DomainDatePicker(
                     TextButton(
                         onClick = {
                             onSubmit(
-                                epochMillisToDate(state.selectedStartDateMillis!!) .. epochMillisToDate(
-                                    state.selectedEndDateMillis!!
+                                epochMillisToDate(
+                                    state.selectedStartDateMillis!!,
+                                    TimeZone.UTC
+                                ).rangeTo(
+                                    epochMillisToDate(
+                                        state.selectedEndDateMillis!!,
+                                        TimeZone.UTC
+                                    )
                                 )
                             )
                         },
@@ -331,12 +336,7 @@ private fun TickAmountOverTimePreview() {
                 ticks = ticks,
                 range = ticks.first().amount .. ticks.last().amount,
                 domain = domain,
-                domainLimits = with(CurrentTimeZoneGetter()) {
-                    TimeDomain(
-                        domain.start.toLocalDateTime().date.atStartOfDayIn(this),
-                        domain.endInclusive.toLocalDateTime().date.atStartOfDayIn(this)
-                    )
-                },
+                domainLimits = domain,
                 domainOptions = listOf(
                     TimeDomainAgoTemplate("Day", 1.days),
                     TimeDomainAgoTemplate("Week", 7.days),
