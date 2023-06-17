@@ -43,6 +43,18 @@ interface CounterDao {
     suspend fun counter(id: Long): CounterEntity?
 
     /**
+     * All [TickEntity] ordered by [TickEntity.timeModified]
+     */
+    @Query("SELECT * FROM counter_ticks ORDER BY time_modified")
+    suspend fun ticks(): List<TickEntity>
+
+    /**
+     * Return [TickEntity] with [id] if it exists, else null
+     */
+    @Query("SELECT * FROM counter_ticks WHERE id = :id")
+    suspend fun tick(id: Long): TickEntity?
+
+    /**
      * All [TickEntity] with matching [parentId] ordered by [TickEntity.timeForData]
      */
     @Query("SELECT * FROM counter_ticks WHERE parent_id = :parentId ORDER BY time_for_data")
