@@ -9,6 +9,9 @@ import dagger.hilt.testing.TestInstallIn
 import org.calamarfederal.messyink.data.MessyInkDb
 import javax.inject.Singleton
 
+/**
+ * # App Level Test Module
+ */
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],

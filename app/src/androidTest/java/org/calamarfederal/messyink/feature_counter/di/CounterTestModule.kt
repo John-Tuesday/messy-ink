@@ -16,6 +16,11 @@ import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
 
+/**
+ * # View-model Scoped Module
+ *
+ * provides binds for whole feature
+ */
 @Module
 @TestInstallIn(
     components = [ViewModelScoped::class],
@@ -35,12 +40,22 @@ abstract class CounterTestModuleBindings {
 private val timeConst: Instant = Instant.fromEpochMilliseconds(1683283570000L)
 private val timeZoneConst: TimeZone = TimeZone.UTC
 
+/**
+ * # View Model level test module
+ *
+ * provides for whole feature
+ */
 @Module
 @TestInstallIn(
     components = [ViewModelScoped::class],
     replaces = [CounterModuleProvider::class],
 )
 object CounterTestModuleProvider {
+    /**
+     * provide dao
+     *
+     * relies on [MessyInkDb] injection
+     */
     @Provides
     @ViewModelScoped
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
@@ -53,19 +68,22 @@ object CounterTestModuleProvider {
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     /**
-     * Provide the current time of the system at initialization
+     * Provides [timeConst]
      */
     @CurrentTime
     @Provides
     fun provideCurrentTime(): Instant = timeConst
 
     /**
-     * Provides a simple callable which returns the current time
+     * Provides a simple callable which returns the [timeConst]
      */
     @CurrentTime
     @Provides
     fun provideCurrentTimeGetter(): GetTime = GetTime { timeConst }
 
+    /**
+     * Provides a simple callable which gets [timeZoneConst]
+     */
     @CurrentTimeZone
     @Provides
     fun provideCurrentTimeZoneGetter(): GetTimeZone =
