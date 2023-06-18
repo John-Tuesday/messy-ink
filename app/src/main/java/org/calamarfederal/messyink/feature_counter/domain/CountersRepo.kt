@@ -49,14 +49,14 @@ interface CountersRepo {
     fun getTicksFlow(parentId: Long): Flow<List<Tick>>
 
     /**
-     * Copy [counter]'s values, but save with a new id, and set its timeModified value
+     * Copy [counter]'s values, but save with a new id, and set its timeModified, and timeCreated values. returns the new [Counter]
      *
      * @param[counter] counter which will be used as the basis for a new counter
      */
     suspend fun duplicateCounter(counter: Counter): Counter
 
     /**
-     * Copy [tick]'s values, but save with a new id, and set its timeModified value
+     * Copy [tick]'s values, but save with a new id, and set its timeModified and timeCreated values. returns the new [Tick]
      *
      * @param[tick] tick which will be used as the basis for a new tick
      */
@@ -102,17 +102,19 @@ interface CountersRepo {
     suspend fun deleteTicksByTimeForData(
         parentId: Long,
         start: Instant = Instant.DISTANT_PAST,
-        end: Instant = Instant.DISTANT_FUTURE
+        end: Instant = Instant.DISTANT_FUTURE,
     )
 
     /**
-     * delete up to [limit], or all if [limit] is null, [Tick] with [Tick.timeModified] in bounds [[start], [end]]
+     * if [limit] is `null`, deletes all [Tick] with [parentId] and [Tick.timeModified] in bounds [[start], [end]]
+     *
+     * otherwise deletes up to [limit] in order of [Tick.timeModified]
      */
     suspend fun deleteTicksByTimeModified(
         parentId: Long,
         limit: Int? = null,
         start: Instant = Instant.DISTANT_PAST,
-        end: Instant = Instant.DISTANT_FUTURE
+        end: Instant = Instant.DISTANT_FUTURE,
     )
 
     /**

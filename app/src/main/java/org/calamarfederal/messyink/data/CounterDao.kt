@@ -201,7 +201,7 @@ interface CounterDao {
     )
 
     /**
-     * Delete up to [limit] [TickEntity] with [parentId] in bounds [[start], [end]]
+     * Delete up to [limit] [TickEntity] with [parentId] and [TickEntity.timeModified] in bounds [[start], [end]], ordered by [TickEntity.timeModified]
      */
     @Transaction
     suspend fun deleteTicksByTimeModifiedLimited(
