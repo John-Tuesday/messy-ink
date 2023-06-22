@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons.Filled
@@ -19,6 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.dismiss
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 
 
 /**
@@ -38,10 +43,16 @@ internal fun CounterOptions(
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
     if (visible) {
+        BackHandler(onBack = onDismiss)
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = sheetState,
-            modifier = modifier,
+            modifier = modifier
+                .semantics(mergeDescendants = true) {
+                    testTag = CounterOverviewTestTags.CounterOptions
+
+                    dismiss { onDismiss(); true }
+                },
         ) {
             Column {
                 ListItem(

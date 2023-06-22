@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -63,6 +64,7 @@ fun CounterOverviewScreen(
             CounterOverviewFAB(
                 expanded = fabExpand,
                 onCreateCounter = onCreateCounter,
+                modifier = Modifier.testTag(CounterOverviewTestTags.CreateCounterFab)
             )
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -105,7 +107,7 @@ private fun CounterOverviewLayout(
     var expandIndex by remember { mutableLongStateOf(-1L) }
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.testTag(CounterOverviewTestTags.CountersContainer),
         verticalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -123,17 +125,19 @@ private fun CounterOverviewLayout(
                     onHistory = { onViewHistory(counter) },
                     onEditCounter = { onEditCounter(counter) },
                     onViewInFull = { onViewInFull(counter) },
-                    modifier = Modifier.combinedClickable(
-                        onLongClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showOptions = true
-                            expandIndex = counter.id
-                        },
-                        onClick = {
-                            expandIndex = if (expandIndex == counter.id) -1 else counter.id
-                        },
-                        onDoubleClick = { onViewHistory(counter) }
-                    )
+                    modifier = Modifier
+                        .combinedClickable(
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showOptions = true
+                                expandIndex = counter.id
+                            },
+                            onClick = {
+                                expandIndex = if (expandIndex == counter.id) -1 else counter.id
+                            },
+                            onDoubleClick = { onViewHistory(counter) }
+                        )
+                        .testTag(CounterOverviewTestTags.CounterItem)
                 )
 
                 CounterOptions(
