@@ -10,10 +10,11 @@ import javax.inject.Inject
 
 /**
  * ## Entry point into a ComponentActivity
- *
- * meant to be called inside of [ComponentActivity.onCreate] and should call [ComponentActivity.setContent]
  */
 fun interface OnCreateHook {
+    /**
+     * meant to be called inside of [ComponentActivity.onCreate] and should call [ComponentActivity.setContent]
+     */
     operator fun invoke(activity: ComponentActivity, savedInstanceState: Bundle?)
 }
 

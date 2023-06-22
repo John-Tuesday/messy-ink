@@ -23,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -144,7 +147,10 @@ private fun EditTitleField(
             singleLine = true,
             keyboardActions = KeyboardActions { onDone() },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier.focusRequester(focusRequester)
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .semantics { if (isError) error(helpText ?: "Unknown Error") }
+                .testTag(CreateCounterTestTags.TitleTextField)
         )
     }
 }

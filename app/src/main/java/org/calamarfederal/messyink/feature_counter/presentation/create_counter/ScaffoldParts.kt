@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 
 /**
@@ -39,12 +40,19 @@ internal fun CreateCounterAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onClose) {
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier.testTag(CreateCounterTestTags.CloseButton),
+            ) {
                 Icon(Icons.Filled.Close, "close")
             }
         },
         actions = {
-            FilledTonalIconButton(onClick = onDone, enabled = enableDone) {
+            FilledTonalIconButton(
+                onClick = onDone,
+                enabled = enableDone,
+                modifier = Modifier.testTag(CreateCounterTestTags.SubmitButton),
+            ) {
                 Icon(Icons.Filled.Done, "finalize counter")
             }
         },
