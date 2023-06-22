@@ -7,6 +7,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.click
@@ -29,6 +31,8 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
 import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
 import org.calamarfederal.messyink.data.CounterDao
@@ -46,7 +50,7 @@ import javax.inject.Inject
  * ## Unit Tests
  */
 @HiltAndroidTest
-class CounterOverviewScreenKtTest {
+class CounterOverviewScreenTest {
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -54,8 +58,10 @@ class CounterOverviewScreenKtTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
+    private val testContent = CounterOverviewContent()
+
     @BindValue
-    val contentSetter: OnCreateHookImpl = CounterOverviewContent()
+    val contentSetter: OnCreateHookImpl = testContent
 
     @Inject
     lateinit var dao: CounterDao
@@ -85,40 +91,5 @@ class CounterOverviewScreenKtTest {
         composeRule.onNodeWithTag(CounterOverviewTestTags.CounterOptions)
             .performSemanticsAction(SemanticsActions.Dismiss)
         composeRule.onNodeWithTag(CounterOverviewTestTags.CounterOptions).assertDoesNotExist()
-    }
-}
-
-class CounterOverviewContent : OnCreateHookImpl() {
-    override fun invoke(activity: ComponentActivity, savedInstanceState: Bundle?) {
-        with(activity) {
-            setContent {
-                val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = "test"
-                ) {
-                    composable("test") { entry ->
-                        val viewModel: CounterOverviewViewModel = hiltViewModel(entry)
-                        val counters by viewModel.countersState.collectAsState()
-                        val tickSum by viewModel.ticksSumState.collectAsState()
-
-                        CounterOverviewScreen(
-                            counters = counters,
-                            tickSums = tickSum,
-                            onCounterIncrement = { viewModel.incrementCounter(it.id) },
-                            onCounterDecrement = { viewModel.decrementCounter(it.id) },
-                            onDeleteCounter = { viewModel.deleteCounter(it.id) },
-                            onClearCounterTicks = { viewModel.clearCounterTicks(it.id) },
-                            onCreateCounter = {},
-                            onNavigateToCounterDetails = {},
-                            onNavigateToCounterGameMode = {},
-                            onNavigateToCounterEdit = {},
-                        )
-                    }
-                }
-
-            }
-        }
-
     }
 }

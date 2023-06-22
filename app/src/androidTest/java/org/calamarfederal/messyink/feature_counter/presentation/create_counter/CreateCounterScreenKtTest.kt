@@ -57,36 +57,27 @@ class CreateCounterScreenKtTest {
     @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private var otherCounterSupport: UiCounterSupport? by mutableStateOf(null)
-    private var onCancelHook: () -> Unit by mutableStateOf({})
-    private var onDoneHook: () -> Unit by mutableStateOf({})
+    private val testContent = CreateCounterTestContent()
 
     @BindValue
-    val contentSetter: OnCreateHookImpl = object : OnCreateHookImpl() {
-        override fun invoke(activity: ComponentActivity, savedInstanceState: Bundle?) {
-            with(activity) {
-                setContent {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "test",
-                    ) {
-                        composable(route = "test") {
-                            val vm: CreateCounterViewModel = hiltViewModel(it)
-                            val vmCounterSupport by vm.counterSupport.collectAsState()
+    val contentSetter: OnCreateHookImpl = testContent
 
-                            CreateCounterScreen(
-                                counterSupport = otherCounterSupport ?: vmCounterSupport,
-                                onNameChange = vm::changeName,
-                                onCancel = onCancelHook,
-                                onDone = onDoneHook,
-                            )
-                        }
-                    }
-                }
-            }
+    private var otherCounterSupport: UiCounterSupport?
+        get() = testContent.otherCounterSupport
+        set(value) {
+            testContent.otherCounterSupport = value
         }
-    }
+
+    private var onCancelHook: () -> Unit
+        get() = testContent.onCancelHook
+        set(value) {
+            testContent.onCancelHook = value
+        }
+    private var onDoneHook: () -> Unit
+        get() = testContent.onDoneHook
+        set(value) {
+            testContent.onDoneHook = value
+        }
 
     private val submitButtonNode get() = composeRule.onNodeWithTag(CreateCounterTestTags.SubmitButton)
     private val closeButtonNode get() = composeRule.onNodeWithTag(CreateCounterTestTags.CloseButton)
