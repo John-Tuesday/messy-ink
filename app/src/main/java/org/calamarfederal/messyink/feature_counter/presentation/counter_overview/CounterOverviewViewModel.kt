@@ -29,7 +29,6 @@ import kotlin.time.Duration.Companion.seconds
  */
 @HiltViewModel
 class CounterOverviewViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCountersFlow: GetCountersFlow,
     private val _getTicksSumByFlow: GetTicksSumByFlow,
