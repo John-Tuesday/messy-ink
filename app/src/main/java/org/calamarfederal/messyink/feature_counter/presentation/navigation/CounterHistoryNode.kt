@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
@@ -27,8 +28,11 @@ internal object CounterHistoryNode : CounterNavNode {
     override val arguments = listOf(navArgument(COUNTER_ID) { type = NavType.LongType })
     override val route = "$BASE_ROUTE/{$COUNTER_ID}"
 
-    fun NavHostController.navigateToCounterHistory(counterId: Long) {
-        navigate("$BASE_ROUTE/$counterId")
+    fun NavHostController.navigateToCounterHistory(
+        counterId: Long,
+        navOptions: NavOptions? = null,
+    ) {
+        navigate("$BASE_ROUTE/$counterId", navOptions = navOptions)
     }
 
     fun NavGraphBuilder.counterHistory(

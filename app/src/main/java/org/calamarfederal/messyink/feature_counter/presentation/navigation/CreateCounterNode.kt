@@ -32,14 +32,14 @@ internal object CreateCounterNode : CounterNavNode {
      * Navigate to stand-alone counter creation
      */
     fun NavHostController.navigateToCreateCounter(
-        navOptions: NavOptions = navOptions { launchSingleTop = true },
+        navOptions: NavOptions? = navOptions { launchSingleTop = true },
     ) {
         navigate(this@CreateCounterNode.route, navOptions)
     }
 
     fun NavHostController.navigateToEditCounter(
         counterId: Long,
-        navOptions: NavOptions = navOptions { launchSingleTop = true },
+        navOptions: NavOptions? = navOptions { launchSingleTop = true },
     ) {
         navigate("$BASE_ROUTE?$INIT_COUNTER_ID=$counterId", navOptions)
     }

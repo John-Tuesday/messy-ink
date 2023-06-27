@@ -21,9 +21,7 @@ internal object CounterOverviewNode : CounterNavNode {
     override val route: String = "counter_overview"
 
     fun NavHostController.navigateToCounterOverview(
-        navOptions: NavOptions = navOptions {
-            launchSingleTop = true
-        }
+        navOptions: NavOptions? = navOptions { launchSingleTop = true }
     ) {
         navigate(this@CounterOverviewNode.route, navOptions)
     }

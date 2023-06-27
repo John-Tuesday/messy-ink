@@ -31,7 +31,7 @@ internal object GameCounterNode : CounterNavNode {
 
     fun NavHostController.navigateToGameCounter(
         counterId: Long,
-        navOptions: NavOptions = navOptions {},
+        navOptions: NavOptions? = null,
     ) {
         navigate("$BASE_ROUTE/$counterId", navOptions)
     }

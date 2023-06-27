@@ -43,8 +43,8 @@ fun CounterFeatureEntry(
             counterHistory(navController)
             createCounter(
                 navController,
-                onCancel = { navController.popBackStack() },
-                onDone = { navController.popBackStack() },
+                onCancel = { navController.navigateUp() },
+                onDone = { navController.navigateUp() },
             )
         }
     }
