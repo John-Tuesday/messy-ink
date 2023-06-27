@@ -149,13 +149,14 @@ data class GraphColor constructor(
 fun BasicLineGraph(
     lineGraphPoints: List<PointByPercent>,
     modifier: Modifier = Modifier,
+    contentDescription: String = "Line graph",
     graphSize: GraphSize2d = GraphSize2d(),
     graphColors: GraphColor = GraphColor(),
     pointInfo: (Int) -> String? = { null },
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
 ) {
     Canvas(
-        contentDescription = "Line Graph representing changes to data",
+        contentDescription = contentDescription,
         modifier = modifier
             .defaultMinSize(
                 minWidth = graphSize.pointDiameter * graphSize.xAxisChunks,
@@ -242,6 +243,7 @@ fun BasicLineGraph(
             strokeWidth = graphSize.pointDiameter.toPx(),
         )
 
+        // Draw labels
         for (i in lineGraphPoints.indices) {
             val result = textMeasurer.measure(
                 text = pointInfo(i) ?: continue,
@@ -257,6 +259,7 @@ fun BasicLineGraph(
                 .toOffset()
             val verticalPadding: Float = 1.dp.toPx()
             val horizontalPadding: Float = 2.dp.toPx()
+            // Background box
             drawRoundRect(
                 color = graphColors.signColor,
                 topLeft = resultTopLeft + Offset(-horizontalPadding, -verticalPadding),
@@ -266,6 +269,7 @@ fun BasicLineGraph(
                 ),
                 cornerRadius = CornerRadius(2.dp.toPx()),
             )
+            // Text
             drawText(
                 textLayoutResult = result,
                 topLeft = resultTopLeft,
@@ -285,6 +289,7 @@ fun LineGraph(
     lineGraphPoints: List<PointByPercent>,
     modifier: Modifier = Modifier,
     graphModifier: Modifier = Modifier,
+    contentDescription: String = "Line graph",
     pointInfo: (Int) -> String? = { null },
     title: @Composable () -> Unit = {},
     domainSlot: @Composable () -> Unit = {},
@@ -322,6 +327,7 @@ fun LineGraph(
                 pointInfo = pointInfo,
                 graphSize = size,
                 graphColors = colors,
+                contentDescription = contentDescription,
                 modifier = graphModifier.constrainAs(graphBox) {
                     val radius = size.pointDiameter / 2
                     top.linkTo(parent.top, radius)

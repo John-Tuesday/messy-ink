@@ -83,6 +83,7 @@ internal fun TicksOverTimeLayout(
 
 //          Graph: Amount v Time
             LineGraph(
+                contentDescription = "Line graph of Tick amount over time",
                 modifier = Modifier
                     .weight(1f)
                     .clickable { showPointInfo = !showPointInfo }
