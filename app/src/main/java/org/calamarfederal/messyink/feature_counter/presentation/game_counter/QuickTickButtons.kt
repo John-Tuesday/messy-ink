@@ -31,12 +31,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion.LongPress
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.calamarfederal.messyink.common.compose.MoreClickButton
 import org.calamarfederal.messyink.common.compose.MoreClickFilledTonalButton
-import org.calamarfederal.messyink.common.compose.Placeholder
 import org.calamarfederal.messyink.common.compose.material3.exposed.ExposedButtonDefaults
 import org.calamarfederal.messyink.common.compose.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
@@ -182,7 +184,13 @@ internal fun EditIncrementDialog(
                 isError = inputError,
                 singleLine = true,
                 supportingText = { Text(supportText) },
-                placeholder = { Placeholder(text = currentAmount.toStringAllowShorten()) },
+                placeholder = {
+                    Text(
+                        text = currentAmount.toStringAllowShorten(),
+                        fontWeight = FontWeight.Light,
+                        fontStyle = FontStyle.Italic,
+                    )
+                },
                 modifier = Modifier.focusRequester(focusRequester),
             )
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
