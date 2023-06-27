@@ -13,13 +13,14 @@ import androidx.navigation.compose.rememberNavController
  * intended to be implemented as a stateless object at the Feature-Level
  *
  */
-interface SubNavOwner <T : SubNavNode> {
+interface SubNavOwner<T : SubNavNode> {
     /**
      * route to this, i.e. the owner of the nested graph
      *
      * should be const
      */
     val rootRoute: String
+
     /**
      * The typical first screen / subcomponent when entering this
      *

@@ -81,7 +81,7 @@ data class GraphSize2d(
 /**
  * Determines the color of a (line) graph
  */
-data class GraphColor constructor(
+data class GraphColor(
     /**
      * Color of every axis
      */
