@@ -13,7 +13,7 @@ import org.calamarfederal.messyink.data.TimeTypeConverters
  *
  * [timeModified] and [timeCreated] are converted to timestamp [Long] in the db
  */
-@Entity(tableName = "counters")
+@Entity(tableName = "counter")
 data class CounterEntity(
     /**
      * user given name
@@ -50,7 +50,7 @@ data class CounterEntity(
  * [Instant] converts to [Long]
  */
 @Entity(
-    tableName = "counter_ticks", foreignKeys = [ForeignKey(
+    tableName = "counter_tick", foreignKeys = [ForeignKey(
         entity = CounterEntity::class,
         parentColumns = ["id"],
         childColumns = ["parent_id"],
@@ -103,4 +103,3 @@ data class TickEntity(
     @PrimaryKey
     val id: Long,
 )
-

@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.data
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,7 +10,7 @@ import androidx.room.Update
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
 
-private const val DB_VERSION: Int = 11
+private const val DB_VERSION: Int = 12
 
 /**
  * [RoomDatabase] for [CounterEntity] and [Note] types and related
@@ -21,6 +22,9 @@ private const val DB_VERSION: Int = 11
         TickEntity::class,
     ],
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 11, to = 12)
+    ]
 )
 abstract class MessyInkDb : RoomDatabase() {
 
