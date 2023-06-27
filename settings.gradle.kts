@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Messy Ink"
-include ':app'
+include(":app")

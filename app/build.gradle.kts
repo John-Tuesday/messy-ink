@@ -1,50 +1,51 @@
 plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-    id "com.google.devtools.ksp"
-    id "com.google.dagger.hilt.android"
-    id "org.jetbrains.kotlin.kapt"
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
-    namespace "org.calamarfederal.messyink"
-    compileSdk 34
+    namespace = "org.calamarfederal.messyink"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId "org.calamarfederal.messyink"
-        minSdk 33
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        applicationId = "org.calamarfederal.messyink"
+        minSdk = 33
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
 
-        testInstrumentationRunner "org.calamarfederal.messyink.HiltTestRunner"
+        testInstrumentationRunner = "org.calamarfederal.messyink.HiltTestRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
 //        sourceCompatibility JavaVersion.VERSION_1_8
 //        targetCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.current()
-        sourceCompatibility JavaVersion.current()
+        sourceCompatibility = JavaVersion.current()
+        targetCompatibility = JavaVersion.current()
     }
     kotlinOptions {
         jvmTarget = "17"
     }
     buildFeatures {
-        compose true
+        compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.7"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
-    packagingOptions {
+//    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -53,7 +54,7 @@ android {
 
 dependencies {
     // Essentials
-    implementation platform('androidx.compose:compose-bom:2023.06.01')
+    implementation(platform("androidx.compose:compose-bom:2023.06.01"))
     implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
     implementation("androidx.navigation:navigation-runtime-ktx:2.6.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
@@ -64,8 +65,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.5.0-beta02")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.0-beta02")
     implementation("androidx.compose.ui:ui-graphics:1.5.0-beta02")
-    implementation('androidx.compose.material:material-icons-extended:1.6.0-alpha01')
-    implementation('androidx.compose.material3:material3:1.2.0-alpha03')
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha01")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha03")
     implementation("androidx.activity:activity-ktx:1.7.2")
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
@@ -75,7 +76,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.0-beta02")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0-beta02")
-    androidTestImplementation platform('androidx.compose:compose-bom:2023.06.01')
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.06.01"))
     androidTestImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:core:1.5.0")
@@ -90,20 +91,20 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     // Room
-    def room_version = "2.6.0-alpha02"
+    val roomVersion = "2.6.0-alpha02"
 
-    ksp("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-runtime:2.6.0-alpha02")
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // Hilt
-    def hilt_version = "2.46.1"
+    val hiltVersion = "2.46.1"
 
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:$hilt_version")
-    kapt("com.google.dagger:hilt-android-compiler:$hilt_version")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("com.google.dagger:hilt-android:2.46.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:$hilt_version")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
 }
 
 kapt {
