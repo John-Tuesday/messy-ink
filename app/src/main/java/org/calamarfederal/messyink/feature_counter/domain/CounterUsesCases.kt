@@ -2,6 +2,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -31,7 +32,7 @@ fun interface GetCountersFlow {
      *
      * @return flow emits empty list when none can be found
      */
-    operator fun invoke(): Flow<List<UiCounter>>
+    operator fun invoke(sort: CounterSort.TimeType): Flow<List<UiCounter>>
 }
 
 /**
@@ -50,7 +51,7 @@ fun interface GetTicksOfFlow {
     /**
      * list of all UiTick sharing [parentId]
      */
-    operator fun invoke(parentId: Long): Flow<List<UiTick>>
+    operator fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>>
 }
 
 /**
@@ -137,25 +138,6 @@ fun interface UpdateTick {
 }
 
 /**
- * SAM: Undo Ticks by time with optional limit
- *
- */
-fun interface UndoTicks {
-    /**
-     * delete up to [limit], or all if [limit] is null, [Tick] modified within [duration] ago
-     */
-    suspend operator fun invoke(parentId: Long, limit: Int?, duration: Duration)
-
-    /**
-     * [invoke] with no limit
-     *
-     * overload because I cant use default values
-     */
-    suspend operator fun invoke(parentId: Long, duration: Duration) =
-        invoke(parentId, limit = null, duration)
-}
-
-/**
  * @see [invoke]
  */
 fun interface DeleteCounter {
@@ -200,13 +182,13 @@ fun interface DeleteTicksFrom {
     /**
      * Delete all [Tick] with [Tick.parentId] and [Tick.timeForData] within [[start], [end]]
      */
-    suspend operator fun invoke(parentId: Long, start: Instant, end: Instant)
+    suspend operator fun invoke(parentId: Long, timeType: TimeType, start: Instant, end: Instant)
 
     /**
      * Overload of [invoke] with bounds set to max
      */
-    suspend operator fun invoke(parentId: Long) =
-        invoke(parentId, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
+    suspend operator fun invoke(parentId: Long, timeType: TimeType) =
+        invoke(parentId, timeType, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
 }
 
 /**
@@ -220,13 +202,23 @@ fun interface GetTicksSumOfFlow {
      *
      * @return Flow should emit 0.00 when no ticks exist (if it crashes make it nullable)
      */
-    operator fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double>
+    operator fun invoke(
+        parentId: Long,
+        timeType: TimeType,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double>
 
     /**
      * overload of [invoke] for when time has no bounds
      */
-    operator fun invoke(parentId: Long): Flow<Double> =
-        invoke(parentId = parentId, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
+    operator fun invoke(parentId: Long, timeType: TimeType): Flow<Double> =
+        invoke(
+            parentId = parentId,
+            timeType = timeType,
+            start = Instant.DISTANT_PAST,
+            end = Instant.DISTANT_FUTURE
+        )
 }
 
 /**
@@ -240,13 +232,23 @@ fun interface GetTicksAverageOfFlow {
      *
      * @return Flow should emit 0.00 when no ticks exist (if it crashes make it nullable)
      */
-    operator fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double>
+    operator fun invoke(
+        parentId: Long,
+        timeType: TimeType,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double>
 
     /**
      * Overload for [invoke]. Useful when there are no time bounds
      */
-    operator fun invoke(parentId: Long): Flow<Double> =
-        invoke(parentId = parentId, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
+    operator fun invoke(parentId: Long, timeType: TimeType): Flow<Double> =
+        invoke(
+            parentId = parentId,
+            timeType = timeType,
+            start = Instant.DISTANT_PAST,
+            end = Instant.DISTANT_FUTURE
+        )
 }
 
 /**

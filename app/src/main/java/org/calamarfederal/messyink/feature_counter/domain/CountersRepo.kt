@@ -2,6 +2,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 
 /**
  * # Wrapper for managing counters, ticks, and their common commands
@@ -10,7 +11,7 @@ interface CountersRepo {
     /**
      * One-shot get all saved counters ordered by DAO logic
      */
-    suspend fun getCounters(): List<Counter>
+    suspend fun getCounters(sort: CounterSort.TimeType): List<Counter>
 
     /**
      * Gets the counter if it exists, null otherwise
@@ -22,7 +23,7 @@ interface CountersRepo {
      *
      * @param[parentId] should be a valid Counter.id
      */
-    suspend fun getTicks(parentId: Long): List<Tick>
+    suspend fun getTicks(parentId: Long, sort: TickSort.TimeType): List<Tick>
 
     /**
      * Watch changes to Counter with [id]
@@ -37,7 +38,7 @@ interface CountersRepo {
      *
      * @return Flow emits empty list when no Counter exists
      */
-    fun getCountersFlow(): Flow<List<Counter>>
+    fun getCountersFlow(sort: CounterSort.TimeType): Flow<List<Counter>>
 
     /**
      * Watch all ticks which have parent_id = [parentId]
@@ -46,7 +47,7 @@ interface CountersRepo {
      *
      * @return Flow emits empty list if no such tick can be found
      */
-    fun getTicksFlow(parentId: Long): Flow<List<Tick>>
+    fun getTicksFlow(parentId: Long, sort: TickSort.TimeType): Flow<List<Tick>>
 
     /**
      * Copy [counter]'s values, but save with a new id, and set its timeModified, and timeCreated values. returns the new [Counter]
@@ -99,8 +100,9 @@ interface CountersRepo {
     /**
      * Delete all [Tick] with matching [Tick.parentId] from [[start], [end]]
      */
-    suspend fun deleteTicksByTimeForData(
+    suspend fun deleteTicksBySelection(
         parentId: Long,
+        timeType: TimeType,
         start: Instant = Instant.DISTANT_PAST,
         end: Instant = Instant.DISTANT_FUTURE,
     )
@@ -110,9 +112,10 @@ interface CountersRepo {
      *
      * otherwise deletes up to [limit] in order of [Tick.timeModified]
      */
-    suspend fun deleteTicksByTimeModified(
+    suspend fun deleteTicksBySelection(
         parentId: Long,
         limit: Int? = null,
+        timeType: TimeType,
         start: Instant = Instant.DISTANT_PAST,
         end: Instant = Instant.DISTANT_FUTURE,
     )
@@ -130,6 +133,7 @@ interface CountersRepo {
      */
     fun getTicksSumOfFlow(
         parentId: Long,
+        timeType: TimeType,
         start: Instant = Instant.DISTANT_PAST,
         end: Instant = Instant.DISTANT_FUTURE,
     ): Flow<Double>
@@ -143,6 +147,7 @@ interface CountersRepo {
      */
     fun getTicksAverageOfFlow(
         parentId: Long,
+        timeType: TimeType,
         start: Instant = Instant.DISTANT_PAST,
         end: Instant = Instant.DISTANT_FUTURE,
     ): Flow<Double>

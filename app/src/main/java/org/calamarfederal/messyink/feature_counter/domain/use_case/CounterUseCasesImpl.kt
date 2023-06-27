@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
+import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
@@ -22,8 +23,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
@@ -34,7 +34,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterS
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import javax.inject.Inject
-import kotlin.time.Duration
 
 /**
  * Default Implementation
@@ -50,8 +49,8 @@ class GetCounterFlowImpl @Inject constructor(private val repo: CountersRepo) : G
  */
 class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : GetCountersFlow {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(): Flow<List<UiCounter>> =
-        repo.getCountersFlow().mapLatest { it.map { item -> item.toUI() } }
+    override fun invoke(sort: CounterSort.TimeType): Flow<List<UiCounter>> =
+        repo.getCountersFlow(sort).mapLatest { it.map { item -> item.toUI() } }
 }
 
 class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo) :
@@ -71,8 +70,9 @@ class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo
  */
 class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksOfFlow {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(parentId: Long): Flow<List<UiTick>> =
-        repo.getTicksFlow(parentId = parentId).mapLatest { it.map { item -> item.toUi() } }
+    override fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>> =
+        repo.getTicksFlow(parentId = parentId, sort = sort)
+            .mapLatest { it.map { item -> item.toUi() } }
 }
 
 /**
@@ -137,21 +137,6 @@ class UpdateCounterSupportImpl @Inject constructor(private val repo: CountersRep
     }
 }
 
-/**
- * Default Implementation
- */
-class UndoTicksImpl @Inject constructor(
-    private val repo: CountersRepo,
-    @CurrentTime private val getTime: GetTime,
-) : UndoTicks {
-    override suspend fun invoke(parentId: Long, limit: Int?, duration: Duration) =
-        repo.deleteTicksByTimeModified(
-            parentId = parentId,
-            limit = limit,
-            start = getTime() - duration,
-            end = Instant.DISTANT_FUTURE
-        )
-}
 
 /**
  * Default Implementation
@@ -186,8 +171,13 @@ class DeleteTicksOfImpl @Inject constructor(private val repo: CountersRepo) : De
  * Default Implementation
  */
 class DeleteTicksFromImpl @Inject constructor(private val repo: CountersRepo) : DeleteTicksFrom {
-    override suspend fun invoke(parentId: Long, start: Instant, end: Instant) =
-        repo.deleteTicksByTimeForData(parentId = parentId, start = start, end = end)
+    override suspend fun invoke(parentId: Long, timeType: TimeType, start: Instant, end: Instant) =
+        repo.deleteTicksBySelection(
+            parentId = parentId,
+            timeType = timeType,
+            start = start,
+            end = end
+        )
 }
 
 /**
@@ -195,8 +185,13 @@ class DeleteTicksFromImpl @Inject constructor(private val repo: CountersRepo) : 
  */
 class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) :
     GetTicksSumOfFlow {
-    override fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double> =
-        repo.getTicksSumOfFlow(parentId = parentId, start = start, end = end)
+    override fun invoke(
+        parentId: Long,
+        timeType: TimeType,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> =
+        repo.getTicksSumOfFlow(parentId = parentId, timeType = timeType, start = start, end = end)
 }
 
 /**
@@ -204,8 +199,19 @@ class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) 
  */
 class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRepo) :
     GetTicksAverageOfFlow {
-    override fun invoke(parentId: Long, start: Instant, end: Instant): Flow<Double> =
-        repo.getTicksAverageOfFlow(parentId = parentId, start = start, end = end)
+
+    override fun invoke(
+        parentId: Long,
+        timeType: TimeType,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> =
+        repo.getTicksAverageOfFlow(
+            parentId = parentId,
+            timeType = timeType,
+            start = start,
+            end = end
+        )
 }
 
 /**

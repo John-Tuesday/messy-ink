@@ -6,17 +6,22 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -50,10 +55,17 @@ class CounterOverviewViewModel @Inject constructor(
 
     private val ioScope: CoroutineScope get() = viewModelScope + SupervisorJob() + ioDispatcher
 
+    private val counterSortState = MutableStateFlow(CounterSort.TimeType.TimeCreated)
+    private val tickSortState = MutableStateFlow(TickSort.TimeType.TimeCreated)
+
     /**
      * State of all counters
      */
-    val countersState = _getCountersFlow().stateInViewModel(listOf())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val countersState =
+        counterSortState
+            .flatMapLatest { _getCountersFlow(it) }
+            .stateInViewModel(listOf())
 
     /**
      * State of ticks sum, grouped by [UiTick.parentId]
@@ -85,6 +97,6 @@ class CounterOverviewViewModel @Inject constructor(
      * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
      */
     fun clearCounterTicks(counterId: Long) {
-        ioScope.launch { _deleteTicksFrom(parentId = counterId) }
+        ioScope.launch { _deleteTicksFrom(parentId = counterId, tickSortState.value) }
     }
 }

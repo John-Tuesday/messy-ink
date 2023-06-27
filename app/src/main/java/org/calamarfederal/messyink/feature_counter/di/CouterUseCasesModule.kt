@@ -18,7 +18,6 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
@@ -37,7 +36,6 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksAvera
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.UndoTicksImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateCounterFromSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateCounterSupportImpl
@@ -115,12 +113,6 @@ abstract class CounterUseCasesModule {
      */
     @Binds
     abstract fun bindUpdateTick(impl: UpdateTickImpl): UpdateTick
-
-    /**
-     * Binds Default Implementation
-     */
-    @Binds
-    abstract fun bindUndoTicks(impl: UndoTicksImpl): UndoTicks
 
     /**
      * Binds Default Implementation

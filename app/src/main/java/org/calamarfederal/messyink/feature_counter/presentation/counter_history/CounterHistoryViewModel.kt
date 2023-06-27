@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.math.minAndMaxOf
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
+import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
@@ -32,6 +35,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
@@ -82,6 +86,9 @@ class CounterHistoryViewModel @Inject constructor(
     private val counterIdState =
         savedStateHandle.getStateFlow(CounterHistoryNode.COUNTER_ID, NOID)
 
+    private val counterSortState = MutableStateFlow(CounterSort.TimeType.TimeCreated)
+    private val tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
+
     /**
      * Counter being examined.
      *
@@ -96,26 +103,26 @@ class CounterHistoryViewModel @Inject constructor(
     /**
      * All [UiTick] with [UiTick.parentId] equal to [counter]
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val ticks: StateFlow<List<UiTick>> = counterIdState
-        .flatMapLatest { _getTicksOfFlow(it) }
-        .stateInViewModel(listOf())
+    val ticks: StateFlow<List<UiTick>> =
+        counterIdState.combineTransform(tickSortState) { id, sort ->
+            emitAll(_getTicksOfFlow(id, sort))
+        }.stateInViewModel(listOf())
 
     /**
      * Sum of [ticks] or `null` when empty
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val tickSum: StateFlow<Double?> = counterIdState
-        .flatMapLatest { _getTicksSumOfFlow(it) }
-        .stateInViewModel(null)
+    val tickSum: StateFlow<Double?> =
+        counterIdState.combineTransform(tickSortState) { id, sort ->
+            emitAll(_getTicksSumOfFlow(id, sort))
+        }.stateInViewModel(null)
 
     /**
      * Average of [ticks] or `null` when empty
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val tickAverage: StateFlow<Double?> = counterIdState
-        .flatMapLatest { _getTicksAverageOfFlow(it) }
-        .stateInViewModel(null)
+    val tickAverage: StateFlow<Double?> =
+        counterIdState.combineTransform(tickSortState) { id, sort ->
+            emitAll(_getTicksAverageOfFlow(id, sort))
+        }.stateInViewModel(null)
 
     private val _graphDomain = MutableStateFlow(TimeDomainAgoTemplate("24hrs ago", 1.days).domain())
 

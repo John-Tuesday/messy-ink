@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -20,7 +22,7 @@ import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.UndoTicks
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -44,7 +46,6 @@ class GameCounterViewModel @Inject constructor(
     private val _duplicateTick: DuplicateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
-    private val _undoTicks: UndoTicks,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
@@ -61,6 +62,7 @@ class GameCounterViewModel @Inject constructor(
     private val ioScope = viewModelScope + SupervisorJob() + ioDispatcher
 
     private val counterIdState = savedStateHandle.getStateFlow(GameCounterNode.COUNTER_ID, NOID)
+    private val tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
 
     /**
      * counter being examined; idk how to handle when DNE.
@@ -73,9 +75,9 @@ class GameCounterViewModel @Inject constructor(
     /**
      * Sum all [UiTick] of parent [counter]
      */
-    val tickSum = counterIdState
-        .flatMapLatest { _getTicksSumOfFlow(it) }
-        .stateInIo(0.00)
+    val tickSum = counterIdState.combineTransform(tickSortState) { id, sort ->
+        emitAll(_getTicksSumOfFlow(id, sort))
+    }.stateInIo(0.00)
 
     private val _primaryIncrement = MutableStateFlow(5.00)
 
