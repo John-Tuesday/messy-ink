@@ -63,10 +63,16 @@ object CounterModuleProvider {
     @ViewModelScoped
     fun provideCounterDao(db: MessyInkDb): CounterDao = db.counterDao()
 
+    /**
+     * Provide View Model scoped [TickDao]
+     */
     @Provides
     @ViewModelScoped
     fun provideTickDao(db: MessyInkDb): TickDao = db.tickDao()
 
+    /**
+     * Provide View Model scoped [CounterTickDao]
+     */
     @Provides
     @ViewModelScoped
     fun provideCounterTickDao(db: MessyInkDb): CounterTickDao = db.CounterTickDao()
@@ -92,6 +98,9 @@ object CounterModuleProvider {
     @Provides
     fun provideCurrentTimeGetter(): GetTime = GetTime { Clock.System.now() }
 
+    /**
+     * Provides a simple callable which returns the current timezone
+     */
     @CurrentTimeZone
     @Provides
     fun provideCurrentTimeZoneGetter(): GetTimeZone =

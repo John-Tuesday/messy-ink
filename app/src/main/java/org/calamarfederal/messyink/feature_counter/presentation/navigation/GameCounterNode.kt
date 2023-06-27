@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter

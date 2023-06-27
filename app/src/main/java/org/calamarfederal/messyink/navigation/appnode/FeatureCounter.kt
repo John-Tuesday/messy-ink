@@ -6,7 +6,13 @@ import androidx.navigation.compose.composable
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterFeatureEntry
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterNavHost
 
+/**
+ * # Count, track, and graph Feature
+ */
 object FeatureCounter : MessyInkNavNode(route = CounterNavHost.rootRoute) {
+    /**
+     * Entry point builder
+     */
     fun NavGraphBuilder.featureCounter(
         navHostController: NavHostController,
     ) {

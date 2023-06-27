@@ -7,7 +7,7 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZo
 /**
  * to string with the order Day Month Year
  *
- * am I using [formatWithSkeleton] wrong? use this until I figure it out
+ * am I using [androidx.compose.material3.formatWithSkeleton] wrong? use this until I figure it out
  */
 fun Instant.localDateToString(
     year: Boolean = false,
@@ -31,7 +31,7 @@ fun Instant.localDateToString(
 /**
  * convert to string using a 24 hr clock, localized with [CurrentTimeZoneGetter]
  *
- * am I using [formatWithSkeleton] wrong? use this until I figure it out
+ * am I using [androidx.compose.material3.formatWithSkeleton] wrong? use this until I figure it out
  */
 fun Instant.localTimeToString(second: Boolean = false, separator: String = ":"): String {
     val dt = toLocalDateTime(CurrentTimeZoneGetter())
@@ -52,7 +52,7 @@ fun Instant.localTimeToString(second: Boolean = false, separator: String = ":"):
 /**
  * convenience function equivalent to [localToString] [divider] [localTimeToString]
  *
- * am I using [formatWithSkeleton] wrong? use this until I figure it out
+ * am I using [androidx.compose.material3.formatWithSkeleton] wrong? use this until I figure it out
  */
 fun Instant.localToString(
     divider: String = " ",

@@ -21,7 +21,7 @@ fun Dp.toMaterialLevelFloor(): MaterialLevel = MaterialLevel.floor(this)
 fun Dp.toMaterialLevelCiel(): MaterialLevel = MaterialLevel.ciel(this)
 
 /**
- * Should supersede [TonalElevation]
+ * Elevation level to Z-height in dp
  */
 class MaterialLevel private constructor(
     /**
@@ -69,7 +69,7 @@ class MaterialLevel private constructor(
         }
 
         /**
-         * Get [MaterialLevel] with [level] clamped inclusively between 0 and [allLevels.size]
+         * Get [MaterialLevel] with [level] clamped inclusively between `0` and size of [allLevels]
          */
         operator fun invoke(level: Int = 0): MaterialLevel =
             allLevels[level.coerceIn(0, allLevels.size)]

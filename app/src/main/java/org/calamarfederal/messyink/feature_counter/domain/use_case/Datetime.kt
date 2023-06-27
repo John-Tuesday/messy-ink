@@ -2,7 +2,6 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.TimeZone.Companion
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.di.CurrentTimeZone
 import org.calamarfederal.messyink.feature_counter.domain.GetTime

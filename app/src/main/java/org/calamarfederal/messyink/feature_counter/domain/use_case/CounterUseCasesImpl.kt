@@ -6,23 +6,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
+import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterAsSupportOrNull
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSupport
@@ -53,6 +52,9 @@ class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : 
         repo.getCountersFlow(sort).mapLatest { it.map { item -> item.toUI() } }
 }
 
+/**
+ * Default Implementation
+ */
 class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo) :
     GetCounterAsSupportOrNull {
     override suspend fun invoke(id: Long): UiCounterSupport? = repo.getCounterOrNull(id)?.let {
@@ -114,6 +116,9 @@ class UpdateCounterImpl @Inject constructor(private val repo: CountersRepo) : Up
     override suspend fun invoke(changed: UiCounter) = repo.updateCounter(changed.toCounter())
 }
 
+/**
+ * Default Implementation
+ */
 class UpdateCounterFromSupportImpl @Inject constructor(private val repo: CountersRepo) :
     UpdateCounterFromSupport {
     override suspend fun invoke(support: UiCounterSupport): Boolean {

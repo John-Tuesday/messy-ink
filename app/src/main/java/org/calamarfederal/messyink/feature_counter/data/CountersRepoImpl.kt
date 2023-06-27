@@ -9,8 +9,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.isDistantFuture
 import kotlinx.datetime.isDistantPast
 import org.calamarfederal.messyink.data.CounterTickDao
-import org.calamarfederal.messyink.data.entity.CounterColumn
-import org.calamarfederal.messyink.data.entity.TickColumn
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort

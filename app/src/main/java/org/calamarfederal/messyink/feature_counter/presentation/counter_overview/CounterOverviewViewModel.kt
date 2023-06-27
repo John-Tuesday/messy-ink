@@ -1,6 +1,5 @@
 package org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -12,7 +12,7 @@ import org.calamarfederal.messyink.data.entity.TickEntity
 private const val DB_VERSION: Int = 12
 
 /**
- * [RoomDatabase] for [CounterEntity] and [Note] types and related
+ * [RoomDatabase] for the whole app
  */
 @Database(
     version = DB_VERSION,
@@ -28,12 +28,18 @@ private const val DB_VERSION: Int = 12
 abstract class MessyInkDb : RoomDatabase() {
 
     /**
-     * Dao for [CounterEntity] feature
+     * Simple [CounterEntity] Dao
      */
     abstract fun counterDao(): CounterDao
 
+    /**
+     * Simple [TickEntity] Dao
+     */
     abstract fun tickDao(): TickDao
 
+    /**
+     * Dao [TickEntity] and [CounterEntity]
+     */
     abstract fun CounterTickDao(): CounterTickDao
 
 }
@@ -43,23 +49,23 @@ abstract class MessyInkDb : RoomDatabase() {
  */
 typealias RowsChanged = Int
 /**
- * Optional return value for [Insert] if and only if there is one [Entity]
+ * Optional return value for [Insert] if and only if there is one Entity/Row
  */
 typealias RowId = Long
 
 /**
- * matches objects using [PrimaryKey]
+ * matches objects using PrimaryKey
  */
 typealias DeleteNotes = Delete
 
 /**
- * matches objects using [PrimaryKey]
+ * matches objects using PrimaryKey
  */
 typealias UpdateNotes = Update
 
 /**
- * if one [Entity] as a parameter, can return [RowId]
+ * if one Entity as a parameter, can return [RowId]
  *
- * if array or collection of [Entity] as parameter, can return an array or collection of [RowId]
+ * if array or collection of Entity as parameter, can return an array or collection of [RowId]
  */
 typealias InsertNotes = Insert

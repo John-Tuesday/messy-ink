@@ -7,6 +7,9 @@ import org.calamarfederal.messyink.navigation.appnode.FeatureCounter.featureCoun
 import org.calamarfederal.messyink.navigation.appnode.MessyInkNavNode
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
+/**
+ * Wrapper for [MessyInkNavHost.SubNavHost]
+ */
 @Composable
 fun MessyInkEntry(
     modifier: Modifier = Modifier,
@@ -22,4 +25,3 @@ fun MessyInkEntry(
         }
     }
 }
-

@@ -6,7 +6,6 @@ import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import kotlin.time.Duration
 
 
 /**
@@ -39,6 +38,9 @@ fun interface GetCountersFlow {
  * SAM Get Counter but return it as a [UiCounterSupport] instead of [UiCounter]
  */
 fun interface GetCounterAsSupportOrNull {
+    /**
+     * gets the Counter with [id] and converts it to [UiCounterSupport] or `null` if it doesn't exist
+     */
     suspend operator fun invoke(id: Long): UiCounterSupport?
 }
 
@@ -110,6 +112,12 @@ fun interface UpdateCounter {
  * SAM to Update Counter
  */
 fun interface UpdateCounterFromSupport {
+    /**
+     * Finds and updates Counter with matching [Counter.id]
+     *
+     * returns `false` if [support] has any errors or invalid id,
+     * return `true` if the [Counter] was found and updated
+     */
     suspend operator fun invoke(support: UiCounterSupport): Boolean
 }
 

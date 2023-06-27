@@ -34,7 +34,7 @@ import org.calamarfederal.messyink.common.compose.material3.exposed.tonalElevati
 
 
 /**
- * replicate the default [Button] except add optional [onLongClick] and [onDoubleClick] callbacks
+ * replicate the default [androidx.compose.material3.Button] except add optional [onLongClick] and [onDoubleClick] callbacks
  *
  * defaults are taken from [ButtonDefaults] or facsimiled when necessary
  */
@@ -85,8 +85,7 @@ fun MoreClickButton(
                 Row(
                     modifier = Modifier
                         .defaultMinSize(
-                            minWidth = ButtonDefaults.MinWidth,
-                            minHeight = ButtonDefaults.MinHeight
+                            minWidth = ButtonDefaults.MinWidth, minHeight = ButtonDefaults.MinHeight
                         )
                         .padding(contentPadding),
                     horizontalArrangement = Arrangement.Center,
@@ -99,7 +98,7 @@ fun MoreClickButton(
 }
 
 /**
- * [FilledTonalButton] but with [onLongClick] and [onDoubleClick]
+ * [androidx.compose.material3.FilledTonalButton] but with [onLongClick] and [onDoubleClick]
  *
  * implementation through [MoreClickButton]
  */
@@ -137,7 +136,7 @@ fun MoreClickFilledTonalButton(
 )
 
 /**
- * [ElevatedButton] but with [onLongClick] and [onDoubleClick]
+ * [androidx.compose.material3.ElevatedButton] but with [onLongClick] and [onDoubleClick]
  *
  * implementation through [MoreClickButton]
  */
@@ -175,7 +174,7 @@ fun MoreClickElevatedButton(
 )
 
 /**
- * [OutlinedButton] but with [onLongClick] and [onDoubleClick]
+ * [androidx.compose.material3.OutlinedButton] but with [onLongClick] and [onDoubleClick]
  *
  * implementation through [MoreClickButton]
  */
@@ -211,4 +210,3 @@ fun MoreClickOutlinedButton(
     onDoubleClick = onDoubleClick,
     content = content
 )
-

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * - tab display names
  * - index of each tab
  */
+@Suppress("MemberVisibilityCanBePrivate")
 internal enum class CounterHistoryTab(
     val displayName: String,
     private val activeIcon: () -> ImageVector,

@@ -12,7 +12,7 @@ import org.calamarfederal.messyink.data.entity.TickColumn.TimeType
 import org.calamarfederal.messyink.data.entity.TickEntity
 
 /**
- * Dao for combined operations of [TickEntity] and [CounterEntity]
+ * Dao operations on [TickEntity] when grouped [TickEntity.parentId]
  */
 @Dao
 interface CounterTickDao : TickDao, CounterDao {

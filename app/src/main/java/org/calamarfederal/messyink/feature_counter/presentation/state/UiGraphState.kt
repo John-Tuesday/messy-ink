@@ -4,7 +4,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -12,7 +11,6 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Convenience function to convert [millis] to a date using [timeZone]
@@ -152,4 +150,3 @@ class TimeDomainAgoTemplate(
 ) : TimeDomainTemplate {
     override fun domain() = CurrentTimeGetter().let { TimeDomain((it - duration) .. it) }
 }
-

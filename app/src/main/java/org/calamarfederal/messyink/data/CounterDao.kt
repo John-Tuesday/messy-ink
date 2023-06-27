@@ -2,17 +2,12 @@ package org.calamarfederal.messyink.data
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.TypeConverters
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.entity.CounterColumn
 import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickColumn
-import org.calamarfederal.messyink.data.entity.TickColumn.TimeType
-import org.calamarfederal.messyink.data.entity.TickEntity
 
 
 /**
