@@ -6,7 +6,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.isUnspecified
@@ -22,7 +21,7 @@ fun DenseTextField(
 
     // Option Begin
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = TextFieldDefaults.outlinedTextFieldPadding(),
+    contentPadding: PaddingValues = TextFieldDefaults.contentPaddingWithoutLabel(),
     enabled: Boolean = true,
     singleLine: Boolean = true,
     isError: Boolean = false,
@@ -36,13 +35,13 @@ fun DenseTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
 
     textStyle: TextStyle = LocalTextStyle.current,
-    denseTextFieldColors: TextFieldColors = outlinedTextFieldColors(),
+    denseTextFieldColors: TextFieldColors = TextFieldDefaults.colors(),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    innerContainer: @Composable () -> Unit = {}
+    innerContainer: @Composable () -> Unit = {},
 ) {
     val mergedTextStyle = LocalTextStyle.current.copy(
-        color = if(textStyle.color.isUnspecified) LocalContentColor.current else textStyle.color
+        color = if (textStyle.color.isUnspecified) LocalContentColor.current else textStyle.color
     ).merge(textStyle)
 
     BasicTextField(
@@ -57,8 +56,8 @@ fun DenseTextField(
         interactionSource = interactionSource,
         modifier = modifier
     ) {
-        TextFieldDefaults.OutlinedTextFieldDecorationBox(
-            value.text,
+        TextFieldDefaults.DecorationBox(
+            value = value.text,
             innerTextField = it,
             label = label,
             placeholder = placeholder,
@@ -84,7 +83,7 @@ fun DenseTextField(
 
     // Option Begin
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = TextFieldDefaults.outlinedTextFieldPadding(),
+    contentPadding: PaddingValues = TextFieldDefaults.contentPaddingWithoutLabel(),
     enabled: Boolean = true,
     singleLine: Boolean = true,
     isError: Boolean = false,
@@ -98,10 +97,10 @@ fun DenseTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
 
     textStyle: TextStyle = LocalTextStyle.current,
-    denseTextFieldColors: TextFieldColors = outlinedTextFieldColors(),
+    denseTextFieldColors: TextFieldColors = TextFieldDefaults.colors(),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    innerContainer: @Composable () -> Unit = {}
+    innerContainer: @Composable () -> Unit = {},
 ) {
     val mergedTextStyle = LocalTextStyle.current.copy(
         color = if (textStyle.color.isUnspecified) LocalContentColor.current else textStyle.color
@@ -119,8 +118,8 @@ fun DenseTextField(
         interactionSource = interactionSource,
         modifier = modifier
     ) {
-        TextFieldDefaults.OutlinedTextFieldDecorationBox(
-            value,
+        TextFieldDefaults.DecorationBox(
+            value = value,
             innerTextField = it,
             label = label,
             placeholder = placeholder,
@@ -137,4 +136,3 @@ fun DenseTextField(
         )
     }
 }
-

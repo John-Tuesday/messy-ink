@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -100,8 +99,14 @@ data class GraphColor constructor(
      */
     val pointColor: Color,
 
+    /**
+     * Color of the box background of the text labels
+     */
     val signColor: Color,
 
+    /**
+     * Color of the text labels
+     */
     val signTextColor: Color,
 
     /**
@@ -275,7 +280,6 @@ fun BasicLineGraph(
  *
  * [rangeSlotIndexed] and [domainSlotIndexed] provide Zero-indexed labels for gridlines
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LineGraph(
     lineGraphPoints: List<PointByPercent>,
@@ -430,4 +434,3 @@ private fun LabeledGraphPreview() {
         }
     }
 }
-
