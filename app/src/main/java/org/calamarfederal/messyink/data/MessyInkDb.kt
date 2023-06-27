@@ -20,7 +20,7 @@ private const val DB_VERSION: Int = 11
         CounterEntity::class,
         TickEntity::class,
     ],
-    exportSchema = false,
+    exportSchema = true,
 )
 abstract class MessyInkDb : RoomDatabase() {
 
