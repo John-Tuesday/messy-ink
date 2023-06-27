@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import kotlinx.datetime.isDistantFuture
 import kotlinx.datetime.isDistantPast
-import org.calamarfederal.messyink.data.CounterDao
+import org.calamarfederal.messyink.data.CounterTickDao
+import org.calamarfederal.messyink.data.entity.CounterColumn
+import org.calamarfederal.messyink.data.entity.TickColumn
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
@@ -34,26 +36,32 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CountersRepoImpl @Inject constructor(
-    private val dao: CounterDao,
+    private val dao: CounterTickDao,
     @CurrentTime private val getCurrentTime: GetTime,
 ) : CountersRepo {
+    private val counterSort = CounterColumn.TimeModified
+    private val tickSort = TickColumn.TimeForData
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
 
-    override suspend fun getCounters(): List<Counter> = dao.counters().map { it.toCounter() }
+    override suspend fun getCounters(): List<Counter> =
+        dao.counters(counterSort).map { it.toCounter() }
 
     override suspend fun getCounterOrNull(id: Long): Counter? = dao.counter(id)?.toCounter()
     override suspend fun getTicks(parentId: Long): List<Tick> =
-        dao.ticksOf(parentId).map { it.toTick() }
+        dao.ticksWithParentId(parentId, tickSort).map { it.toTick() }
 
     override fun getCounterFlow(id: Long): Flow<Counter?> =
         dao.counterFlow(id).distinctUntilChanged().mapLatest { it?.toCounter() }
 
     override fun getCountersFlow(): Flow<List<Counter>> =
-        dao.countersFlow().distinctUntilChanged().map { data -> data.map { it.toCounter() } }
+        dao.countersFlow(counterSort).distinctUntilChanged()
+            .map { data -> data.map { it.toCounter() } }
 
     override fun getTicksFlow(parentId: Long): Flow<List<Tick>> =
-        dao.ticksOfFlow(parentId).distinctUntilChanged().map { data -> data.map { it.toTick() } }
+        dao.ticksWithParentIdFlow(parentId, tickSort)
+            .distinctUntilChanged()
+            .map { data -> data.map { it.toTick() } }
 
 
     override suspend fun duplicateCounter(counter: Counter): Counter {
@@ -74,7 +82,7 @@ class CountersRepoImpl @Inject constructor(
             timeModified = time,
             timeForData = tick.timeForData.run { if (isDistantFuture || isDistantPast) time else this },
             id = generateId(pool = getTickIds().toSet()),
-        ).also { dao.insertCounterTick(it.toEntity()) }
+        ).also { dao.insertTick(it.toEntity()) }
     }
 
     override suspend fun updateCounter(counter: Counter) =
@@ -86,10 +94,16 @@ class CountersRepoImpl @Inject constructor(
     override suspend fun deleteCounter(id: Long) = dao.deleteCounter(id)
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
     override suspend fun deleteTicks(ids: List<Long>) = dao.deleteTicks(ids)
-    override suspend fun deleteTicksOf(parentId: Long) = dao.deleteTicksOf(parentId)
+    override suspend fun deleteTicksOf(parentId: Long) = dao.deleteTickWithParentId(parentId)
 
     override suspend fun deleteTicksByTimeForData(parentId: Long, start: Instant, end: Instant) =
-        dao.deleteTicksByTimeForData(parentId, start = start, end = end)
+        dao.deleteTicksBySelector(
+            parentId = parentId,
+            limit = null,
+            sortColumn = tickSort,
+            start = start,
+            end = end
+        )
 
     override suspend fun deleteTicksByTimeModified(
         parentId: Long,
@@ -97,18 +111,33 @@ class CountersRepoImpl @Inject constructor(
         start: Instant,
         end: Instant,
     ) {
-        if (limit == null) dao.deleteTicksByTimeModified(parentId, start, end)
-        else dao.deleteTicksByTimeModifiedLimited(parentId, limit, start, end)
+        dao.deleteTicksBySelector(
+            parentId = parentId,
+            limit = limit,
+            sortColumn = tickSort,
+            start = start,
+            end = end
+        )
     }
 
     /**
      * # Summary & Calculation
      */
     override fun getTicksSumOfFlow(parentId: Long, start: Instant, end: Instant): Flow<Double> =
-        dao.ticksSumOfFlow(parentId = parentId, start = start, end = end)
+        dao.tickSumWithParentIdBySelectorFlow(
+            parentId = parentId,
+            selector = tickSort,
+            start = start,
+            end = end
+        )
 
     override fun getTicksAverageOfFlow(parentId: Long, start: Instant, end: Instant): Flow<Double> =
-        dao.ticksAverageOfFlow(parentId = parentId, start = start, end = end)
+        dao.tickAverageWithParentIdBySelectorFlow(
+            parentId = parentId,
+            selector = tickSort,
+            start = start,
+            end = end
+        )
 
-    override fun getTicksSumByFlow(): Flow<Map<Long, Double>> = dao.ticksSumByFlow()
+    override fun getTicksSumByFlow(): Flow<Map<Long, Double>> = dao.tickSumByParentIdFlow()
 }

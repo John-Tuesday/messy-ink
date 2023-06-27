@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.room.Update
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
@@ -32,8 +31,12 @@ abstract class MessyInkDb : RoomDatabase() {
      * Dao for [CounterEntity] feature
      */
     abstract fun counterDao(): CounterDao
-}
 
+    abstract fun tickDao(): TickDao
+
+    abstract fun CounterTickDao(): CounterTickDao
+
+}
 
 /**
  * Optional return value for [Update], [Delete], or [Insert]

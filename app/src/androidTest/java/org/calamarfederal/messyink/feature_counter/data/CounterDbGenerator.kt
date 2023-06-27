@@ -1,7 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.data
 
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.CounterDao
+import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
 import kotlin.time.Duration
@@ -65,7 +65,7 @@ fun generateTicks(
     )
 }
 
-suspend fun CounterDao.generateTestData(
+suspend fun CounterTickDao.generateTestData(
     counters: Int = 20,
     ticksForCounter: (Int) -> Int = { 10 },
     startTime: Instant = TestTime,
@@ -80,7 +80,7 @@ suspend fun CounterDao.generateTestData(
             startId = generateTickId.next(),
             incId = { generateTickId.next() }
         ).take(ticksForCounter(index)).forEach {
-            insertCounterTick(it)
+            insertTick(it)
         }
     }
 }

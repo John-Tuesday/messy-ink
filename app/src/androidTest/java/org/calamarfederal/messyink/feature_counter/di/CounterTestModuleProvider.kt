@@ -13,10 +13,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.calamarfederal.messyink.data.CounterDao
+import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.data.MessyInkDb
-import org.calamarfederal.messyink.feature_counter.di.CounterModuleProvider
-import org.calamarfederal.messyink.feature_counter.di.CurrentTime
-import org.calamarfederal.messyink.feature_counter.di.CurrentTimeZone
+import org.calamarfederal.messyink.data.TickDao
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
 import javax.inject.Singleton
@@ -33,6 +32,14 @@ object CounterTestModuleProvider {
     @Provides
     @Singleton
     fun provideCountersDao(db: MessyInkDb): CounterDao = db.counterDao()
+
+    @Provides
+    @Singleton
+    fun provideTickDao(db: MessyInkDb): TickDao = db.tickDao()
+
+    @Provides
+    @Singleton
+    fun provideCounterTickDao(db: MessyInkDb): CounterTickDao = db.CounterTickDao()
 
     /**
      * Dispatcher to move local database operations off UI thread
