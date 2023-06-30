@@ -6,10 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.create_counter.CreateCounterScreen
@@ -31,13 +33,13 @@ internal object CreateCounterNode : CounterNavNode {
     /**
      * Navigate to stand-alone counter creation
      */
-    fun NavHostController.navigateToCreateCounter(
+    fun NavController.navigateToCreateCounter(
         navOptions: NavOptions? = navOptions { launchSingleTop = true },
     ) {
         navigate(this@CreateCounterNode.route, navOptions)
     }
 
-    fun NavHostController.navigateToEditCounter(
+    fun NavController.navigateToEditCounter(
         counterId: Long,
         navOptions: NavOptions? = navOptions { launchSingleTop = true },
     ) {
@@ -45,12 +47,15 @@ internal object CreateCounterNode : CounterNavNode {
     }
 
     fun NavGraphBuilder.createCounter(
-        navController: NavHostController,
         onCancel: () -> Unit,
         onDone: () -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
-        subNavNode { entry ->
+        composable(
+            route = CreateCounterNode.route,
+            arguments = CreateCounterNode.arguments,
+            deepLinks = CreateCounterNode.deepLinks,
+        ) { entry ->
             onEntry(entry)
 
             val viewModel: CreateCounterViewModel = hiltViewModel(entry)

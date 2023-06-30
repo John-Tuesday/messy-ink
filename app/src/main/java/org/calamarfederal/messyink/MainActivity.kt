@@ -25,6 +25,5 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         onCreateHook(this, savedInstanceState)
-
     }
 }

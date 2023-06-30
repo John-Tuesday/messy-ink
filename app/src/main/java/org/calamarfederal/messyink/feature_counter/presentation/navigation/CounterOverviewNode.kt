@@ -5,9 +5,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewScreen
 import org.calamarfederal.messyink.feature_counter.presentation.counter_overview.CounterOverviewViewModel
@@ -20,21 +22,24 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
 internal object CounterOverviewNode : CounterNavNode {
     override val route: String = "counter_overview"
 
-    fun NavHostController.navigateToCounterOverview(
-        navOptions: NavOptions? = navOptions { launchSingleTop = true }
+    fun NavController.navigateToCounterOverview(
+        navOptions: NavOptions? = navOptions { launchSingleTop = true },
     ) {
         navigate(this@CounterOverviewNode.route, navOptions)
     }
 
     fun NavGraphBuilder.counterOverview(
-        navController: NavHostController,
         onNavigateToCreateCounter: () -> Unit,
         onNavigateToCounterDetails: (Long) -> Unit,
         onNavigateToCounterGameMode: (Long) -> Unit,
         onNavigateToCounterEdit: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
-        subNavNode { entry ->
+        composable(
+            route = CounterOverviewNode.route,
+            arguments = CounterOverviewNode.arguments,
+            deepLinks = CounterOverviewNode.deepLinks,
+        ) { entry ->
             onEntry(entry)
 
             val viewModel: CounterOverviewViewModel = hiltViewModel()

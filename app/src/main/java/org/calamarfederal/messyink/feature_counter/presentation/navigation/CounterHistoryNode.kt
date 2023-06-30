@@ -5,10 +5,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
@@ -28,7 +30,7 @@ internal object CounterHistoryNode : CounterNavNode {
     override val arguments = listOf(navArgument(COUNTER_ID) { type = NavType.LongType })
     override val route = "$BASE_ROUTE/{$COUNTER_ID}"
 
-    fun NavHostController.navigateToCounterHistory(
+    fun NavController.navigateToCounterHistory(
         counterId: Long,
         navOptions: NavOptions? = null,
     ) {
@@ -36,10 +38,14 @@ internal object CounterHistoryNode : CounterNavNode {
     }
 
     fun NavGraphBuilder.counterHistory(
-        navController: NavHostController,
+        onNavigateUp: () -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
-        subNavNode { entry ->
+        composable(
+            route = CounterHistoryNode.route,
+            arguments = CounterHistoryNode.arguments,
+            deepLinks = CounterHistoryNode.deepLinks,
+        ) { entry ->
             onEntry(entry)
 
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
@@ -67,7 +73,7 @@ internal object CounterHistoryNode : CounterNavNode {
                 onDeleteTick = viewModel::deleteTick,
                 onResetCounter = viewModel::resetCounter,
                 onCounterChange = viewModel::changeCounter,
-                onNavigateUp = { navController.navigateUp() },
+                onNavigateUp = onNavigateUp,
             )
         }
     }

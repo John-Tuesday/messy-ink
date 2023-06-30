@@ -27,25 +27,4 @@ interface SubNavOwner<T : SubNavNode> {
      * should be const
      */
     val defaultStart: T
-
-    /**
-     * Convenience function for creating the owned [NavHost]
-     *
-     * often the [navController] is hoisted
-     */
-    @Composable
-    fun SubNavHost(
-        modifier: Modifier = Modifier,
-        start: T = defaultStart,
-        navController: NavHostController = rememberNavController(),
-        builder: NavGraphBuilder.() -> Unit,
-    ) {
-        NavHost(
-            modifier = modifier,
-            navController = navController,
-            startDestination = start.route,
-            route = rootRoute,
-            builder = builder,
-        )
-    }
 }

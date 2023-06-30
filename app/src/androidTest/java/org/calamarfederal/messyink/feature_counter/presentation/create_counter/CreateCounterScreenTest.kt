@@ -1,56 +1,31 @@
 package org.calamarfederal.messyink.feature_counter.presentation.create_counter
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.editableText
-import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
-import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import dagger.Binds
-import dagger.Module
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.calamarfederal.messyink.MainActivity
-import org.calamarfederal.messyink.OnCreateHook
 import org.calamarfederal.messyink.OnCreateHookImpl
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
-import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Singleton
 
 /**
  * # Create Counter Screen
  * ## Unit Tests
  */
 @HiltAndroidTest
-class CreateCounterScreenKtTest {
+class CreateCounterScreenTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 

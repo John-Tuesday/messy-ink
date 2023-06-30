@@ -24,32 +24,7 @@ interface SubNavNode {
     val arguments: List<NamedNavArgument> get() = listOf()
 
     /**
-     * create the arguments side of the normal route string
-     *
-     * For example:
-     * - `listOf(navArgument("Name")).`[toArgPlaceholder]` = "{Name}"`
-     * - `listOf(navArgument("One"), navArgument("two")).`[toArgPlaceholder]` = "{One}/{two}"`
-     */
-    fun List<NamedNavArgument>.toArgPlaceholder() = joinToString(
-        separator = "/",
-        prefix = "{",
-        postfix = "}",
-    ) { it.name }
-
-    /**
      * Deep links associated with this node
      */
     val deepLinks: List<NavDeepLink> get() = listOf()
-
-    /**
-     * Convenience function for starting composable logic
-     */
-    fun NavGraphBuilder.subNavNode(content: @Composable (NavBackStackEntry) -> Unit) =
-        composable(
-            route = this@SubNavNode.route,
-            arguments = this@SubNavNode.arguments,
-            deepLinks = this@SubNavNode.deepLinks,
-            content = content
-        )
 }
-

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.calamarfederal.messyink.OnCreateHookImpl
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterNavHost
 
 class CounterOverviewContent : OnCreateHookImpl() {
     override fun invoke(activity: ComponentActivity, savedInstanceState: Bundle?) {

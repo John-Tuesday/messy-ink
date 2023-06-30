@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
-import org.calamarfederal.messyink.navigation.MessyInkEntry
-import org.calamarfederal.messyink.navigation.appnode.FeatureCounter
+import androidx.navigation.compose.rememberNavController
+import org.calamarfederal.messyink.navigation.FeatureCounter
+import org.calamarfederal.messyink.navigation.MessyInkNavHost
+import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import javax.inject.Inject
 
 /**
@@ -29,9 +31,9 @@ open class OnCreateHookImpl @Inject constructor() : OnCreateHook {
         with(activity) {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             setContent {
-                MessyInkEntry(
-                    startDestination = FeatureCounter,
-                )
+                MessyInkTheme {
+                    MessyInkNavHost.NavHostGraph()
+                }
             }
         }
     }

@@ -5,15 +5,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import java.io.File.separator
 
 /**
  * # Game Mode Node
@@ -26,9 +29,16 @@ internal object GameCounterNode : CounterNavNode {
     override val arguments = listOf(
         navArgument(COUNTER_ID) { type = NavType.LongType; defaultValue = NOID },
     )
-    override val route = "$BASE_ROUTE/${arguments.toArgPlaceholder()}"
 
-    fun NavHostController.navigateToGameCounter(
+    override val route: String = "$BASE_ROUTE/${
+        arguments.joinToString(
+            separator = "/",
+            prefix = "{",
+            postfix = "}",
+        ) { it.name }
+    }"
+
+    fun NavController.navigateToGameCounter(
         counterId: Long,
         navOptions: NavOptions? = null,
     ) {
@@ -36,10 +46,14 @@ internal object GameCounterNode : CounterNavNode {
     }
 
     fun NavGraphBuilder.gameCounterNode(
-        navHostController: NavHostController,
+        onEditCounter: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
-        subNavNode { entry ->
+        composable(
+            route = GameCounterNode.route,
+            arguments = GameCounterNode.arguments,
+            deepLinks = GameCounterNode.deepLinks,
+        ) { entry ->
             onEntry(entry)
 
             val viewModel: GameCounterViewModel = hiltViewModel(entry)
@@ -60,7 +74,7 @@ internal object GameCounterNode : CounterNavNode {
                 onUndo = viewModel::undoTick,
                 onRedo = viewModel::redoTick,
                 onReset = viewModel::restartCounter,
-                onEditCounter = { navHostController.navigateToEditCounter(counter.id) },
+                onEditCounter = { onEditCounter(counter.id) },
             )
         }
     }
