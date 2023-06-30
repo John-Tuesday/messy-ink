@@ -6,9 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import org.calamarfederal.messyink.common.navigation.SubNavOwner
 import org.calamarfederal.messyink.data.MessyInkDb
-import org.calamarfederal.messyink.navigation.MessyInkNavHost
 import javax.inject.Singleton
 
 @Module

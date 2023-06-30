@@ -1,19 +1,15 @@
 package org.calamarfederal.messyink.common.navigation
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 
 /**
- * # Navigation Points for use in a [SubNavOwner]
+ * # Navigation Points for use in a [NavigationRoot]
  *
  * intended to implemented as a sealed class per graph.
  *
  */
-interface SubNavNode {
+interface NavigationNode {
     /**
      * Route to this Node
      */

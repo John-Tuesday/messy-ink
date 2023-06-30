@@ -3,8 +3,8 @@ package org.calamarfederal.messyink.feature_counter.presentation.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
-import org.calamarfederal.messyink.common.navigation.SubNavNode
-import org.calamarfederal.messyink.common.navigation.SubNavOwner
+import org.calamarfederal.messyink.common.navigation.NavigationNode
+import org.calamarfederal.messyink.common.navigation.NavigationRoot
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.counterHistory
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToCounterHistory
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.counterOverview
@@ -19,7 +19,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameC
  *
  * defines the entry point for the feature
  */
-object CounterNavHost : SubNavOwner<CounterNavNode> {
+object CounterGraphRoot : NavigationRoot<CounterNavNode> {
     override val rootRoute: String = "counter_feature"
     override val defaultStart: CounterNavNode = CounterOverviewNode
 
@@ -49,6 +49,6 @@ object CounterNavHost : SubNavOwner<CounterNavNode> {
 }
 
 /**
- * # Sealed base class for Navigation Points for use with [CounterNavHost]
+ * # Sealed base class for Navigation Points for use with [CounterGraphRoot]
  */
-sealed interface CounterNavNode : SubNavNode
+sealed interface CounterNavNode : NavigationNode
