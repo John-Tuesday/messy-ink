@@ -7,7 +7,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
@@ -19,7 +18,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
  *
  * Provide high level summary of all Counters and act as a nexus for navigation
  */
-internal object CounterOverviewNode : CounterNavNode {
+internal object CounterOverviewNode : CounterGraphNode {
     override val route: String = "counter_overview"
 
     fun NavController.navigateToCounterOverview(

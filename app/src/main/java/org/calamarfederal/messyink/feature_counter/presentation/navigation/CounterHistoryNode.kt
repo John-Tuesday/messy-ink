@@ -7,7 +7,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -19,7 +18,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_history.
  * # History and Details
  * ## of a Counter, including its ticks
  */
-internal object CounterHistoryNode : CounterNavNode {
+internal object CounterHistoryNode : CounterGraphNode {
     private const val BASE_ROUTE = "counter_history"
 
     /**

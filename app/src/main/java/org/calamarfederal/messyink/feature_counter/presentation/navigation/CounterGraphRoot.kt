@@ -1,7 +1,10 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.navigation
 import androidx.navigation.navigation
 import org.calamarfederal.messyink.common.navigation.NavigationNode
 import org.calamarfederal.messyink.common.navigation.NavigationRoot
@@ -19,14 +22,24 @@ import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameC
  *
  * defines the entry point for the feature
  */
-object CounterGraphRoot : NavigationRoot<CounterNavNode> {
+object CounterGraphRoot : NavigationRoot<CounterGraphNode>, NavigationNode {
     override val rootRoute: String = "counter_feature"
-    override val defaultStart: CounterNavNode = CounterOverviewNode
+    override val route: String get() = rootRoute
+    override val defaultStart: CounterGraphNode = CounterOverviewNode
+    override val arguments: List<NamedNavArgument> = listOf()
+    override val deepLinks: List<NavDeepLink> = listOf()
 
+    /**
+     * Feature entry point
+     *
+     * uses [navigation] and sets all the [CounterGraphNode]
+     */
     fun NavGraphBuilder.counterGraph(navController: NavController) {
         navigation(
             route = rootRoute,
             startDestination = defaultStart.route,
+            arguments = arguments,
+            deepLinks = deepLinks,
         ) {
             counterOverview(
                 onNavigateToCreateCounter = { navController.navigateToCreateCounter() },
@@ -51,4 +64,4 @@ object CounterGraphRoot : NavigationRoot<CounterNavNode> {
 /**
  * # Sealed base class for Navigation Points for use with [CounterGraphRoot]
  */
-sealed interface CounterNavNode : NavigationNode
+sealed interface CounterGraphNode : NavigationNode

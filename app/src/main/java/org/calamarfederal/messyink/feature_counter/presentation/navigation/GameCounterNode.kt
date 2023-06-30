@@ -7,22 +7,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import java.io.File.separator
 
 /**
  * # Game Mode Node
  * ## designed to track stats in games like player health in MtG
  */
-internal object GameCounterNode : CounterNavNode {
+internal object GameCounterNode : CounterGraphNode {
     private const val BASE_ROUTE = "game_counter"
     const val COUNTER_ID = "counter_id"
 

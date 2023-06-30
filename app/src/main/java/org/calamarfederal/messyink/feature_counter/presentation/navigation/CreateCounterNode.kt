@@ -8,7 +8,6 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -21,7 +20,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 /**
  * # Create / Edit Counter Node
  */
-internal object CreateCounterNode : CounterNavNode {
+internal object CreateCounterNode : CounterGraphNode {
     private const val BASE_ROUTE = "create_counter"
     const val INIT_COUNTER_ID = "init_counter_id"
 
