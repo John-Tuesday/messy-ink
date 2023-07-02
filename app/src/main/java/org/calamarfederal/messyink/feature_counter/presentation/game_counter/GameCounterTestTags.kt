@@ -5,4 +5,5 @@ internal object GameCounterTestTags {
     const val PrimaryDecButton = "primary-dec-button"
     const val SecondaryIncButton = "secondary-inc-button"
     const val SecondaryDecButton = "secondary-dec-button"
+    const val SummaryBox = "summary-box"
 }

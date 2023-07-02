@@ -20,6 +20,9 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
 import javax.inject.Singleton
 
+val TestTime: Instant = Instant.fromEpochMilliseconds(1684749567000)
+val TestTz: TimeZone = TimeZone.UTC
+
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
@@ -46,24 +49,24 @@ object CounterTestModuleProvider {
      */
     @Provides
     @Singleton
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
     /**
      * Provide the current time of the system at initialization
      */
     @CurrentTime
     @Provides
-    fun provideCurrentTime(): Instant = Clock.System.now()
+    fun provideCurrentTime(): Instant = TestTime
 
     /**
      * Provides a simple callable which returns the current time
      */
     @CurrentTime
     @Provides
-    fun provideCurrentTimeGetter(): GetTime = GetTime { Clock.System.now() }
+    fun provideCurrentTimeGetter(): GetTime = GetTime { TestTime }
 
     @CurrentTimeZone
     @Provides
     fun provideCurrentTimeZoneGetter(): GetTimeZone =
-        GetTimeZone { TimeZone.currentSystemDefault() }
+        GetTimeZone { TestTz }
 }

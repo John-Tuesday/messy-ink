@@ -1,6 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.data
 
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.data.CounterDao
 import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
@@ -15,7 +16,7 @@ import kotlin.time.Duration.Companion.days
 val TestTime: Instant = Instant.fromEpochMilliseconds(1684749567000)
 
 fun generateCounters(
-    startTime: Instant,
+    startTime: Instant = TestTime,
     stepTime: Duration = 1.days,
     startId: Long = 1L,
     incId: (Long) -> Long = { it + 1 },
@@ -37,9 +38,9 @@ fun generateCounters(
 }
 
 fun generateTicks(
-    startTime: Instant,
+    startTime: Instant = TestTime,
     stepTime: Duration = 1.days,
-    parentId: Long = 0L,
+    parentId: Long = 1L,
     startId: Long = 1L,
     incId: (Long) -> Long = { it + 1 },
     amount: (Long) -> Double = { it.toDouble() },
