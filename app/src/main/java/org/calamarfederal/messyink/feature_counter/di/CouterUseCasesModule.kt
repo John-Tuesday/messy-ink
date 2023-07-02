@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
@@ -23,6 +24,7 @@ import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSuppo
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromSupportImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateTickImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteCounterImpl
@@ -83,6 +85,12 @@ abstract class CounterUseCasesModule {
      */
     @Binds
     abstract fun bindCreateCounterFromSupport(impl: CreateCounterFromSupportImpl): CreateCounterFromSupport
+
+    /**
+     * Binds Implementation to interface
+     */
+    @Binds
+    abstract fun bindCreateTick(impl: CreateTickImpl): CreateTick
 
     /**
      * Binds Implementation to interface

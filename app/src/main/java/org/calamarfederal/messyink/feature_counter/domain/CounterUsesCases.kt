@@ -82,6 +82,10 @@ fun interface CreateCounterFromSupport {
     suspend operator fun invoke(support: UiCounterSupport): UiCounter?
 }
 
+fun interface CreateTick {
+    suspend operator fun invoke(tick: UiTick): UiTick
+}
+
 /**
  * SAM
  *

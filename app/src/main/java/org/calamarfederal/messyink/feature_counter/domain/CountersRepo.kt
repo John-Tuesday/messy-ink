@@ -63,6 +63,8 @@ interface CountersRepo {
      */
     suspend fun duplicateTick(tick: Tick): Tick
 
+    suspend fun createTick(tick: Tick): Tick
+
     /**
      * Update old [Counter] to [counter] and update [Counter.timeModified]
      *

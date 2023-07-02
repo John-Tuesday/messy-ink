@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
@@ -43,7 +44,7 @@ class GameCounterViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCounterFlow: GetCounterFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
-    private val _duplicateTick: DuplicateTick,
+    private val _createTick: CreateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
 ) : ViewModel() {
@@ -119,7 +120,7 @@ class GameCounterViewModel @Inject constructor(
      */
     fun addTick(amount: Double) {
         ioScope.launch {
-            _duplicateTick(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
+            _createTick(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
         }
     }
 

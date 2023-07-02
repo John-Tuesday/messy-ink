@@ -9,6 +9,7 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
@@ -96,6 +97,13 @@ class CreateCounterFromSupportImpl @Inject constructor(private val repo: Counter
         return repo.duplicateCounter(
             UiCounter(name = support.nameInput, id = NOID).toCounter()
         ).toUI()
+    }
+}
+
+class CreateTickImpl @Inject constructor(private val repo: CountersRepo) : CreateTick {
+    override suspend fun invoke(tick: UiTick): UiTick {
+        require(tick.parentId != NOID) { "Cannot create a Tick without a valid Parent ID" }
+        return repo.createTick(tick.toTick()).toUi()
     }
 }
 

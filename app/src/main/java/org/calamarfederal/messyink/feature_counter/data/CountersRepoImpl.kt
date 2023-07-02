@@ -43,6 +43,24 @@ class CountersRepoImpl @Inject constructor(
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
 
+    private suspend fun _createNewTick(
+        amount: Double,
+        parentId: Long,
+        timeForData: Instant? = null,
+    ): Tick {
+        require(parentId != NOID)
+
+        val time = getCurrentTime()
+        return Tick(
+            amount = amount,
+            timeCreated = time,
+            timeModified = time,
+            timeForData = timeForData ?: time,
+            parentId = parentId,
+            id = generateId(getTickIds().toSet())
+        )
+    }
+
     override suspend fun getCounters(sort: CounterSort.TimeType): List<Counter> =
         dao.counters(sort.toCounterTimeColumn()).map { it.toCounter() }
 
@@ -82,6 +100,14 @@ class CountersRepoImpl @Inject constructor(
             timeForData = tick.timeForData.run { if (isDistantFuture || isDistantPast) time else this },
             id = generateId(pool = getTickIds().toSet()),
         ).also { dao.insertTick(it.toEntity()) }
+    }
+
+    override suspend fun createTick(tick: Tick): Tick {
+        require(tick.parentId != NOID) { "Cannot create Tick without a valid Parent ID" }
+
+        val outTick = _createNewTick(tick.amount, parentId = tick.parentId)
+        dao.insertTick(outTick.toEntity())
+        return outTick
     }
 
     override suspend fun updateCounter(counter: Counter) =
