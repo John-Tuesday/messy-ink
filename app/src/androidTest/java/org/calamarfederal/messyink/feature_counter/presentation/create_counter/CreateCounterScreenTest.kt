@@ -1,19 +1,27 @@
 package org.calamarfederal.messyink.feature_counter.presentation.create_counter
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
+import org.calamarfederal.messyink.feature_counter.data.generateCounters
+import org.calamarfederal.messyink.feature_counter.data.toCounter
+import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 
 import org.junit.Before
@@ -24,35 +32,13 @@ import org.junit.Test
  * # Create Counter Screen
  * ## Unit Tests
  */
-@HiltAndroidTest
 class CreateCounterScreenTest {
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val composeRule = createComposeRule()
 
-    @get:Rule(order = 1)
-    val composeRule = createAndroidComposeRule<MainActivity>()
-
-    private val testContent = CreateCounterTestContent()
-
-    @BindValue
-    val contentSetter: OnCreateHookImpl = testContent
-
-    private var otherCounterSupport: UiCounterSupport?
-        get() = testContent.otherCounterSupport
-        set(value) {
-            testContent.otherCounterSupport = value
-        }
-
-    private var onCancelHook: () -> Unit
-        get() = testContent.onCancelHook
-        set(value) {
-            testContent.onCancelHook = value
-        }
-    private var onDoneHook: () -> Unit
-        get() = testContent.onDoneHook
-        set(value) {
-            testContent.onDoneHook = value
-        }
+    private lateinit var counterSupportState: MutableStateFlow<UiCounterSupport>
+    private lateinit var onCancel: MutableStateFlow<() -> Unit>
+    private lateinit var onDone: MutableStateFlow<() -> Unit>
 
     private val submitButtonNode get() = composeRule.onNodeWithTag(CreateCounterTestTags.SubmitButton)
     private val closeButtonNode get() = composeRule.onNodeWithTag(CreateCounterTestTags.CloseButton)
@@ -60,24 +46,35 @@ class CreateCounterScreenTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
+        counterSupportState = MutableStateFlow(UiCounterSupport())
+        onCancel = MutableStateFlow({})
+        onDone = MutableStateFlow({})
 
-        otherCounterSupport = null
-        onCancelHook = {}
-        onDoneHook = {}
+        composeRule.setContent {
+            val counterSupport by counterSupportState.collectAsState()
+            val cancel by onCancel.collectAsState()
+            val done by onDone.collectAsState()
+
+            CreateCounterScreen(
+                counterSupport = counterSupport,
+                onNameChange = {},
+                onCancel = cancel,
+                onDone = done,
+            )
+        }
     }
 
     @Test
     fun `Disable submit button when error`() {
-        otherCounterSupport = UiCounterSupport(nameError = true)
+        counterSupportState.value = UiCounterSupport(nameError = true)
         submitButtonNode.assertIsNotEnabled()
     }
 
     @Test
     fun `Enable submit button when no error`() {
-        otherCounterSupport = UiCounterSupport(nameError = false)
+        counterSupportState.value = UiCounterSupport(nameError = false)
         submitButtonNode.assertIsEnabled()
-        otherCounterSupport = UiCounterSupport(nameHelp = "help text", nameError = false)
+        counterSupportState.value = UiCounterSupport(nameHelp = "help text", nameError = false)
         submitButtonNode.assertIsEnabled()
     }
 
@@ -89,7 +86,7 @@ class CreateCounterScreenTest {
     @Test
     fun `Title field shows error message when error`() {
         val helpMessage = "help message"
-        otherCounterSupport = UiCounterSupport(nameHelp = helpMessage, nameError = true)
+        counterSupportState.value = UiCounterSupport(nameHelp = helpMessage, nameError = true)
 
         val semantics = titleFieldNode.fetchSemanticsNode().config
 
@@ -100,12 +97,12 @@ class CreateCounterScreenTest {
 
     @Test
     fun `Title field not marked error when no error`() {
-        otherCounterSupport = UiCounterSupport(nameError = false)
+        counterSupportState.value = UiCounterSupport(nameError = false)
         assert(
             !titleFieldNode.fetchSemanticsNode().config.contains(SemanticsProperties.Error)
         )
         val helpMessage = "help message"
-        otherCounterSupport = UiCounterSupport(nameHelp = helpMessage, nameError = false)
+        counterSupportState.value = UiCounterSupport(nameHelp = helpMessage, nameError = false)
         assert(
             !titleFieldNode.fetchSemanticsNode().config.contains(SemanticsProperties.Error)
         )
@@ -119,9 +116,10 @@ class CreateCounterScreenTest {
     @Test
     fun `Title field Ime action is submit when valid`() {
         var hasSubmitted = false
-        onDoneHook = { hasSubmitted = true }
+        onDone.value = { hasSubmitted = true }
 
-        titleFieldNode.performTextInput("valid title")
+        counterSupportState.update { it.copy(nameError = false) }
+
         assert(
             !titleFieldNode.fetchSemanticsNode().config.contains(SemanticsProperties.Error)
         )
@@ -133,9 +131,9 @@ class CreateCounterScreenTest {
     @Test
     fun `Title field ime action will not submit when invalid`() {
         var hasSubmitted = false
-        onDoneHook = { hasSubmitted = true }
+        onDone.value = { hasSubmitted = true }
 
-        otherCounterSupport = UiCounterSupport(nameError = true)
+        counterSupportState.value = UiCounterSupport(nameError = true)
         assert(
             titleFieldNode.fetchSemanticsNode().config.contains(SemanticsProperties.Error)
         )
