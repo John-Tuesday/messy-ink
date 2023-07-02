@@ -63,6 +63,10 @@ interface CountersRepo {
      */
     suspend fun duplicateTick(tick: Tick): Tick
 
+    /**
+     * Create new [Tick] using [Tick.amount], [Tick.parentId], and [Tick.timeForData] from [tick].
+     * sets new [Tick.timeCreated] and [Tick.timeModified]
+     */
     suspend fun createTick(tick: Tick): Tick
 
     /**

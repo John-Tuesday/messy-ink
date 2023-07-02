@@ -82,7 +82,13 @@ fun interface CreateCounterFromSupport {
     suspend operator fun invoke(support: UiCounterSupport): UiCounter?
 }
 
+/**
+ * Create a new [Tick] and set [Tick.timeModified] and [Tick.timeCreated] accordingly
+ */
 fun interface CreateTick {
+    /**
+     * Create a new [Tick] and set [Tick.timeModified] and [Tick.timeCreated] accordingly
+     */
     suspend operator fun invoke(tick: UiTick): UiTick
 }
 

@@ -100,6 +100,9 @@ class CreateCounterFromSupportImpl @Inject constructor(private val repo: Counter
     }
 }
 
+/**
+ * Default Implementation
+ */
 class CreateTickImpl @Inject constructor(private val repo: CountersRepo) : CreateTick {
     override suspend fun invoke(tick: UiTick): UiTick {
         require(tick.parentId != NOID) { "Cannot create a Tick without a valid Parent ID" }
