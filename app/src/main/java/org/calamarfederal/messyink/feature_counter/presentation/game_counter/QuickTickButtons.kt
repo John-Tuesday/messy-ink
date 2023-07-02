@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType.Companion.LongPress
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -72,6 +73,7 @@ internal fun CompactTickButtons(
                 onEditIncrement(Primary)
             },
             modifier = Modifier
+                .testTag(GameCounterTestTags.PrimaryIncButton)
                 .weight(primaryWeight)
                 .fillMaxWidth(),
         ) {
@@ -86,6 +88,7 @@ internal fun CompactTickButtons(
                 onEditIncrement(Secondary)
             },
             modifier = Modifier
+                .testTag(GameCounterTestTags.SecondaryIncButton)
                 .weight(secondaryWeight)
                 .fillMaxWidth(),
         ) {
@@ -107,6 +110,7 @@ internal fun CompactTickButtons(
                 content = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
             modifier = Modifier
+                .testTag(GameCounterTestTags.SecondaryDecButton)
                 .weight(secondaryWeight)
                 .fillMaxWidth(),
         ) {
@@ -125,6 +129,7 @@ internal fun CompactTickButtons(
                 content = MaterialTheme.colorScheme.onTertiary,
             ),
             modifier = Modifier
+                .testTag(GameCounterTestTags.PrimaryDecButton)
                 .weight(primaryWeight)
                 .fillMaxWidth(),
         ) {

@@ -35,6 +35,8 @@ internal object GameCounterNode : CounterGraphNode {
         ) { it.name }
     }"
 
+    internal fun buildDestination(counterId: Long) = "$BASE_ROUTE/$counterId"
+
     fun NavController.navigateToGameCounter(
         counterId: Long,
         navOptions: NavOptions? = null,
