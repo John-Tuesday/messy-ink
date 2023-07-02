@@ -8,11 +8,13 @@ import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -30,25 +32,16 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import javax.inject.Inject
 
-@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
 class GameCounterScreenTest {
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 1)
-    val composeRule = createAndroidComposeRule<MainActivity>()
+    @get:Rule
+    val composeRule = createComposeRule()
 
     private val testCounter = generateCounters().first().toCounter().toUI()
     private val testSum = 1.23
-    private val testContent = GameCounterTestContent(
-        counter = testCounter,
-        sum = testSum,
-    )
-
-    @BindValue
-    val contentSetter: OnCreateHookImpl = testContent
 
     private val primaryIncButton get() = composeRule.onNodeWithTag(GameCounterTestTags.PrimaryIncButton)
     private val primaryDecButton get() = composeRule.onNodeWithTag(GameCounterTestTags.PrimaryDecButton)
@@ -57,7 +50,26 @@ class GameCounterScreenTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
+        composeRule.setContent {
+            val counter = testCounter
+            val sum = testSum
+            val primaryInc = 5.00
+            val secondaryInc = 5.00
+
+            GameCounterScreen(
+                counter = counter,
+                tickSum = sum,
+                primaryIncrement = primaryInc,
+                onChangePrimaryIncrement = {},
+                secondaryIncrement = secondaryInc,
+                onChangeSecondaryIncrement = {},
+                onAddTick = {},
+                onUndo = {},
+                onRedo = {},
+                onReset = {},
+                onEditCounter = {},
+            )
+        }
     }
 
     @Test
