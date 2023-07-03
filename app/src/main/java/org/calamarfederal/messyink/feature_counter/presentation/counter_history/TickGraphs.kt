@@ -51,6 +51,13 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
+import org.calamarfederal.messyink.common.compose.ClockFormat.AMPMTitle
+import org.calamarfederal.messyink.common.compose.ClockFormat.TwelveHourHidden
+import org.calamarfederal.messyink.common.compose.HourFormat
+import org.calamarfederal.messyink.common.compose.MinuteFormat
+import org.calamarfederal.messyink.common.compose.SecondFormat
+import org.calamarfederal.messyink.common.compose.SecondFormat.Omit
+import org.calamarfederal.messyink.common.compose.SecondFormat.TwoDigit
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
@@ -64,6 +71,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.epochMilli
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 
 
 @Composable
@@ -178,11 +186,40 @@ private fun DomainBoundsAndPicker(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        TextButton(onClick = { openDomainPicker = true }) {
-            Text(domain.start.localToString())
+        val domainDiff by remember(domain) {
+            mutableStateOf((domain.start - domain.end).absoluteValue)
+        }
+        val secondFormat by remember(domainDiff) {
+            mutableStateOf(if (domainDiff > 1.minutes) SecondFormat.Omit else SecondFormat.TwoDigit)
+        }
+        val minuteFormat by remember(domainDiff) {
+            mutableStateOf(if (domainDiff > 2.days) MinuteFormat.Omit else MinuteFormat.TwoDigit)
+        }
+        val hourFormat by remember(domainDiff) {
+            mutableStateOf(if (domainDiff > 5.days) HourFormat.Omit else HourFormat.MinDigit)
+        }
+        val clockFormat by remember(hourFormat) {
+            mutableStateOf(if (hourFormat == HourFormat.Omit) TwelveHourHidden else AMPMTitle)
         }
         TextButton(onClick = { openDomainPicker = true }) {
-            Text(domain.end.localToString())
+            Text(
+                domain.start.localToString(
+                    second = secondFormat,
+                    minute = minuteFormat,
+                    hour = hourFormat,
+                    clockFormat = clockFormat,
+                )
+            )
+        }
+        TextButton(onClick = { openDomainPicker = true }) {
+            Text(
+                domain.end.localToString(
+                    second = secondFormat,
+                    minute = minuteFormat,
+                    hour = hourFormat,
+                    clockFormat = clockFormat,
+                )
+            )
         }
     }
     if (openDomainPicker) {
