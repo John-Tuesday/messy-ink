@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
@@ -36,7 +36,7 @@ class CounterOverviewViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCountersFlow: GetCountersFlow,
     private val _getTicksSumByFlow: GetTicksSumByFlow,
-    private val _createTick: DuplicateTick,
+    private val _createTick: CreateTick,
     private val _deleteCounter: DeleteCounter,
     private val _deleteTicksFrom: DeleteTicksFrom,
 ) : ViewModel() {

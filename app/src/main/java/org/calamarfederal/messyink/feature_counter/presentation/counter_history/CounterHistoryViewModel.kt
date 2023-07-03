@@ -26,9 +26,9 @@ import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.math.minAndMaxOf
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateTick
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
@@ -61,7 +61,7 @@ class CounterHistoryViewModel @Inject constructor(
     private val _getTicksOfFlow: GetTicksOfFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
-    private val _duplicateTick: DuplicateTick,
+    private val _createTick: CreateTick,
     private val _updateTick: UpdateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
@@ -176,7 +176,7 @@ class CounterHistoryViewModel @Inject constructor(
      */
     fun addTick(amount: Double) {
         ioScope.launch {
-            _duplicateTick(
+            _createTick(
                 UiTick(
                     amount = amount,
                     parentId = counterIdState.value,
