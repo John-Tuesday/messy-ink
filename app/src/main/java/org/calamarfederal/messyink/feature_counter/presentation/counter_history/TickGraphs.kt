@@ -35,6 +35,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,13 +52,17 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.compose.ClockFormat.AMPMTitle
 import org.calamarfederal.messyink.common.compose.ClockFormat.TwelveHourHidden
+import org.calamarfederal.messyink.common.compose.DayFormat
 import org.calamarfederal.messyink.common.compose.HourFormat
 import org.calamarfederal.messyink.common.compose.MinuteFormat
+import org.calamarfederal.messyink.common.compose.MonthFormat
 import org.calamarfederal.messyink.common.compose.SecondFormat
 import org.calamarfederal.messyink.common.compose.SecondFormat.Omit
 import org.calamarfederal.messyink.common.compose.SecondFormat.TwoDigit
+import org.calamarfederal.messyink.common.compose.YearFormat
 import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.compose.charts.PointByPercent
@@ -201,12 +206,37 @@ private fun DomainBoundsAndPicker(
         val clockFormat by remember(hourFormat) {
             mutableStateOf(if (hourFormat == HourFormat.Omit) TwelveHourHidden else AMPMTitle)
         }
+        val localDates by remember(domain) {
+            derivedStateOf {
+                val tz = CurrentTimeZoneGetter()
+                domain.start.toLocalDateTime(tz) .. domain.end.toLocalDateTime(tz)
+            }
+        }
+        val yearFormat by remember(localDates) {
+            mutableStateOf(
+                if (localDates.start.year == localDates.endInclusive.year) YearFormat.Omit
+                else YearFormat.FullDigit
+            )
+        }
+        val dayFormat by remember(localDates) {
+            mutableStateOf(
+                if (localDates.start == localDates.endInclusive) DayFormat.Omit else DayFormat.MinDigit
+            )
+        }
+        val monthFormat by remember(dayFormat) {
+            mutableStateOf(
+                if (dayFormat == DayFormat.Omit) MonthFormat.Omit else MonthFormat.FullName
+            )
+        }
         TextButton(onClick = { openDomainPicker = true }) {
             Text(
                 domain.start.localToString(
                     second = secondFormat,
                     minute = minuteFormat,
                     hour = hourFormat,
+                    day = dayFormat,
+                    month = monthFormat,
+                    year = yearFormat,
                     clockFormat = clockFormat,
                 )
             )
@@ -217,6 +247,9 @@ private fun DomainBoundsAndPicker(
                     second = secondFormat,
                     minute = minuteFormat,
                     hour = hourFormat,
+                    day = dayFormat,
+                    month = monthFormat,
+                    year = yearFormat,
                     clockFormat = clockFormat,
                 )
             )
