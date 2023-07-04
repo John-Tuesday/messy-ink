@@ -8,13 +8,22 @@ import androidx.room.TypeConverters
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.TimeTypeConverters
 
+
+private object TickTableNames {
+    const val TableName: String = "counter_tick"
+    const val TimeCreated: String = "time_created"
+    const val TimeModified: String = "time_modified"
+    const val TimeForData: String = "time_for_data"
+}
+
 /**
  * Room [Entity] for an event owned by [CounterEntity]
  *
  * [Instant] converts to [Long]
  */
 @Entity(
-    tableName = "counter_tick", foreignKeys = [ForeignKey(
+    tableName = TickTableNames.TableName,
+    foreignKeys = [ForeignKey(
         entity = CounterEntity::class,
         parentColumns = ["id"],
         childColumns = ["parent_id"],
@@ -33,7 +42,7 @@ data class TickEntity(
      *
      * converts to [Long]
      */
-    @ColumnInfo(name = "time_modified")
+    @ColumnInfo(name = TickTableNames.TimeModified)
     @field:TypeConverters(TimeTypeConverters::class)
     val timeModified: Instant,
 
@@ -42,7 +51,7 @@ data class TickEntity(
      *
      * converts to [Long]
      */
-    @ColumnInfo(name = "time_created")
+    @ColumnInfo(name = TickTableNames.TimeCreated)
     @field:TypeConverters(TimeTypeConverters::class)
     val timeCreated: Instant,
 
@@ -51,7 +60,7 @@ data class TickEntity(
      *
      * converts to [Long]
      */
-    @ColumnInfo(name = "time_for_data")
+    @ColumnInfo(name = TickTableNames.TimeForData)
     @field:TypeConverters(TimeTypeConverters::class)
     val timeForData: Instant,
 
@@ -67,33 +76,3 @@ data class TickEntity(
     @PrimaryKey
     val id: Long,
 )
-
-/**
- * Column of [TickEntity]
- */
-sealed class TickColumn(
-    /**
-     * Name of the column in room
-     */
-    val columnName: String,
-) {
-    /**
-     * Column measuring time
-     */
-    sealed class TimeType(columnName: String) : TickColumn(columnName)
-
-    /**
-     * Time last modified
-     */
-    object TimeModified : TimeType("time_modified")
-
-    /**
-     * Time first created
-     */
-    object TimeCreated : TimeType("time_created")
-
-    /**
-     * Default time used to sort or graph
-     */
-    object TimeForData : TimeType("time_for_data")
-}

@@ -7,8 +7,6 @@ import androidx.room.Transaction
 import androidx.room.TypeConverters
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.entity.TickColumn
-import org.calamarfederal.messyink.data.entity.TickColumn.TimeType
 import org.calamarfederal.messyink.data.entity.TickEntity
 
 /**
@@ -20,31 +18,38 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * All [TickEntity] with matching [parentId] ordered by [TickEntity.timeForData]
      */
-    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId ORDER BY :sortColumn")
-    suspend fun ticksWithParentId(
-        parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        sortColumn: TimeType,
-    ): List<TickEntity>
+    @Transaction
+    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId")
+    suspend fun ticksWithParentId(parentId: Long): List<TickEntity>
 
     /**
      * @return emits [List] of every [TickEntity] with matching [parentId] ordered by [TickEntity.timeForData] or empty [List]
      */
-    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId ORDER BY :sortColumn")
-    fun ticksWithParentIdFlow(
-        parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        sortColumn: TimeType,
-    ): Flow<List<TickEntity>>
+    @Transaction
+    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId ORDER BY time_for_data")
+    fun ticksWithParentIdOrderDataFlow(parentId: Long): Flow<List<TickEntity>>
+
+    /**
+     * @return emits [List] of every [TickEntity] with matching [parentId] ordered by [TickEntity.timeModified] or empty [List]
+     */
+    @Transaction
+    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId ORDER BY time_modified")
+    fun ticksWithParentIdOrderModifiedFlow(parentId: Long): Flow<List<TickEntity>>
+
+    /**
+     * @return emits [List] of every [TickEntity] with matching [parentId] ordered by [TickEntity.timeCreated] or empty [List]
+     */
+    @Transaction
+    @Query("SELECT * FROM counter_tick WHERE parent_id = :parentId ORDER BY time_created")
+    fun ticksWithParentIdOrderCreatedFlow(parentId: Long): Flow<List<TickEntity>>
 
     /**
      * [List] of [TickEntity.id] sorted by [TickEntity.timeModified] in bounds [[start], [end]] with [parentId]
      */
-    @Query("SELECT id FROM counter_tick WHERE parent_id = :parentId AND :sortColumn BETWEEN :start AND :end ORDER BY :sortColumn")
-    suspend fun tickIdsBySelector(
+    @Transaction
+    @Query("SELECT id FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end ORDER BY time_for_data")
+    suspend fun tickIdsByTimeForData(
         parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        sortColumn: TimeType,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -54,12 +59,11 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * [List] of [TickEntity.id] sorted by [TickEntity.timeModified] in bounds [[start], [end]] with [parentId]
      */
-    @Query("SELECT id FROM counter_tick WHERE parent_id = :parentId AND :sortColumn BETWEEN :start AND :end ORDER BY :sortColumn LIMIT :limit")
-    suspend fun tickIdsBySelectorWithLimit(
+    @Transaction
+    @Query("SELECT id FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end ORDER BY time_for_data LIMIT :limit")
+    suspend fun tickIdsByTimeForData(
         parentId: Long,
         limit: Int,
-        @TypeConverters(TickColumnConverters::class)
-        sortColumn: TickColumn.TimeType,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -69,6 +73,7 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * Delete all [TickEntity] with [parentId]
      */
+    @Transaction
     @Query("DELETE FROM counter_tick WHERE parent_id = :parentId")
     suspend fun deleteTickWithParentId(parentId: Long)
 
@@ -78,6 +83,7 @@ interface CounterTickDao : TickDao, CounterDao {
      * key is [TickEntity.parentId]
      * value is the sum of all matching [TickEntity]
      */
+    @Transaction
     @MapInfo(
         keyColumn = "parent_id",
         valueColumn = "tick_sum",
@@ -88,11 +94,10 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * Sum of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
      */
-    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND :selector BETWEEN :start AND :end")
-    suspend fun tickSumWithParentIdBySelector(
+    @Transaction
+    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
+    suspend fun tickSumWithParentIdByTimeForData(
         parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        selector: TimeType,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -102,11 +107,36 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * Sum of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
      */
-    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND :selector BETWEEN :start AND :end")
-    fun tickSumWithParentIdBySelectorFlow(
+    @Transaction
+    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
+    fun tickSumWithParentIdByDataFlow(
         parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        selector: TimeType,
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    ): Flow<Double>
+
+    /**
+     * Sum of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
+     */
+    @Transaction
+    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND time_created BETWEEN :start AND :end")
+    fun tickSumWithParentIdByCreatedFlow(
+        parentId: Long,
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    ): Flow<Double>
+
+    /**
+     * Sum of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
+     */
+    @Transaction
+    @Query("SELECT SUM(amount) FROM counter_tick WHERE parent_id = :parentId AND time_modified BETWEEN :start AND :end")
+    fun tickSumWithParentIdByModifiedFlow(
+        parentId: Long,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -116,11 +146,10 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * Average of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
      */
-    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND :selector BETWEEN :start AND :end")
-    suspend fun tickAverageWithParentIdBySelector(
+    @Transaction
+    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
+    suspend fun tickAverageWithParentIdByTimeForData(
         parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        selector: TimeType,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -130,11 +159,10 @@ interface CounterTickDao : TickDao, CounterDao {
     /**
      * Average of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
      */
-    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND :selector BETWEEN :start AND :end")
-    fun tickAverageWithParentIdBySelectorFlow(
+    @Transaction
+    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND time_for_data BETWEEN :start AND :end")
+    fun tickAverageWithParentIdByDataFlow(
         parentId: Long,
-        @TypeConverters(TickColumnConverters::class)
-        selector: TimeType,
         @TypeConverters(TimeTypeConverters::class)
         start: Instant,
         @TypeConverters(TimeTypeConverters::class)
@@ -142,29 +170,29 @@ interface CounterTickDao : TickDao, CounterDao {
     ): Flow<Double>
 
     /**
-     * Delete up to [limit] [TickEntity] with [parentId] and [TickEntity.timeModified] in bounds [[start], [end]], ordered by [TickEntity.timeModified]
+     * Average of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
      */
     @Transaction
-    suspend fun deleteTicksBySelector(
+    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND time_created BETWEEN :start AND :end")
+    fun tickAverageWithParentIdByCreatedFlow(
         parentId: Long,
-        limit: Int?,
-        sortColumn: TimeType,
+        @TypeConverters(TimeTypeConverters::class)
         start: Instant,
+        @TypeConverters(TimeTypeConverters::class)
         end: Instant,
-    ) {
-        val ids = if (limit != null) tickIdsBySelectorWithLimit(
-            parentId = parentId,
-            limit = limit,
-            sortColumn = sortColumn,
-            start = start,
-            end = end
-        ) else tickIdsBySelector(
-            parentId = parentId,
-            sortColumn = sortColumn,
-            start = start,
-            end = end
-        )
-        deleteTicks(ids)
-    }
+    ): Flow<Double>
+
+    /**
+     * Average of all [TickEntity.amount] with [parentId] and [selector] between [start] and [end]
+     */
+    @Transaction
+    @Query("SELECT AVG(amount) FROM counter_tick WHERE parent_id = :parentId AND time_modified BETWEEN :start AND :end")
+    fun tickAverageWithParentIdByModifiedFlow(
+        parentId: Long,
+        @TypeConverters(TimeTypeConverters::class)
+        start: Instant,
+        @TypeConverters(TimeTypeConverters::class)
+        end: Instant,
+    ): Flow<Double>
 
 }

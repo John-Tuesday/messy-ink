@@ -11,7 +11,7 @@ interface CountersRepo {
     /**
      * One-shot get all saved counters ordered by DAO logic
      */
-    suspend fun getCounters(sort: CounterSort.TimeType): List<Counter>
+    suspend fun getCounters(): List<Counter>
 
     /**
      * Gets the counter if it exists, null otherwise
@@ -23,7 +23,7 @@ interface CountersRepo {
      *
      * @param[parentId] should be a valid Counter.id
      */
-    suspend fun getTicks(parentId: Long, sort: TickSort.TimeType): List<Tick>
+    suspend fun getTicks(parentId: Long): List<Tick>
 
     /**
      * Watch changes to Counter with [id]

@@ -7,12 +7,18 @@ import androidx.room.TypeConverters
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.TimeTypeConverters
 
+private object CounterTableNames {
+    const val TableName = "counter"
+    const val TimeModified = "time_modified"
+    const val TimeCreated = "time_created"
+}
+
 /**
  * Room [Entity] for counters
  *
  * [timeModified] and [timeCreated] are converted to timestamp [Long] in the db
  */
-@Entity(tableName = "counter")
+@Entity(tableName = CounterTableNames.TableName)
 data class CounterEntity(
     /**
      * user given name
@@ -24,7 +30,7 @@ data class CounterEntity(
      *
      * converts to [Long]
      */
-    @ColumnInfo(name = "time_modified")
+    @ColumnInfo(name = CounterTableNames.TimeModified)
     @field:TypeConverters(TimeTypeConverters::class)
     val timeModified: Instant,
 
@@ -33,7 +39,7 @@ data class CounterEntity(
      *
      * converts to [Long]
      */
-    @ColumnInfo(name = "time_created")
+    @ColumnInfo(name = CounterTableNames.TimeCreated)
     @field:TypeConverters(TimeTypeConverters::class)
     val timeCreated: Instant,
 
@@ -42,28 +48,3 @@ data class CounterEntity(
      */
     @PrimaryKey val id: Long,
 )
-
-/**
- * Identify columns for queries (typically sorting)
- */
-sealed class CounterColumn(
-    /**
-     * Name of the column in room
-     */
-    val columnName: String,
-) {
-    /**
-     * Column measuring time
-     */
-    sealed class TimeType(columnName: String) : CounterColumn(columnName)
-
-    /**
-     * Time Created
-     */
-    object TimeCreated : TimeType("time_created")
-
-    /**
-     * Time Modified
-     */
-    object TimeModified : TimeType("time_modified")
-}

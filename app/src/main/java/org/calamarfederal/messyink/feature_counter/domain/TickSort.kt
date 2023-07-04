@@ -1,5 +1,8 @@
 package org.calamarfederal.messyink.feature_counter.domain
 
+import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+
 /**
  * Sort Ticks by element
  */
@@ -23,6 +26,15 @@ sealed interface TickSort {
          */
         TimeForData,
     }
+}
+
+/**
+ * Get corresponding time based on [timeType]
+ */
+fun Tick.getTime(timeType: TickSort.TimeType): Instant = when (timeType) {
+    TimeType.TimeModified -> timeModified
+    TimeType.TimeCreated  -> timeCreated
+    TimeType.TimeForData  -> timeForData
 }
 
 /**
