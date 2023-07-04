@@ -226,6 +226,7 @@ fun BasicLineGraph(
                     y = size.height,
                 )
                 path.lineTo(x = 0f, y = size.height)
+                path.close()
                 drawPath(
                     path = path,
                     color = graphColors.fillColor,
@@ -407,6 +408,26 @@ private fun BasicGraphPreview() {
                 lineGraphPoints = mapOf(
                     .3 to .2,
                     .5 to .4,
+                ).map { PointByPercent(it.key, it.value) },
+                modifier = Modifier
+                    .size(300.dp)
+                    .padding(16.dp),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun LineGraphAltPreview() {
+    MessyInkTheme {
+        Surface {
+            LineGraph(
+                lineGraphPoints = mapOf(
+                    0.00 to 1.00,
+                    .3 to .2,
+                    .5 to .4,
+                    1.00 to 0.00,
                 ).map { PointByPercent(it.key, it.value) },
                 modifier = Modifier
                     .size(300.dp)
