@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.common.compose.material3.exposed
+package org.calamarfederal.messyink.common.presentation.compose.material3.exposed
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme

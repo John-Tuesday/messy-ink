@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.common.compose.material3.exposed
+package org.calamarfederal.messyink.common.presentation.compose.material3.exposed
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
@@ -24,8 +24,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Dp
-import org.calamarfederal.messyink.common.compose.material3.exposed.ExposedElevationAnimation.DefaultIncomingSpec
-import org.calamarfederal.messyink.common.compose.material3.exposed.ExposedElevationAnimation.DefaultOutgoingSpec
+import org.calamarfederal.messyink.common.presentation.compose.material3.exposed.ExposedElevationAnimation.DefaultIncomingSpec
+import org.calamarfederal.messyink.common.presentation.compose.material3.exposed.ExposedElevationAnimation.DefaultOutgoingSpec
 
 
 /**

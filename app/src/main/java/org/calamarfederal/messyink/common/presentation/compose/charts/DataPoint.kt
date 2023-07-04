@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.common.compose.charts
+package org.calamarfederal.messyink.common.presentation.compose.charts
 
 import androidx.compose.ui.geometry.Offset
 

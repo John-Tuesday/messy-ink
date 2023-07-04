@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.common.compose.material3.exposed
+package org.calamarfederal.messyink.common.presentation.compose.material3.exposed
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.InteractionSource
@@ -47,4 +47,3 @@ fun ExposedButtonElevation.shadowElevation(
     enabled: Boolean,
     interactionSource: InteractionSource,
 ): State<Dp> = animateElevation(enabled = enabled, interactionSource = interactionSource)
-
