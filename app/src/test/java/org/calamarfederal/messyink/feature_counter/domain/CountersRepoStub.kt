@@ -2,10 +2,11 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.domain.CounterSort.TimeType
 
 
 open class CountersRepoStub : CountersRepo {
-    override suspend fun getCounters(sort: CounterSort.TimeType): List<Counter> {
+    override suspend fun getCounters(): List<Counter> {
         TODO("Not yet implemented")
     }
 
@@ -13,7 +14,7 @@ open class CountersRepoStub : CountersRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getTicks(parentId: Long, sort: TickSort.TimeType): List<Tick> {
+    override suspend fun getTicks(parentId: Long): List<Tick> {
         TODO("Not yet implemented")
     }
 
@@ -21,7 +22,7 @@ open class CountersRepoStub : CountersRepo {
         TODO("Not yet implemented")
     }
 
-    override fun getCountersFlow(sort: CounterSort.TimeType): Flow<List<Counter>> {
+    override fun getCountersFlow(sort: TimeType): Flow<List<Counter>> {
         TODO("Not yet implemented")
     }
 

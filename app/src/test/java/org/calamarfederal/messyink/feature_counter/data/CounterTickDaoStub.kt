@@ -4,39 +4,37 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.data.RowsChanged
-import org.calamarfederal.messyink.data.entity.CounterColumn.TimeType
 import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickColumn
 import org.calamarfederal.messyink.data.entity.TickEntity
 
 open class CounterTickDaoStub : CounterTickDao {
-    override suspend fun ticksWithParentId(
-        parentId: Long,
-        sortColumn: TickColumn.TimeType,
-    ): List<TickEntity> {
+    override suspend fun ticksWithParentId(parentId: Long): List<TickEntity> {
         TODO("Not yet implemented")
     }
 
-    override fun ticksWithParentIdFlow(
-        parentId: Long,
-        sortColumn: TickColumn.TimeType,
-    ): Flow<List<TickEntity>> {
+    override fun ticksWithParentIdOrderDataFlow(parentId: Long): Flow<List<TickEntity>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun tickIdsBySelector(
+    override fun ticksWithParentIdOrderModifiedFlow(parentId: Long): Flow<List<TickEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun ticksWithParentIdOrderCreatedFlow(parentId: Long): Flow<List<TickEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun tickIdsByTimeForData(
         parentId: Long,
-        sortColumn: TickColumn.TimeType,
         start: Instant,
         end: Instant,
     ): List<Long> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun tickIdsBySelectorWithLimit(
+    override suspend fun tickIdsByTimeForData(
         parentId: Long,
         limit: Int,
-        sortColumn: TickColumn.TimeType,
         start: Instant,
         end: Instant,
     ): List<Long> {
@@ -51,43 +49,71 @@ open class CounterTickDaoStub : CounterTickDao {
         TODO("Not yet implemented")
     }
 
-    override suspend fun tickSumWithParentIdBySelector(
+    override suspend fun tickSumWithParentIdByTimeForData(
         parentId: Long,
-        selector: TickColumn.TimeType,
         start: Instant,
         end: Instant,
     ): Double {
         TODO("Not yet implemented")
     }
 
-    override fun tickSumWithParentIdBySelectorFlow(
+    override fun tickSumWithParentIdByDataFlow(
         parentId: Long,
-        selector: TickColumn.TimeType,
         start: Instant,
         end: Instant,
     ): Flow<Double> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun tickAverageWithParentIdBySelector(
+    override fun tickSumWithParentIdByCreatedFlow(
         parentId: Long,
-        selector: TickColumn.TimeType,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> {
+        TODO("Not yet implemented")
+    }
+
+    override fun tickSumWithParentIdByModifiedFlow(
+        parentId: Long,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun tickAverageWithParentIdByTimeForData(
+        parentId: Long,
         start: Instant,
         end: Instant,
     ): Double {
         TODO("Not yet implemented")
     }
 
-    override fun tickAverageWithParentIdBySelectorFlow(
+    override fun tickAverageWithParentIdByDataFlow(
         parentId: Long,
-        selector: TickColumn.TimeType,
         start: Instant,
         end: Instant,
     ): Flow<Double> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun ticks(sortColumn: TickColumn.TimeType): List<TickEntity> {
+    override fun tickAverageWithParentIdByCreatedFlow(
+        parentId: Long,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> {
+        TODO("Not yet implemented")
+    }
+
+    override fun tickAverageWithParentIdByModifiedFlow(
+        parentId: Long,
+        start: Instant,
+        end: Instant,
+    ): Flow<Double> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun ticks(): List<TickEntity> {
         TODO("Not yet implemented")
     }
 
@@ -119,7 +145,7 @@ open class CounterTickDaoStub : CounterTickDao {
         TODO("Not yet implemented")
     }
 
-    override suspend fun counters(sortColumn: TimeType): List<CounterEntity> {
+    override suspend fun counters(): List<CounterEntity> {
         TODO("Not yet implemented")
     }
 
@@ -131,7 +157,15 @@ open class CounterTickDaoStub : CounterTickDao {
         TODO("Not yet implemented")
     }
 
-    override fun countersFlow(sortColumn: TimeType): Flow<List<CounterEntity>> {
+    override fun countersFlow(): Flow<List<CounterEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun countersByCreatedFlow(): Flow<List<CounterEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun countersByModifiedFlow(): Flow<List<CounterEntity>> {
         TODO("Not yet implemented")
     }
 
@@ -150,4 +184,5 @@ open class CounterTickDaoStub : CounterTickDao {
     override suspend fun deleteCounters(ids: List<Long>) {
         TODO("Not yet implemented")
     }
+
 }
