@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
@@ -37,10 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import org.calamarfederal.messyink.common.compose.MoreClickButton
-import org.calamarfederal.messyink.common.compose.MoreClickFilledTonalButton
-import org.calamarfederal.messyink.common.compose.material3.exposed.ExposedButtonDefaults
-import org.calamarfederal.messyink.common.compose.toStringAllowShorten
+import org.calamarfederal.messyink.common.presentation.compose.MoreClickButton
+import org.calamarfederal.messyink.common.presentation.compose.MoreClickFilledTonalButton
+import org.calamarfederal.messyink.common.presentation.compose.material3.exposed.ExposedButtonDefaults
+import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Secondary
 
@@ -77,7 +78,7 @@ internal fun CompactTickButtons(
                 .weight(primaryWeight)
                 .fillMaxWidth(),
         ) {
-            Icon(Icons.Filled.Add, "add $primaryAmount")
+            Icon(Filled.Add, "add $primaryAmount")
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(primaryAmount.toStringAllowShorten(), style = textStyle)
         }
@@ -92,7 +93,7 @@ internal fun CompactTickButtons(
                 .weight(secondaryWeight)
                 .fillMaxWidth(),
         ) {
-            Icon(Icons.Filled.Add, "add $secondaryAmount")
+            Icon(Filled.Add, "add $secondaryAmount")
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(secondaryAmount.toStringAllowShorten(), style = textStyle)
         }
@@ -114,7 +115,7 @@ internal fun CompactTickButtons(
                 .weight(secondaryWeight)
                 .fillMaxWidth(),
         ) {
-            Icon(Icons.Filled.Remove, "subtract $secondaryAmount")
+            Icon(Filled.Remove, "subtract $secondaryAmount")
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(secondaryAmount.toStringAllowShorten(), style = textStyle)
         }
@@ -133,7 +134,7 @@ internal fun CompactTickButtons(
                 .weight(primaryWeight)
                 .fillMaxWidth(),
         ) {
-            Icon(Icons.Filled.Remove, "subtract $primaryAmount")
+            Icon(Filled.Remove, "subtract $primaryAmount")
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(primaryAmount.toStringAllowShorten(), style = textStyle)
         }

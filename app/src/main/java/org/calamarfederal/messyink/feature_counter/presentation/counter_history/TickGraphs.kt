@@ -53,35 +53,27 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import org.calamarfederal.messyink.common.compose.ClockFormat.AMPMTitle
-import org.calamarfederal.messyink.common.compose.ClockFormat.TwelveHourHidden
-import org.calamarfederal.messyink.common.compose.DayFormat
-import org.calamarfederal.messyink.common.compose.HourFormat
-import org.calamarfederal.messyink.common.compose.MinuteFormat
-import org.calamarfederal.messyink.common.compose.MonthFormat
-import org.calamarfederal.messyink.common.compose.SecondFormat
-import org.calamarfederal.messyink.common.compose.SecondFormat.Omit
-import org.calamarfederal.messyink.common.compose.SecondFormat.TwoDigit
-import org.calamarfederal.messyink.common.compose.YearFormat
-import org.calamarfederal.messyink.common.compose.charts.GraphSize2d
-import org.calamarfederal.messyink.common.compose.charts.LineGraph
-import org.calamarfederal.messyink.common.compose.charts.PointByPercent
-import org.calamarfederal.messyink.common.compose.localToString
+import org.calamarfederal.messyink.common.presentation.compose.charts.GraphSize2d
+import org.calamarfederal.messyink.common.presentation.compose.charts.LineGraph
+import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
+import org.calamarfederal.messyink.common.presentation.format.formatToString
+import org.calamarfederal.messyink.common.presentation.format.omitWhen
+import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 
 
 @Composable
 internal fun TicksOverTimeLayout(
-    ticks: List<UiTick>,
+    graphPoints: List<PointByPercent>,
+    pointInfo: (Int) -> String,
     range: ClosedRange<Double>,
     domain: TimeDomain,
     domainLimits: TimeDomain,
@@ -101,14 +93,9 @@ internal fun TicksOverTimeLayout(
                     .weight(1f)
                     .clickable { showPointInfo = !showPointInfo }
                     .testTag(CounterHistoryTestTags.TickGraph),
-                lineGraphPoints = ticks.map {
-                    PointByPercent(
-                        x = (it.timeForData - domain.start) / (domain.end - domain.start),
-                        y = (it.amount - range.start) / (range.endInclusive - range.start),
-                    )
-                },
+                lineGraphPoints = graphPoints,
                 pointInfo = {
-                    if (showPointInfo) ticks[it].amount.toString() else null
+                    pointInfo(it)
                 },
                 size = graphSize,
                 title = {
@@ -185,81 +172,41 @@ private fun DomainBoundsAndPicker(
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
 ) {
     var openDomainPicker by remember { mutableStateOf(false) }
+    val localDomain by remember {
+        derivedStateOf {
+            domain.start.toLocalDateTime(timeZone) to domain.end.toLocalDateTime(timeZone)
+        }
+    }
+    val domainStart by remember {
+        derivedStateOf {
+            localDomain.first.formatToString(dateTimeFormat)
+        }
+    }
+    val domainEnd by remember {
+        derivedStateOf {
+            localDomain.second.formatToString(dateTimeFormat)
+        }
+    }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        val domainDiff by remember(domain) {
-            mutableStateOf((domain.start - domain.end).absoluteValue)
-        }
-        val secondFormat by remember(domainDiff) {
-            mutableStateOf(if (domainDiff > 1.minutes) SecondFormat.Omit else SecondFormat.TwoDigit)
-        }
-        val minuteFormat by remember(domainDiff) {
-            mutableStateOf(if (domainDiff > 2.days) MinuteFormat.Omit else MinuteFormat.TwoDigit)
-        }
-        val hourFormat by remember(domainDiff) {
-            mutableStateOf(if (domainDiff > 5.days) HourFormat.Omit else HourFormat.MinDigit)
-        }
-        val clockFormat by remember(hourFormat) {
-            mutableStateOf(if (hourFormat == HourFormat.Omit) TwelveHourHidden else AMPMTitle)
-        }
-        val localDates by remember(domain) {
-            derivedStateOf {
-                val tz = CurrentTimeZoneGetter()
-                domain.start.toLocalDateTime(tz) .. domain.end.toLocalDateTime(tz)
-            }
-        }
-        val yearFormat by remember(localDates) {
-            mutableStateOf(
-                if (localDates.start.year == localDates.endInclusive.year) YearFormat.Omit
-                else YearFormat.FullDigit
-            )
-        }
-        val dayFormat by remember(localDates) {
-            mutableStateOf(
-                if (localDates.start == localDates.endInclusive) DayFormat.Omit else DayFormat.MinDigit
-            )
-        }
-        val monthFormat by remember(dayFormat) {
-            mutableStateOf(
-                if (dayFormat == DayFormat.Omit) MonthFormat.Omit else MonthFormat.FullName
-            )
+        TextButton(onClick = { openDomainPicker = true }) {
+            Text(text = domainStart)
         }
         TextButton(onClick = { openDomainPicker = true }) {
-            Text(
-                domain.start.localToString(
-                    second = secondFormat,
-                    minute = minuteFormat,
-                    hour = hourFormat,
-                    day = dayFormat,
-                    month = monthFormat,
-                    year = yearFormat,
-                    clockFormat = clockFormat,
-                )
-            )
-        }
-        TextButton(onClick = { openDomainPicker = true }) {
-            Text(
-                domain.end.localToString(
-                    second = secondFormat,
-                    minute = minuteFormat,
-                    hour = hourFormat,
-                    day = dayFormat,
-                    month = monthFormat,
-                    year = yearFormat,
-                    clockFormat = clockFormat,
-                )
-            )
+            Text(text = domainEnd)
         }
     }
     if (openDomainPicker) {
         val selectable = domainLimits.toSelectableDates()
         val domainState = rememberDateRangePickerState(
-            initialSelectedStartDateMillis = domain.start.toEpochMilliseconds(),
-            initialSelectedEndDateMillis = domain.end.toEpochMilliseconds(),
+            initialSelectedStartDateMillis = localDomain.first.date.toUtcMillis(),
+            initialSelectedEndDateMillis = localDomain.second.date.toUtcMillis(),
             selectableDates = selectable,
         )
         DomainDatePicker(
@@ -395,7 +342,8 @@ private fun TickAmountOverTimePreview() {
             val ticks = previewUiTicks(1L).take(10).toList()
             val domain = TimeDomain(ticks.last().timeForData .. ticks.first().timeForData)
             TicksOverTimeLayout(
-                ticks = ticks,
+                graphPoints = listOf(),
+                pointInfo = { "" },
                 range = ticks.first().amount .. ticks.last().amount,
                 domain = domain,
                 domainLimits = domain,

@@ -18,11 +18,15 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.common.math.MinMax
 import org.calamarfederal.messyink.common.math.minAndMaxOf
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
@@ -47,6 +51,12 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+
+private fun UiTick.fromSort(sort: TickSort.TimeType) = when (sort) {
+    TickSort.TimeType.TimeCreated  -> timeCreated
+    TickSort.TimeType.TimeModified -> timeModified
+    TickSort.TimeType.TimeForData  -> timeForData
+}
 
 /**
  * # Counter Details View Model
@@ -148,6 +158,26 @@ class CounterHistoryViewModel @Inject constructor(
             domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },
         ),
     )
+
+    /**
+     * Points to be graphed which represent the current [ticks] within [graphDomain] sorted by [tickSortState]
+     */
+    val graphPoints: StateFlow<List<PointByPercent>> =
+        combine(ticks, graphDomain, tickSortState) { tickList, domain, tickSort ->
+            println("domain: ${domain.start} .. ${domain.end}")
+            println("tickSort: $tickSort")
+
+            val boundTicks = tickList.filter { it.fromSort(tickSort) in domain }
+            val width = (domain.start - domain.end).absoluteValue
+            val height =
+                boundTicks.minAndMaxOfOrNull { it.amount } ?: MinMax(min = 0.00, max = 1.00)
+            boundTicks.map { tick ->
+                PointByPercent(
+                    x = (tick.fromSort(tickSort) - domain.start) / width,
+                    y = (tick.amount - height.min) / (height.max - height.min)
+                )
+            }
+        }.stateInViewModel(listOf())
 
     init {
         ioScope.launch {

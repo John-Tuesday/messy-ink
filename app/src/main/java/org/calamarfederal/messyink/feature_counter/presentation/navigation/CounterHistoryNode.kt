@@ -53,6 +53,7 @@ internal object CounterHistoryNode : CounterGraphNode {
             val ticks by viewModel.ticks.collectAsState()
             val tickSum by viewModel.tickSum.collectAsState()
             val tickAverage by viewModel.tickAverage.collectAsState()
+            val graphPoints by viewModel.graphPoints.collectAsState()
             val graphRange by viewModel.graphRange.collectAsState()
             val graphDomain by viewModel.graphDomain.collectAsState()
             val graphDomainLimits by viewModel.graphDomainLimits.collectAsState()
@@ -63,6 +64,7 @@ internal object CounterHistoryNode : CounterGraphNode {
                 ticks = ticks,
                 tickSum = tickSum,
                 tickAverage = tickAverage,
+                graphPoints = graphPoints,
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,

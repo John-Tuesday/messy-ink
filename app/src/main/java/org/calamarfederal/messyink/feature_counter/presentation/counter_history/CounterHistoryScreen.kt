@@ -35,6 +35,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -64,6 +65,7 @@ fun CounterHistoryScreen(
     ticks: List<UiTick>,
     tickSum: Double?,
     tickAverage: Double?,
+    graphPoints: List<PointByPercent>,
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
@@ -117,6 +119,7 @@ fun CounterHistoryScreen(
             onResetCounter = onResetCounter,
             state = pagerState,
             onCounterChange = onCounterChange,
+            graphPoints = graphPoints,
             graphDomain = graphDomain,
             graphDomainLimits = graphDomainLimits,
             graphDomainOptions = graphDomainOptions,
@@ -141,6 +144,7 @@ private fun TabbedLayout(
     onDeleteTick: (Long) -> Unit,
     onResetCounter: () -> Unit,
     onCounterChange: (UiCounter) -> Unit,
+    graphPoints: List<PointByPercent>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
     graphDomainOptions: List<TimeDomainTemplate>,
@@ -170,7 +174,8 @@ private fun TabbedLayout(
                 )
 
                 TickGraphs -> TicksOverTimeLayout(
-                    ticks = ticks,
+                    graphPoints = graphPoints,
+                    pointInfo = { "${ticks[it].amount}" },
                     range = graphRange,
                     domain = graphDomain,
                     domainLimits = graphDomainLimits,
@@ -216,6 +221,7 @@ private fun CounterHistoryScreenPreview() {
     CounterHistoryScreen(
         counter = counter,
         ticks = ticks,
+        graphPoints = listOf(),
         tickSum = tickSum,
         tickAverage = tickSum?.div(ticks.size),
         graphRange = range,

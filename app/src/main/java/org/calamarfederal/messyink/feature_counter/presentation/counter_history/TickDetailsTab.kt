@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.calamarfederal.messyink.common.compose.toStringAllowShorten
+import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
+import org.calamarfederal.messyink.common.presentation.format.formatToString
+import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MaterialLevel
@@ -95,6 +98,7 @@ private fun TickListItem(
     selected: Boolean,
     modifier: Modifier = Modifier,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    dateTimeFormat: DateTimeFormat = DateTimeFormat(),
 ) {
     ListItem(
         modifier = modifier,
@@ -110,19 +114,47 @@ private fun TickListItem(
             )
         },
         supportingContent = {
-            val localTime by remember { derivedStateOf { tick.timeForData.toLocalDateTime(timeZone) } }
-            Text(
-                text = "${localTime.date} @${localTime.hour}:${localTime.minute}:${localTime.second}",
-                style = MaterialTheme.typography.titleSmall.let {
-                    if (selected) it + TextStyle(
-                        fontWeight = FontWeight.Medium,
-                        fontStyle = FontStyle.Normal
-                    ) else it + TextStyle(
-                        fontWeight = FontWeight.Light,
-                        fontStyle = FontStyle.Italic
-                    )
+            val style = MaterialTheme.typography.titleSmall.let {
+                if (selected) it + TextStyle(
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal
+                ) else it + TextStyle(
+                    fontWeight = FontWeight.Light,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            val timeForData by remember(tick.timeForData) {
+                derivedStateOf {
+                    "data: ${
+                        tick.timeForData
+                            .toLocalDateTime(timeZone)
+                            .formatToString(dateTimeFormat)
+                    }"
                 }
-            )
+            }
+            val timeModified by remember(tick.timeModified) {
+                derivedStateOf {
+                    "modified: ${
+                        tick.timeModified
+                            .toLocalDateTime(timeZone)
+                            .formatToString(dateTimeFormat)
+                    }"
+                }
+            }
+            val timeCreated by remember(tick.timeCreated) {
+                derivedStateOf {
+                    "created: ${
+                        tick.timeCreated
+                            .toLocalDateTime(timeZone)
+                            .formatToString(dateTimeFormat)
+                    }"
+                }
+            }
+            Column {
+                Text(text = timeForData, style = style)
+                Text(text = timeCreated, style = style)
+                Text(text = timeModified, style = style)
+            }
         },
         tonalElevation = LocalAbsoluteTonalElevation.current.let {
             if (selected) it.toMaterialLevelCiel().coerceAtLeast(MaterialLevel(3)).elevation

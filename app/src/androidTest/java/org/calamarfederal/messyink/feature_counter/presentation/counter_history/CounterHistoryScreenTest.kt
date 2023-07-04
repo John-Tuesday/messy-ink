@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
 import org.calamarfederal.messyink.feature_counter.data.generateTicks
 import org.calamarfederal.messyink.feature_counter.data.toCounter
@@ -26,7 +25,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.stream.Collectors.toList
 
 class CounterHistoryScreenTest {
     @get:Rule
@@ -65,6 +63,7 @@ class CounterHistoryScreenTest {
             CounterHistoryScreen(
                 counter = counter,
                 ticks = ticks,
+                graphPoints = listOf(),
                 tickSum = tickSum,
                 tickAverage = tickAverage,
                 graphRange = graphRange,
