@@ -63,13 +63,6 @@ class CountersRepoImpl @Inject constructor(
         )
     }
 
-    override suspend fun getCounters(): List<Counter> =
-        dao.counters().map { it.toCounter() }
-
-    override suspend fun getCounterOrNull(id: Long): Counter? = dao.counter(id)?.toCounter()
-    override suspend fun getTicks(parentId: Long): List<Tick> =
-        dao.ticksWithParentId(parentId).map { it.toTick() }
-
     override fun getCounterFlow(id: Long): Flow<Counter?> =
         dao.counterFlow(id).distinctUntilChanged().mapLatest { it?.toCounter() }
 
@@ -88,25 +81,13 @@ class CountersRepoImpl @Inject constructor(
         }.distinctUntilChanged().map { data -> data.map { it.toTick() } }
 
 
-    override suspend fun duplicateCounter(counter: Counter): Counter {
+    override suspend fun createCounter(counter: Counter): Counter {
         val time = getCurrentTime()
         return counter.copy(
             timeCreated = time,
             timeModified = time,
             id = generateId(pool = getCounterIds().toSet()),
         ).also { dao.insertCounter(it.toEntity()) }
-    }
-
-    override suspend fun duplicateTick(tick: Tick): Tick {
-        require(tick.parentId != NOID)
-
-        val time = getCurrentTime()
-        return tick.copy(
-            timeCreated = time,
-            timeModified = time,
-            timeForData = tick.timeForData.run { if (isDistantFuture || isDistantPast) time else this },
-            id = generateId(pool = getTickIds().toSet()),
-        ).also { dao.insertTick(it.toEntity()) }
     }
 
     override suspend fun createTick(tick: Tick): Tick {
@@ -127,38 +108,6 @@ class CountersRepoImpl @Inject constructor(
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
     override suspend fun deleteTicks(ids: List<Long>) = dao.deleteTicks(ids)
     override suspend fun deleteTicksOf(parentId: Long) = dao.deleteTickWithParentId(parentId)
-
-    override suspend fun deleteTicksBySelection(
-        parentId: Long,
-        timeType: TimeType,
-        start: Instant,
-        end: Instant,
-    ) =
-        deleteTicksBySelection(
-            parentId = parentId,
-            timeType = timeType,
-            limit = null,
-            start = start,
-            end = end,
-        )
-
-    override suspend fun deleteTicksBySelection(
-        parentId: Long,
-        limit: Int?,
-        timeType: TimeType,
-        start: Instant,
-        end: Instant,
-    ) {
-        dao.deleteTicks(
-            getTicksFlow(parentId, sort = timeType).map { ticks ->
-                ticks.filter { it.getTime(timeType) in start .. end }
-                    .map { it.id }.run {
-                        if (limit != null) take(limit)
-                        else this
-                    }
-            }.first()
-        )
-    }
 
     /**
      * # Summary & Calculation

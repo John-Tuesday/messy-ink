@@ -17,7 +17,7 @@ import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
+import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
@@ -38,7 +38,7 @@ class CounterOverviewViewModel @Inject constructor(
     private val _getTicksSumByFlow: GetTicksSumByFlow,
     private val _createTick: CreateTick,
     private val _deleteCounter: DeleteCounter,
-    private val _deleteTicksFrom: DeleteTicksFrom,
+    private val _deleteTicksFrom: DeleteTicksOf,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
@@ -96,6 +96,6 @@ class CounterOverviewViewModel @Inject constructor(
      * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
      */
     fun clearCounterTicks(counterId: Long) {
-        ioScope.launch { _deleteTicksFrom(parentId = counterId, tickSortState.value) }
+        ioScope.launch { _deleteTicksFrom(parentId = counterId) }
     }
 }

@@ -6,18 +6,6 @@ import org.calamarfederal.messyink.feature_counter.domain.CounterSort.TimeType
 
 
 open class CountersRepoStub : CountersRepo {
-    override suspend fun getCounters(): List<Counter> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getCounterOrNull(id: Long): Counter? {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getTicks(parentId: Long): List<Tick> {
-        TODO("Not yet implemented")
-    }
-
     override fun getCounterFlow(id: Long): Flow<Counter?> {
         TODO("Not yet implemented")
     }
@@ -30,11 +18,7 @@ open class CountersRepoStub : CountersRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun duplicateCounter(counter: Counter): Counter {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun duplicateTick(tick: Tick): Tick {
+    override suspend fun createCounter(counter: Counter): Counter {
         TODO("Not yet implemented")
     }
 
@@ -63,25 +47,6 @@ open class CountersRepoStub : CountersRepo {
     }
 
     override suspend fun deleteTicksOf(parentId: Long) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteTicksBySelection(
-        parentId: Long,
-        timeType: TickSort.TimeType,
-        start: Instant,
-        end: Instant,
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteTicksBySelection(
-        parentId: Long,
-        limit: Int?,
-        timeType: TickSort.TimeType,
-        start: Instant,
-        end: Instant,
-    ) {
         TODO("Not yet implemented")
     }
 

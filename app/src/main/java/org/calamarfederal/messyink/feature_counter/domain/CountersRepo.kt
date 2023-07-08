@@ -9,23 +9,6 @@ import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
  */
 interface CountersRepo {
     /**
-     * One-shot get all saved counters ordered by DAO logic
-     */
-    suspend fun getCounters(): List<Counter>
-
-    /**
-     * Gets the counter if it exists, null otherwise
-     */
-    suspend fun getCounterOrNull(id: Long): Counter?
-
-    /**
-     * One-shot get all ticks with parent_id
-     *
-     * @param[parentId] should be a valid Counter.id
-     */
-    suspend fun getTicks(parentId: Long): List<Tick>
-
-    /**
      * Watch changes to Counter with [id]
      *
      * @param[id] Counter.id
@@ -54,14 +37,7 @@ interface CountersRepo {
      *
      * @param[counter] counter which will be used as the basis for a new counter
      */
-    suspend fun duplicateCounter(counter: Counter): Counter
-
-    /**
-     * Copy [tick]'s values, but save with a new id, and set its timeModified and timeCreated values. returns the new [Tick]
-     *
-     * @param[tick] tick which will be used as the basis for a new tick
-     */
-    suspend fun duplicateTick(tick: Tick): Tick
+    suspend fun createCounter(counter: Counter): Counter
 
     /**
      * Create new [Tick] using [Tick.amount], [Tick.parentId], and [Tick.timeForData] from [tick].
@@ -102,29 +78,6 @@ interface CountersRepo {
      * Delete all [Tick] with [parentId]
      */
     suspend fun deleteTicksOf(parentId: Long)
-
-    /**
-     * Delete all [Tick] with matching [Tick.parentId] from [[start], [end]]
-     */
-    suspend fun deleteTicksBySelection(
-        parentId: Long,
-        timeType: TimeType,
-        start: Instant = Instant.DISTANT_PAST,
-        end: Instant = Instant.DISTANT_FUTURE,
-    )
-
-    /**
-     * if [limit] is `null`, deletes all [Tick] with [parentId] and [Tick.timeModified] in bounds [[start], [end]]
-     *
-     * otherwise deletes up to [limit] in order of [Tick.timeModified]
-     */
-    suspend fun deleteTicksBySelection(
-        parentId: Long,
-        limit: Int? = null,
-        timeType: TimeType,
-        start: Instant = Instant.DISTANT_PAST,
-        end: Instant = Instant.DISTANT_FUTURE,
-    )
 
     /**
      * # Summary & Calculation

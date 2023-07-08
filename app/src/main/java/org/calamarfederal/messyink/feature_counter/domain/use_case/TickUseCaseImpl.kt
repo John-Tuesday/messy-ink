@@ -7,7 +7,6 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksFrom
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
@@ -59,19 +58,6 @@ class DeleteTicksImpl @Inject constructor(private val repo: CountersRepo) : Dele
  */
 class DeleteTicksOfImpl @Inject constructor(private val repo: CountersRepo) : DeleteTicksOf {
     override suspend fun invoke(parentId: Long) = repo.deleteTicksOf(parentId)
-}
-
-/**
- * Default Implementation
- */
-class DeleteTicksFromImpl @Inject constructor(private val repo: CountersRepo) : DeleteTicksFrom {
-    override suspend fun invoke(parentId: Long, timeType: TimeType, start: Instant, end: Instant) =
-        repo.deleteTicksBySelection(
-            parentId = parentId,
-            timeType = timeType,
-            start = start,
-            end = end
-        )
 }
 
 /**

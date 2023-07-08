@@ -28,18 +28,6 @@ fun interface CreateTick {
     suspend operator fun invoke(tick: UiTick): UiTick
 }
 
-///**
-// * SAM
-// *
-// * @see invoke
-// */
-//fun interface DuplicateTick {
-//    /**
-//     * Use [sample] as the basis for a new tick to be saved and returned
-//     */
-//    suspend operator fun invoke(sample: UiTick): UiTick
-//}
-
 /**
  * SAM to Update Tick
  *
@@ -80,22 +68,6 @@ fun interface DeleteTicksOf {
      * delete all ticks with [parentId]
      */
     suspend operator fun invoke(parentId: Long)
-}
-
-/**
- * @see [invoke]
- */
-fun interface DeleteTicksFrom {
-    /**
-     * Delete all [Tick] with [Tick.parentId] and [Tick.timeForData] within [[start], [end]]
-     */
-    suspend operator fun invoke(parentId: Long, timeType: TimeType, start: Instant, end: Instant)
-
-    /**
-     * Overload of [invoke] with bounds set to max
-     */
-    suspend operator fun invoke(parentId: Long, timeType: TimeType) =
-        invoke(parentId, timeType, start = Instant.DISTANT_PAST, end = Instant.DISTANT_FUTURE)
 }
 
 /**
