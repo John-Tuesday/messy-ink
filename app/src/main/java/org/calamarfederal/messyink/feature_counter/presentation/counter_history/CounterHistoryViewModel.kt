@@ -29,6 +29,7 @@ import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPer
 import org.calamarfederal.messyink.common.math.MinMax
 import org.calamarfederal.messyink.common.math.minAndMaxOf
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
+import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
@@ -37,6 +38,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
@@ -67,6 +69,8 @@ private fun UiTick.fromSort(sort: TickSort.TimeType) = when (sort) {
 class CounterHistoryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ioDispatcher: CoroutineDispatcher,
+    @CurrentTime
+    private val _currentTime: GetTime,
     private val _getCounterFlow: GetCounterFlow,
     private val _getTicksOfFlow: GetTicksOfFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
@@ -132,7 +136,7 @@ class CounterHistoryViewModel @Inject constructor(
             emitAll(_getTicksAverageOfFlow(id, sort))
         }.stateInViewModel(null)
 
-    private val _graphDomain = MutableStateFlow(TimeDomainAgoTemplate("24hrs ago", 1.days).domain())
+    private val _graphDomain = MutableStateFlow(TimeDomainAgoTemplate("24hrs ago", 1.days, _currentTime).domain())
 
     /**
      * Domain for all graphs
@@ -152,7 +156,7 @@ class CounterHistoryViewModel @Inject constructor(
      * All (and only?) quick options to change [graphDomain]
      */
     val graphDomainOptions = listOf(
-        TimeDomainAgoTemplate("Day", 1.days),
+        TimeDomainAgoTemplate("Day", 1.days, _currentTime),
         TimeDomainLambdaTemplate(
             label = "Fit",
             domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },

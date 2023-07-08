@@ -2,7 +2,7 @@ package org.calamarfederal.messyink.feature_counter.presentation.state
 
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -86,9 +86,12 @@ val previewUiCounters: Sequence<UiCounter>
  *
  * used to generate self-labeled UiTicks for preview and testing purposes.
  */
-fun previewUiTicks(parentId: Long): Sequence<UiTick> =
+fun previewUiTicks(
+    parentId: Long,
+    timeGetter: GetTime = GetTime { Instant.fromEpochMilliseconds(0L) },
+): Sequence<UiTick> =
     (1 .. Int.MAX_VALUE).asSequence().filterNot { it.toLong() == parentId }.map {
-        val time = CurrentTimeGetter() + it.days
+        val time = timeGetter() + it.days
         UiTick(
             amount = it.toDouble(),
             timeModified = time,

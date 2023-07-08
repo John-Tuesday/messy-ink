@@ -47,9 +47,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.TimeZone.Companion
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
@@ -60,7 +62,6 @@ import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
@@ -172,7 +173,7 @@ private fun DomainBoundsAndPicker(
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    timeZone: TimeZone = TimeZone.UTC,
     dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
 ) {
     var openDomainPicker by remember { mutableStateOf(false) }
@@ -203,7 +204,7 @@ private fun DomainBoundsAndPicker(
         }
     }
     if (openDomainPicker) {
-        val selectable = domainLimits.toSelectableDates()
+        val selectable = domainLimits.toSelectableDates(timeZone)
         val domainState = rememberDateRangePickerState(
             initialSelectedStartDateMillis = localDomain.first.date.toUtcMillis(),
             initialSelectedEndDateMillis = localDomain.second.date.toUtcMillis(),
@@ -213,11 +214,10 @@ private fun DomainBoundsAndPicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
             onSubmit = {
-                val tz = CurrentTimeZoneGetter()
                 changeDomain(
                     TimeDomain(
-                        it.start.atStartOfDayIn(tz) ..< it.endInclusive.plus(DatePeriod(days = 1))
-                            .atStartOfDayIn(tz)
+                        it.start.atStartOfDayIn(timeZone) ..< it.endInclusive.plus(DatePeriod(days = 1))
+                            .atStartOfDayIn(timeZone)
                     )
                 )
                 openDomainPicker = false
@@ -348,8 +348,8 @@ private fun TickAmountOverTimePreview() {
                 domain = domain,
                 domainLimits = domain,
                 domainOptions = listOf(
-                    TimeDomainAgoTemplate("Day", 1.days),
-                    TimeDomainAgoTemplate("Week", 7.days),
+                    TimeDomainAgoTemplate("Day", 1.days) { Instant.fromEpochMilliseconds(0L) },
+                    TimeDomainAgoTemplate("Week", 7.days) { Instant.fromEpochMilliseconds(0L) },
                 ),
                 changeDomain = {},
             )

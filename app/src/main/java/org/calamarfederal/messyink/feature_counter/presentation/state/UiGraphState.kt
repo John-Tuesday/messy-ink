@@ -8,14 +8,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeGetter
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CurrentTimeZoneGetter
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import kotlin.time.Duration
 
 /**
  * Convenience function to convert [millis] to a date using [timeZone]
  */
-fun epochMillisToDate(millis: Long, timeZone: TimeZone = CurrentTimeZoneGetter()): LocalDate =
+fun epochMillisToDate(millis: Long, timeZone: TimeZone): LocalDate =
     Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).date
 
 /**
@@ -63,7 +62,7 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
      * Create a [SelectableDates] that tests true on dates within bounds
      */
     @OptIn(ExperimentalStdlibApi::class, ExperimentalMaterial3Api::class)
-    fun toSelectableDates(timeZone: TimeZone = CurrentTimeZoneGetter()): SelectableDates {
+    fun toSelectableDates(timeZone: TimeZone /* = CurrentTimeZoneGetter() */): SelectableDates {
         val localStart = start.toLocalDateTime(timeZone)
         val localEnd = end.toLocalDateTime(timeZone)
         return SelectableTimeDomain(
@@ -147,6 +146,7 @@ data class TimeDomainLambdaTemplate(
 class TimeDomainAgoTemplate(
     override val label: String,
     private val duration: Duration,
+    private val timeGetter: GetTime,
 ) : TimeDomainTemplate {
-    override fun domain() = CurrentTimeGetter().let { TimeDomain((it - duration) .. it) }
+    override fun domain() = timeGetter().let { TimeDomain((it - duration) .. it) }
 }
