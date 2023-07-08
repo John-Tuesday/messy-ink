@@ -1,0 +1,3 @@
+Messy Ink is designed to track and graph any value over time.
+
+Edit or delete events. Visualize changes over time within a specific time-window or within the lifetime of the counter.
