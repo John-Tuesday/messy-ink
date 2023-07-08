@@ -2,27 +2,16 @@ package org.calamarfederal.messyink.feature_counter.presentation.counter_overvie
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.BindValue
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
-import org.calamarfederal.messyink.MainActivity
-import org.calamarfederal.messyink.OnCreateHookImpl
-import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
-import org.calamarfederal.messyink.feature_counter.data.generateTestData
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -30,7 +19,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import javax.inject.Inject
 
 /**
  * # Counter Overview Screen
