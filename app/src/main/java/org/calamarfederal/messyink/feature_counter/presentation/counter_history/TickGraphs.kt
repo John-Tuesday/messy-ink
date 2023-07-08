@@ -55,6 +55,7 @@ import kotlinx.datetime.TimeZone.Companion
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.presentation.compose.charts.LineGraph
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
@@ -145,10 +146,7 @@ private fun DomainDropdownMenu(
     Box(modifier = modifier) {
         var expanded by remember { mutableStateOf(false) }
         TextButton(onClick = { expanded = true }) {
-            Icon(
-                if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                null,
-            )
+            Icon(if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null)
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(domainLabel)
         }
@@ -173,7 +171,7 @@ private fun DomainBoundsAndPicker(
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
-    timeZone: TimeZone = TimeZone.UTC,
+    timeZone: TimeZone = LocalTimeZone.current,
     dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
 ) {
     var openDomainPicker by remember { mutableStateOf(false) }
