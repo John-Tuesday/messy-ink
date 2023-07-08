@@ -1,11 +1,8 @@
 package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 
 
 /**
@@ -49,7 +46,7 @@ fun interface GetCounterAsSupportOrNull {
  *
  * @see invoke
  */
-fun interface DuplicateCounter {
+fun interface CreateCounter {
     /**
      * Use [sample] as the basis for a new counter to be saved and returned
      */

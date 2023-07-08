@@ -62,7 +62,7 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
      * Create a [SelectableDates] that tests true on dates within bounds
      */
     @OptIn(ExperimentalStdlibApi::class, ExperimentalMaterial3Api::class)
-    fun toSelectableDates(timeZone: TimeZone /* = CurrentTimeZoneGetter() */): SelectableDates {
+    fun toSelectableDates(timeZone: TimeZone): SelectableDates {
         val localStart = start.toLocalDateTime(timeZone)
         val localEnd = end.toLocalDateTime(timeZone)
         return SelectableTimeDomain(

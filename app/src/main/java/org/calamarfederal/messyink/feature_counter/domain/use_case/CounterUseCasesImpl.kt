@@ -10,7 +10,7 @@ import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
+import org.calamarfederal.messyink.feature_counter.domain.CreateCounter
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterAsSupportOrNull
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
@@ -61,7 +61,7 @@ class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo
 /**
  * Default Implementation
  */
-class DuplicateCounterImpl @Inject constructor(private val repo: CountersRepo) : DuplicateCounter {
+class CreateCounterImpl @Inject constructor(private val repo: CountersRepo) : CreateCounter {
     override suspend fun invoke(sample: UiCounter): UiCounter =
         repo.createCounter(sample.copy(id = NOID).toCounter()).toUI()
 }

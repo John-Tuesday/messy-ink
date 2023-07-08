@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
-import org.calamarfederal.messyink.feature_counter.domain.DuplicateCounter
+import org.calamarfederal.messyink.feature_counter.domain.CreateCounter
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterAsSupportOrNull
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
@@ -15,7 +15,7 @@ import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterFromSuppo
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounterSupport
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterFromSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteCounterImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.DuplicateCounterImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateCounterImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCounterAsSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCounterFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetCountersFlowImpl
@@ -52,7 +52,7 @@ abstract class CounterUseCasesModule {
      * Binds Implementation to interface
      */
     @Binds
-    abstract fun bindDuplicateCounter(impl: DuplicateCounterImpl): DuplicateCounter
+    abstract fun bindDuplicateCounter(impl: CreateCounterImpl): CreateCounter
 
     /**
      * Binds Implementation to interface
