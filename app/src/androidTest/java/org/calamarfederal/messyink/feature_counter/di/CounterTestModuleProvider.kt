@@ -20,6 +20,11 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
 import javax.inject.Singleton
 
+/**
+ * Arbitrary day for use as a more recent test foundation
+ *
+ * Monday, May 22, 2023 4:59:27 AM GMT-05:00
+ */
 val TestTime: Instant = Instant.fromEpochMilliseconds(1684749567000)
 val TestTz: TimeZone = TimeZone.UTC
 

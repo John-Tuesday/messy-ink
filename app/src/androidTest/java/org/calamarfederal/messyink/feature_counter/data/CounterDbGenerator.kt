@@ -1,19 +1,12 @@
 package org.calamarfederal.messyink.feature_counter.data
 
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.CounterDao
 import org.calamarfederal.messyink.data.CounterTickDao
 import org.calamarfederal.messyink.data.entity.CounterEntity
 import org.calamarfederal.messyink.data.entity.TickEntity
+import org.calamarfederal.messyink.feature_counter.di.TestTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-
-/**
- * Arbitrary day for use as a more recent test foundation
- *
- * Monday, May 22, 2023 4:59:27 AM GMT-05:00
- */
-val TestTime: Instant = Instant.fromEpochMilliseconds(1684749567000)
 
 fun generateCounters(
     startTime: Instant = TestTime,
