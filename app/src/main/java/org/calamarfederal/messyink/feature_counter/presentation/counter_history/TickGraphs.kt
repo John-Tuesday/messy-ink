@@ -47,6 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.dismiss
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -186,10 +189,16 @@ private fun DomainBoundsAndPicker(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        TextButton(onClick = { openDomainPicker = true }) {
+        TextButton(
+            onClick = { openDomainPicker = true },
+            modifier = Modifier.testTag(CounterHistoryTestTags.TickGraphDomainLower),
+        ) {
             Text(text = domainStart)
         }
-        TextButton(onClick = { openDomainPicker = true }) {
+        TextButton(
+            onClick = { openDomainPicker = true },
+            modifier = Modifier.testTag(CounterHistoryTestTags.TickGraphDomainUpper),
+        ) {
             Text(text = domainEnd)
         }
     }
@@ -281,7 +290,11 @@ private fun DomainDatePicker(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier
             .fillMaxSize()
-            .safeGesturesPadding(),
+            .safeGesturesPadding()
+            .semantics {
+                testTag = CounterHistoryTestTags.DomainDatePicker
+                dismiss { onDismiss(); true }
+            }
     ) {
         Scaffold(
             topBar = {
@@ -293,7 +306,10 @@ private fun DomainDatePicker(
                         }
                     },
                     actions = {
-                        TextButton(onClick = onFitToData) {
+                        TextButton(
+                            onClick = onFitToData,
+                            modifier = Modifier.testTag(CounterHistoryTestTags.DomainFitToData)
+                        ) {
                             Text("Fit to Data")
                         }
                         TextButton(
@@ -313,7 +329,8 @@ private fun DomainDatePicker(
                             enabled = state.selectableDates.isValidSelection(
                                 state.selectedStartDateMillis,
                                 state.selectedEndDateMillis
-                            )
+                            ),
+                            modifier = Modifier.testTag(CounterHistoryTestTags.DomainPickerSave)
                         ) {
                             Text(text = "Save")
                         }
