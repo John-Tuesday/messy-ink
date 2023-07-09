@@ -26,11 +26,8 @@ import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
@@ -54,11 +51,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.TimeZone.Companion
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
@@ -71,12 +66,10 @@ import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainAgoTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
-import kotlin.time.Duration.Companion.days
 
 
 @Composable
@@ -103,7 +96,7 @@ internal fun TicksOverTimeLayout(
                     .testTag(CounterHistoryTestTags.TickGraph),
                 lineGraphPoints = graphPoints,
                 pointInfo = {
-                    pointInfo(it)
+                    if (showPointInfo) pointInfo(it) else null
                 },
                 size = graphSize,
                 title = {
@@ -210,7 +203,7 @@ private fun DomainBoundsAndPicker(
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
-            onFitToData = { changeDomain(domainLimits) },
+            onFitToData = { changeDomain(domainLimits); openDomainPicker = false },
             onSubmit = {
                 changeDomain(
                     TimeDomain(
