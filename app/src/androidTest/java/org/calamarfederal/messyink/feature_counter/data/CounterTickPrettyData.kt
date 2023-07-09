@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.minutes
 
 private val baseTime get() = TestTime
 
-private val prettyCounterWorkout: CounterEntity
+val prettyCounterWorkout: CounterEntity
     get() =
         CounterEntity(
             name = "Workout",
@@ -58,6 +58,22 @@ private val prettyWorkoutTicks: List<TickEntity>
             timeForData = baseTime + 1.days,
             parentId = prettyCounterWorkout.id,
             id = 11L,
+        ),
+        TickEntity(
+            amount = 0.00,
+            timeModified = baseTime + 2.days,
+            timeCreated = baseTime + 2.days,
+            timeForData = baseTime + 2.days,
+            parentId = prettyCounterWorkout.id,
+            id = 12L,
+        ),
+        TickEntity(
+            amount = 1.00,
+            timeModified = baseTime + 3.days,
+            timeCreated = baseTime + 3.days,
+            timeForData = baseTime + 3.days,
+            parentId = prettyCounterWorkout.id,
+            id = 13L,
         ),
     )
 

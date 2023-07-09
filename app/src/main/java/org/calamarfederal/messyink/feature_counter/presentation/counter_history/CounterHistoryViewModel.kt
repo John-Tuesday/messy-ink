@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.math.MinMax
 import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
+import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
@@ -168,8 +169,10 @@ class CounterHistoryViewModel @Inject constructor(
 
             val boundTicks = tickList.filter { it.fromSort(tickSort) in domain }
             val width = (domain.start - domain.end).absoluteValue
-            val height =
-                boundTicks.minAndMaxOfOrNull { it.amount } ?: MinMax(min = 0.00, max = 1.00)
+            val height = boundTicks.minAndMaxOfOrNull { it.amount }?.let {
+                if (it.min == it.max) minMaxOf(it.min, if (it.min == 0.00) 1.00 else 0.00)
+                else it
+            } ?: MinMax(min = 0.00, max = 1.00)
             boundTicks.map { tick ->
                 PointByPercent(
                     x = (tick.fromSort(tickSort) - domain.start) / width,
