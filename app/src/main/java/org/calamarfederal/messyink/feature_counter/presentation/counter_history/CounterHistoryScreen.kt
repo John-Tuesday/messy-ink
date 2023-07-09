@@ -214,7 +214,7 @@ private fun TabbedLayout(
     )
 
     if (tickSupport != null) {
-        EditTickDialog(
+        EditTickScreenDialog(
             uiTickSupport = tickSupport,
             onChangeTick = onEditTickChanged,
             onDone = onFinalizeEditTick,
