@@ -82,7 +82,6 @@ fun CounterHistoryScreen(
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
-    graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
     onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
@@ -144,7 +143,6 @@ fun CounterHistoryScreen(
             graphPoints = graphPoints,
             graphDomain = graphDomain,
             graphDomainLimits = graphDomainLimits,
-            graphDomainOptions = graphDomainOptions,
             changeGraphDomain = changeGraphDomain,
             graphRange = graphRange,
             modifier = Modifier
@@ -174,7 +172,6 @@ private fun TabbedLayout(
     graphPoints: List<PointByPercent>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
-    graphDomainOptions: List<TimeDomainTemplate>,
     changeGraphDomain: (TimeDomain) -> Unit,
     graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
@@ -206,7 +203,6 @@ private fun TabbedLayout(
                     range = graphRange,
                     domain = graphDomain,
                     domainLimits = graphDomainLimits,
-                    domainOptions = graphDomainOptions,
                     changeDomain = changeGraphDomain,
                 )
             }
@@ -274,7 +270,6 @@ private fun CounterHistoryScreenPreview() {
         graphRange = range,
         graphDomain = TimeDomain.AllTime,
         graphDomainLimits = TimeDomain.AllTime,
-        graphDomainOptions = listOf(),
         changeGraphDomain = {},
         onAddTick = {},
         onDeleteTick = {},

@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapLatest
@@ -156,21 +158,20 @@ class CounterHistoryViewModel @Inject constructor(
      * Maximum limits the domain should ever be
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val graphDomainLimits =
-        ticks.mapLatest { ticks ->
-            ticks.minAndMaxOfOrNull { it.timeForData }?.let { TimeDomain(it) } ?: TimeDomain.AllTime
-        }.stateInViewModel(TimeDomain.AllTime)
+    val graphDomainLimits = ticks.combine(tickSortState) { ticks, sort ->
+        ticks.minAndMaxOfOrNull { it.fromSort(sort) }?.let { TimeDomain(it) } ?: TimeDomain.AllTime
+    }.stateInViewModel(TimeDomain.AllTime)
 
-    /**
-     * All (and only?) quick options to change [graphDomain]
-     */
-    val graphDomainOptions = listOf(
-        TimeDomainAgoTemplate("Day", 1.days, _currentTime),
-        TimeDomainLambdaTemplate(
-            label = "Fit",
-            domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },
-        ),
-    )
+//    /**
+//     * All (and only?) quick options to change [graphDomain]
+//     */
+//    val graphDomainOptions = listOf(
+//        TimeDomainAgoTemplate("Day", 1.days, _currentTime),
+//        TimeDomainLambdaTemplate(
+//            label = "Fit",
+//            domainBuilder = { TimeDomain(ticks.value.minAndMaxOf { it.timeForData }) },
+//        ),
+//    )
 
     /**
      * Points to be graphed which represent the current [ticks] within [graphDomain] sorted by [tickSortState]
@@ -194,9 +195,10 @@ class CounterHistoryViewModel @Inject constructor(
 
     init {
         ioScope.launch {
-            ticks.drop(1).take(1).collect {
-                if (it.isNotEmpty()) changeGraphDomain(graphDomainOptions.last().domain())
-            }
+//            ticks.drop(1).take(1).collect {
+//                if (it.isNotEmpty()) changeGraphDomain(graphDomainLimits.value)
+//            }
+            changeGraphDomain(graphDomainLimits.first { it != TimeDomain.AllTime })
         }
     }
 

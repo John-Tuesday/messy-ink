@@ -4,8 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,14 +26,19 @@ import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -79,7 +86,6 @@ internal fun TicksOverTimeLayout(
     range: ClosedRange<Double>,
     domain: TimeDomain,
     domainLimits: TimeDomain,
-    domainOptions: List<TimeDomainTemplate>,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(),
@@ -124,13 +130,6 @@ internal fun TicksOverTimeLayout(
                 domainLimits = domainLimits,
                 changeDomain = changeDomain,
                 modifier = Modifier.fillMaxWidth(),
-            )
-
-            DomainDropdownMenu(
-                domainLabel = "Domain",
-                domainOptions = domainOptions,
-                onClick = { changeDomain(it.domain()) },
-                modifier = Modifier.align(Alignment.End),
             )
         }
     }
@@ -211,6 +210,7 @@ private fun DomainBoundsAndPicker(
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
+            onFitToData = { changeDomain(domainLimits) },
             onSubmit = {
                 changeDomain(
                     TimeDomain(
@@ -275,11 +275,12 @@ private fun SelectableDates.isValidSelection(utcMilliFirst: Long?, utcMilliSecon
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun DomainDatePicker(
     onDismiss: () -> Unit,
     onSubmit: (ClosedRange<LocalDate>) -> Unit,
+    onFitToData: () -> Unit,
     state: DateRangePickerState = rememberDateRangePickerState(),
 ) {
     AlertDialog(
@@ -289,45 +290,71 @@ private fun DomainDatePicker(
             .fillMaxSize()
             .safeGesturesPadding(),
     ) {
-        Surface {
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                ) {
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Filled.Close, "Close")
-                    }
-                    TextButton(
-                        onClick = {
-                            onSubmit(
-                                epochMillisToDate(
-                                    state.selectedStartDateMillis!!,
-                                    TimeZone.UTC
-                                ).rangeTo(
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.Filled.Close, "Close")
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = onFitToData) {
+                            Text("Fit to Data")
+                        }
+                        TextButton(
+                            onClick = {
+                                onSubmit(
                                     epochMillisToDate(
-                                        state.selectedEndDateMillis!!,
+                                        state.selectedStartDateMillis!!,
                                         TimeZone.UTC
+                                    ).rangeTo(
+                                        epochMillisToDate(
+                                            state.selectedEndDateMillis!!,
+                                            TimeZone.UTC
+                                        )
                                     )
                                 )
+                            },
+                            enabled = state.selectableDates.isValidSelection(
+                                state.selectedStartDateMillis,
+                                state.selectedEndDateMillis
                             )
-                        },
-                        enabled = state.selectableDates.isValidSelection(
-                            state.selectedStartDateMillis,
-                            state.selectedEndDateMillis
-                        )
-                    ) {
-                        Text(text = "Save")
+                        ) {
+                            Text(text = "Save")
+                        }
                     }
-                }
-                DateRangePicker(
-                    state = state,
-                    modifier = Modifier.weight(1f),
                 )
+            },
+        ) { padding ->
+            Surface(
+                modifier = Modifier
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+            ) {
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+                    DateRangePicker(
+                        state = state,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun DomainDatePickerPreview() {
+    MessyInkTheme {
+        Surface {
+            DomainDatePicker(
+                onDismiss = {},
+                onSubmit = {},
+                onFitToData = {},
+            )
         }
     }
 }
@@ -345,10 +372,6 @@ private fun TickAmountOverTimePreview() {
                 range = ticks.first().amount .. ticks.last().amount,
                 domain = domain,
                 domainLimits = domain,
-                domainOptions = listOf(
-                    TimeDomainAgoTemplate("Day", 1.days) { Instant.fromEpochMilliseconds(0L) },
-                    TimeDomainAgoTemplate("Week", 7.days) { Instant.fromEpochMilliseconds(0L) },
-                ),
                 changeDomain = {},
             )
         }

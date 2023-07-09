@@ -65,7 +65,7 @@ internal object CounterHistoryNode : CounterGraphNode {
             val graphRange by viewModel.graphRange.collectAsState()
             val graphDomain by viewModel.graphDomain.collectAsState()
             val graphDomainLimits by viewModel.graphDomainLimits.collectAsState()
-            val graphDomainOptions = viewModel.graphDomainOptions
+//            val graphDomainOptions = viewModel.graphDomainOptions
 
             CounterHistoryScreen(
                 counter = counter,
@@ -77,7 +77,6 @@ internal object CounterHistoryNode : CounterGraphNode {
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
-                graphDomainOptions = graphDomainOptions.toList(),
                 changeGraphDomain = { viewModel.changeGraphDomain(it) },
                 onAddTick = viewModel::addTick,
                 onDeleteTick = viewModel::deleteTick,
