@@ -84,8 +84,8 @@ internal fun TickLogsLayout(
                 TickOptions(
                     visible = showOptions,
                     onDismiss = { showOptions = false },
-                    onDelete = { onDelete(tick.id) },
-                    onEdit = { onEdit(tick.id) },
+                    onDelete = { onDelete(tick.id); showOptions = false },
+                    onEdit = { onEdit(tick.id); showOptions = false },
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }

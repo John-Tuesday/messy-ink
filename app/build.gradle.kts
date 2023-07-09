@@ -49,7 +49,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
 //    packagingOptions {
     packaging {
@@ -62,10 +62,10 @@ android {
 dependencies {
     // Essentials
     implementation(platform("androidx.compose:compose-bom:2023.06.01"))
-    implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.6.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.0-beta02")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.0-beta02")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.0-beta02")
+    implementation("androidx.navigation:navigation-compose:2.7.0-beta02")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.core:core-ktx:1.11.0-beta02")
@@ -91,7 +91,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.6.0")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.0-beta02")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0-beta02")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 

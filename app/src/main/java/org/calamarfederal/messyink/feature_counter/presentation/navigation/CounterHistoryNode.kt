@@ -1,8 +1,13 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -13,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.EditTickScreen
 
 /**
  * # History and Details
@@ -36,6 +42,7 @@ internal object CounterHistoryNode : CounterGraphNode {
         navigate("$BASE_ROUTE/$counterId", navOptions = navOptions)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun NavGraphBuilder.counterHistory(
         onNavigateUp: () -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
@@ -51,6 +58,7 @@ internal object CounterHistoryNode : CounterGraphNode {
 
             val counter by viewModel.counter.collectAsState()
             val ticks by viewModel.ticks.collectAsState()
+            val tickEdit by viewModel.editTickSupport.collectAsState()
             val tickSum by viewModel.tickSum.collectAsState()
             val tickAverage by viewModel.tickAverage.collectAsState()
             val graphPoints by viewModel.graphPoints.collectAsState()
@@ -62,6 +70,7 @@ internal object CounterHistoryNode : CounterGraphNode {
             CounterHistoryScreen(
                 counter = counter,
                 ticks = ticks,
+                tickEdit = tickEdit,
                 tickSum = tickSum,
                 tickAverage = tickAverage,
                 graphPoints = graphPoints,
@@ -72,6 +81,10 @@ internal object CounterHistoryNode : CounterGraphNode {
                 changeGraphDomain = { viewModel.changeGraphDomain(it) },
                 onAddTick = viewModel::addTick,
                 onDeleteTick = viewModel::deleteTick,
+                onEditTick = viewModel::startTickEdit,
+                onCancelEditTick = viewModel::discardTickEdit,
+                onFinalizeEditTick = viewModel::finalizeTickEdit,
+                onEditTickChanged = viewModel::updateTickEdit,
                 onResetCounter = viewModel::resetCounter,
                 onCounterChange = viewModel::changeCounter,
                 onNavigateUp = onNavigateUp,

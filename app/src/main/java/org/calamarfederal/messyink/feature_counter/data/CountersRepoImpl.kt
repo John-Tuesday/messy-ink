@@ -4,6 +4,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
@@ -79,6 +81,10 @@ class CountersRepoImpl @Inject constructor(
             TickSort.TimeType.TimeModified -> dao.ticksWithParentIdOrderModifiedFlow(parentId)
             TickSort.TimeType.TimeForData  -> dao.ticksWithParentIdOrderDataFlow(parentId)
         }.distinctUntilChanged().map { data -> data.map { it.toTick() } }
+
+    override fun getTickFlow(id: Long): Flow<Tick?> {
+        return flow { emit(dao.tick(id)?.toTick()) }
+    }
 
 
     override suspend fun createCounter(counter: Counter): Counter {

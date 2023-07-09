@@ -5,6 +5,7 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 
 /**
  * SAM
@@ -16,6 +17,10 @@ fun interface GetTicksOfFlow {
      * list of all UiTick sharing [parentId]
      */
     operator fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>>
+}
+
+fun interface GetTickSupport {
+    suspend operator fun invoke(id: Long): UiTickSupport?
 }
 
 /**
@@ -40,6 +45,10 @@ fun interface UpdateTick {
      * should it return the new value or `null` if not found
      */
     suspend operator fun invoke(changed: UiTick): Boolean
+}
+
+fun interface UpdateTickFromSupport {
+    suspend operator fun invoke(support: UiTickSupport): Boolean
 }
 
 /**

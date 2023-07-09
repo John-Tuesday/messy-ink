@@ -33,6 +33,11 @@ interface CountersRepo {
     fun getTicksFlow(parentId: Long, sort: TickSort.TimeType): Flow<List<Tick>>
 
     /**
+     * Get and watch tick by [id]
+     */
+    fun getTickFlow(id: Long): Flow<Tick?>
+
+    /**
      * Copy [counter]'s values, but save with a new id, and set its timeModified, and timeCreated values. returns the new [Counter]
      *
      * @param[counter] counter which will be used as the basis for a new counter

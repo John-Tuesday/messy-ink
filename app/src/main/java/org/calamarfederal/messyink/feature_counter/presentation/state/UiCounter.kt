@@ -69,6 +69,30 @@ data class UiTick(
 )
 
 /**
+ * @property[amountInput]
+ * @property[amountHelp]
+ * @property[amountError]
+ * @property[timeForDataInput]
+ * @property[timeForDataHelp]
+ * @property[timeForDataError]
+ * @property[parentId]
+ * @property[id]
+ */
+@Stable
+data class UiTickSupport(
+    val amountInput: String = "",
+    val amountHelp: String? = null,
+    val amountError: Boolean = false,
+    val timeForDataInput: Instant = Instant.DISTANT_PAST,
+    val timeForDataHelp: String? = null,
+    val timeForDataError: Boolean = false,
+    val parentId: Long,
+    val id: Long? = null,
+)
+
+val UiTickSupport.error: Boolean get() = amountError || timeForDataError
+
+/**
  * # Preview Generator
  *
  * used to generate self-labeled UiCounters for preview and testing purposes.

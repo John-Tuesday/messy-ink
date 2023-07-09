@@ -3,19 +3,24 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
+import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
+import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import javax.inject.Inject
 
 /**
@@ -26,6 +31,23 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : G
     override fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>> =
         repo.getTicksFlow(parentId = parentId, sort = sort)
             .mapLatest { it.map { item -> item.toUi() } }
+}
+
+class GetTickSupportImpl @Inject constructor(private val repo: CountersRepo) : GetTickSupport {
+    override suspend fun invoke(id: Long): UiTickSupport? {
+        return repo.getTickFlow(id).singleOrNull()?.let {
+            UiTickSupport(
+                amountInput = it.amount.toString(),
+                amountHelp = null,
+                amountError = false,
+                timeForDataInput = it.timeForData,
+                timeForDataHelp = null,
+                timeForDataError = false,
+                parentId = it.parentId,
+                id = it.id
+            )
+        }
+    }
 }
 
 /**
@@ -43,6 +65,21 @@ class CreateTickImpl @Inject constructor(private val repo: CountersRepo) : Creat
  */
 class UpdateTickImpl @Inject constructor(private val repo: CountersRepo) : UpdateTick {
     override suspend fun invoke(changed: UiTick) = repo.updateTick(changed.toTick())
+}
+
+class UpdateTickFromSupportImpl @Inject constructor(private val repo: CountersRepo) :
+    UpdateTickFromSupport {
+    override suspend fun invoke(support: UiTickSupport): Boolean {
+        if (support.error || support.id == null) return false
+
+        val tick = repo.getTickFlow(support.id).singleOrNull() ?: return false
+        return repo.updateTick(
+            tick.copy(
+                amount = support.amountInput.toDoubleOrNull() ?: return false,
+                timeForData = support.timeForDataInput,
+            )
+        )
+    }
 }
 
 /**

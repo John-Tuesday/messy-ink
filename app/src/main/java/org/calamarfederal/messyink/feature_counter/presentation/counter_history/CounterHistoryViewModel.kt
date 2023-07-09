@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
@@ -35,6 +36,7 @@ import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
@@ -42,6 +44,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
+import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -50,6 +53,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainLambdaTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -75,8 +79,9 @@ class CounterHistoryViewModel @Inject constructor(
     private val _getTicksOfFlow: GetTicksOfFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
     private val _getTicksAverageOfFlow: GetTicksAverageOfFlow,
+    private val _getTickSupport: GetTickSupport,
     private val _createTick: CreateTick,
-    private val _updateTick: UpdateTick,
+    private val _updateTick: UpdateTickFromSupport,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
     private val _deleteTick: DeleteTicks,
@@ -120,6 +125,9 @@ class CounterHistoryViewModel @Inject constructor(
             emitAll(_getTicksOfFlow(id, sort))
         }.stateInViewModel(listOf())
 
+    private val _editTickSupport = MutableStateFlow<UiTickSupport?>(null)
+    val editTickSupport = _editTickSupport.asStateFlow()
+
     /**
      * Sum of [ticks] or `null` when empty
      */
@@ -136,7 +144,8 @@ class CounterHistoryViewModel @Inject constructor(
             emitAll(_getTicksAverageOfFlow(id, sort))
         }.stateInViewModel(null)
 
-    private val _graphDomain = MutableStateFlow(TimeDomainAgoTemplate("24hrs ago", 1.days, _currentTime).domain())
+    private val _graphDomain =
+        MutableStateFlow(TimeDomainAgoTemplate("24hrs ago", 1.days, _currentTime).domain())
 
     /**
      * Domain for all graphs
@@ -228,10 +237,37 @@ class CounterHistoryViewModel @Inject constructor(
     }
 
     /**
-     * Request change to a Tick from UI
+     * Set [editTickSupport] to represent the tick with [id]
      */
-    fun changeTick(tick: UiTick) {
-        ioScope.launch { _updateTick(tick) }
+    fun startTickEdit(id: Long) {
+        ioScope.launch { _editTickSupport.value = _getTickSupport(id) }
+    }
+
+    /**
+     * Update [editTickSupport] and check for errors
+     */
+    fun updateTickEdit(support: UiTickSupport) {
+        _editTickSupport.update { it?.let { support } }
+        val amountError = support.amountInput.toDoubleOrNull() == null
+        val amountHelp = if (amountError) "Enter in a valid decimal number" else null
+        _editTickSupport.update { it?.copy(amountHelp = amountHelp, amountError = amountError) }
+    }
+
+    /**
+     * Clear [editTickSupport] and do not modify any data
+     */
+    fun discardTickEdit() {
+        _editTickSupport.value = null
+    }
+
+    /**
+     * Update corresponding tick. Sets [editTickSupport] to null on success
+     */
+    fun finalizeTickEdit() {
+        ioScope.launch {
+            if (_updateTick(_editTickSupport.value ?: return@launch))
+                _editTickSupport.value = null
+        }
     }
 
     /**
