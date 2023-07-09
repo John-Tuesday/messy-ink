@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +79,7 @@ internal fun TickLogsLayout(
                             showOptions = true
                         },
                         onClick = { showOptions = false },
-                    )
+                    ).testTag(CounterHistoryTestTags.TickLogEntry)
                 )
                 TickOptions(
                     visible = showOptions,
@@ -183,14 +184,15 @@ private fun TickOptions(
             alignment = alignment,
             offset = offset,
         ) {
-            ElevatedCard {
+            ElevatedCard(modifier = Modifier.testTag(CounterHistoryTestTags.TickLogOptions)) {
                 Row(modifier = Modifier.height(IntrinsicSize.Max)) {
                     InputChip(
                         selected = false,
                         onClick = onEdit,
                         border = null,
                         label = { Text("Edit") },
-                        leadingIcon = { Icon(Icons.Filled.Edit, "edit tick") }
+                        leadingIcon = { Icon(Icons.Filled.Edit, "edit tick") },
+                        modifier = Modifier.testTag(CounterHistoryTestTags.TickLogEntryEdit),
                     )
                     Divider(
                         Modifier
@@ -203,7 +205,8 @@ private fun TickOptions(
                         onClick = onDelete,
                         border = null,
                         label = { Text("Delete") },
-                        leadingIcon = { Icon(Icons.Filled.DeleteForever, "delete forever") }
+                        leadingIcon = { Icon(Icons.Filled.DeleteForever, "delete forever") },
+                        modifier = Modifier.testTag(CounterHistoryTestTags.TickLogEntryDelete),
                     )
                 }
             }
