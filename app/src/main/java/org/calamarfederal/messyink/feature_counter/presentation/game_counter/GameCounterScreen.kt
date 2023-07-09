@@ -130,25 +130,18 @@ internal fun GameCounterLayout(
         primaryAmount = primaryIncrement,
         secondaryAmount = secondaryIncrement,
     )
-    AnimatedVisibility(
-        visible = customIncrementPrompt,
-        label = "custom tick"
-    ) {
+    if (customIncrementPrompt) {
         EditIncrementDialog(
             currentAmount = 0.00,
             onChangeAmount = onAddTick,
-            onDismissRequest = { customIncrementPrompt = false })
-    }
-    AnimatedContent(
-        targetState = editIncrementOf,
-        label = "edit tick amount"
-    ) { tickButton ->
-        if (tickButton != null) {
-            EditIncrementDialog(
-                currentAmount = if (tickButton == Primary) primaryIncrement else secondaryIncrement,
-                onChangeAmount = if (tickButton == Primary) onChangePrimaryIncrement else onChangeSecondaryIncrement,
-                onDismissRequest = { editIncrementOf = null })
-        }
+            onDismissRequest = { customIncrementPrompt = false },
+        )
+    } else if (editIncrementOf != null) {
+        EditIncrementDialog(
+            currentAmount = if (editIncrementOf == Primary) primaryIncrement else secondaryIncrement,
+            onChangeAmount = if (editIncrementOf == Primary) onChangePrimaryIncrement else onChangeSecondaryIncrement,
+            onDismissRequest = { editIncrementOf = null }
+        )
     }
 }
 
