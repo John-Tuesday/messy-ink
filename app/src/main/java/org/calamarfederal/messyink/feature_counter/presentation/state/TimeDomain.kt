@@ -3,13 +3,19 @@ package org.calamarfederal.messyink.feature_counter.presentation.state
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Stable
+import kotlinx.datetime.DateTimePeriod
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DateTimeUnit.Companion
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 /**
  * Convenience function to convert [millis] to a date using [timeZone]
@@ -61,23 +67,16 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
     /**
      * Create a [SelectableDates] that tests true on dates within bounds
      */
-    @OptIn(ExperimentalStdlibApi::class, ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     fun toSelectableDates(timeZone: TimeZone): SelectableDates {
-        val localStart = start.toLocalDateTime(timeZone)
-        val localEnd = end.toLocalDateTime(timeZone)
+        val startDate = start.toLocalDateTime(timeZone).date
+        val endDate = end.toLocalDateTime(timeZone).date.let {
+            if (inclusiveEnd) it
+            else it.minus(DateTimeUnit.DAY)
+        }
         return SelectableTimeDomain(
-            containsDate = if (inclusiveEnd) { it -> it in localStart.date .. localEnd.date }
-            else { it -> it in localStart.date ..< localEnd.date },
-            containsYear = if (!inclusiveEnd && localEnd == LocalDateTime(
-                    year = localEnd.year,
-                    0,
-                    0,
-                    0,
-                    0
-                )
-            ) { it ->
-                it in localStart.year ..< localEnd.year
-            } else { it -> it in localStart.year .. localEnd.year }
+            containsDate = { it in startDate .. endDate },
+            containsYear = { it in startDate.year .. endDate.year }
         )
     }
 
