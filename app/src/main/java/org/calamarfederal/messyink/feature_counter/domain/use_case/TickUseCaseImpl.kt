@@ -5,9 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.common.math.MinMax
-import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
-import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
@@ -18,7 +15,6 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
@@ -150,15 +146,14 @@ class GetTicksSumByFlowImpl @Inject constructor(private val repo: CountersRepo) 
 
 class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
     override fun invoke(
-        ticks: List<UiTick>,
+        filteredTicks: List<UiTick>,
         sort: TimeType,
         domain: TimeDomain,
         range: ClosedRange<Double>
     ): List<PointByPercent> {
-        val boundTicks = ticks.filter { it.getTime(sort) in domain }
         val width = (domain.start - domain.end).absoluteValue
         val height = (range.start - range.endInclusive).absoluteValue
-        return boundTicks.map { tick ->
+        return filteredTicks.map { tick ->
             PointByPercent(
                 x = (tick.getTime(sort) - domain.start) / width,
                 y = (tick.amount - range.start) / (height)

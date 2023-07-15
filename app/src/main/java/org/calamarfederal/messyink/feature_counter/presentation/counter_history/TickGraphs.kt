@@ -170,17 +170,17 @@ private fun DomainBoundsAndPicker(
     dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
 ) {
     var openDomainPicker by remember { mutableStateOf(false) }
-    val localDomain by remember {
+    val localDomain by remember(domain, timeZone) {
         derivedStateOf {
             domain.start.toLocalDateTime(timeZone) to domain.end.toLocalDateTime(timeZone)
         }
     }
-    val domainStart by remember {
+    val domainStart by remember(localDomain, dateTimeFormat) {
         derivedStateOf {
             localDomain.first.formatToString(dateTimeFormat)
         }
     }
-    val domainEnd by remember {
+    val domainEnd by remember(localDomain, dateTimeFormat) {
         derivedStateOf {
             localDomain.second.formatToString(dateTimeFormat)
         }

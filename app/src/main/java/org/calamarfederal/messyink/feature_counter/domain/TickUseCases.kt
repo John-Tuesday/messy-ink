@@ -163,7 +163,7 @@ fun interface TicksToGraphPoints {
      * Sort ticks by [sort] and cull any out of [domain] or out of [range]
      */
     operator fun invoke(
-        ticks: List<UiTick>,
+        filteredTicks: List<UiTick>,
         sort: TimeType,
         domain: TimeDomain,
         range: ClosedRange<Double>,

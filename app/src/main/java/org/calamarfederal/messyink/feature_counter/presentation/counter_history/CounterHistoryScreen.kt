@@ -62,24 +62,18 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiT
 )
 @Composable
 fun CounterHistoryScreen(
-    counter: UiCounter,
     ticks: List<UiTick>,
     tickEdit: UiTickSupport?,
-    tickSum: Double?,
-    tickAverage: Double?,
     graphPoints: List<PointByPercent>,
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
     changeGraphDomain: (TimeDomain) -> Unit,
-    onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
     onEditTickChanged: (UiTickSupport) -> Unit,
     onCancelEditTick: () -> Unit,
     onFinalizeEditTick: () -> Unit,
-    onResetCounter: () -> Unit,
-    onCounterChange: (UiCounter) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -115,20 +109,14 @@ fun CounterHistoryScreen(
         },
     ) { padding ->
         TabbedLayout(
-            counter = counter,
             ticks = ticks,
             tickSupport = tickEdit,
-            tickSum = tickSum,
-            tickAverage = tickAverage,
-            onAddTick = onAddTick,
             onDeleteTick = onDeleteTick,
             onEditTick = onEditTick,
             onEditTickChanged = onEditTickChanged,
             onFinalizeEditTick = onFinalizeEditTick,
             onCancelEditTick = onCancelEditTick,
-            onResetCounter = onResetCounter,
             state = pagerState,
-            onCounterChange = onCounterChange,
             graphPoints = graphPoints,
             graphDomain = graphDomain,
             graphDomainLimits = graphDomainLimits,
@@ -145,19 +133,13 @@ fun CounterHistoryScreen(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TabbedLayout(
-    counter: UiCounter,
     ticks: List<UiTick>,
     tickSupport: UiTickSupport?,
-    tickSum: Double?,
-    tickAverage: Double?,
-    onAddTick: (Double) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
     onEditTickChanged: (UiTickSupport) -> Unit,
     onCancelEditTick: () -> Unit,
     onFinalizeEditTick: () -> Unit,
-    onResetCounter: () -> Unit,
-    onCounterChange: (UiCounter) -> Unit,
     graphPoints: List<PointByPercent>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
@@ -250,24 +232,18 @@ private fun CounterHistoryScreenPreview() {
     val range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount }
 
     CounterHistoryScreen(
-        counter = counter,
         ticks = ticks,
         tickEdit = null,
         graphPoints = listOf(),
-        tickSum = tickSum,
-        tickAverage = tickSum?.div(ticks.size),
         graphRange = range,
         graphDomain = TimeDomain.AllTime,
         graphDomainLimits = TimeDomain.AllTime,
         changeGraphDomain = {},
-        onAddTick = {},
         onDeleteTick = {},
         onEditTickChanged = {},
         onFinalizeEditTick = {},
         onCancelEditTick = {},
         onEditTick = {},
-        onResetCounter = {},
-        onCounterChange = {},
         onNavigateUp = {},
     )
 }

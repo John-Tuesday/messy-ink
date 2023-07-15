@@ -81,6 +81,10 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
         )
     }
 
+    override fun toString(): String {
+        return "TimeDomain { start = $start, end = $end, endInclusive = $inclusiveEnd }"
+    }
+
     override fun equals(other: Any?): Boolean =
         if (other is TimeDomain) other.start == start && other.end == end && other.inclusiveEnd == inclusiveEnd else false
 

@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.presentation.navigation
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,36 +57,26 @@ internal object CounterHistoryNode : CounterGraphNode {
 
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
-            val counter by viewModel.counter.collectAsState()
-            val ticks by viewModel.ticks.collectAsState()
-            val tickEdit by viewModel.editTickSupport.collectAsState()
-            val tickSum by viewModel.tickSum.collectAsState()
-            val tickAverage by viewModel.tickAverage.collectAsState()
-            val graphPoints by viewModel.graphPoints.collectAsState()
-            val graphRange by viewModel.graphRange.collectAsState()
-            val graphDomain by viewModel.graphDomain.collectAsState()
-            val graphDomainLimits by viewModel.graphDomainLimits.collectAsState()
-//            val graphDomainOptions = viewModel.graphDomainOptions
+            val ticks by viewModel.allTicksState.collectAsState()
+            val tickEdit by viewModel.editTickSupportState.collectAsState()
+            val graphPoints by viewModel.tickGraphPointsState.collectAsState()
+            val graphRange by viewModel.amountRangeState.collectAsState()
+            val graphDomain by viewModel.timeDomainState.collectAsState()
+            val graphDomainLimits by viewModel.domainLimitState.collectAsState()
 
             CounterHistoryScreen(
-                counter = counter,
                 ticks = ticks,
                 tickEdit = tickEdit,
-                tickSum = tickSum,
-                tickAverage = tickAverage,
                 graphPoints = graphPoints,
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
-                changeGraphDomain = { viewModel.changeGraphDomain(it) },
-                onAddTick = viewModel::addTick,
+                changeGraphDomain = { viewModel.changeGraphZoom(domain = it) },
                 onDeleteTick = viewModel::deleteTick,
                 onEditTick = viewModel::startTickEdit,
                 onCancelEditTick = viewModel::discardTickEdit,
                 onFinalizeEditTick = viewModel::finalizeTickEdit,
                 onEditTickChanged = viewModel::updateTickEdit,
-                onResetCounter = viewModel::resetCounter,
-                onCounterChange = viewModel::changeCounter,
                 onNavigateUp = onNavigateUp,
             )
         }
