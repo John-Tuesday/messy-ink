@@ -12,6 +12,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickImpl
@@ -22,6 +23,7 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksAvera
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.TicksToGraphPointsImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateTickFromSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.UpdateTickImpl
 
@@ -91,4 +93,10 @@ abstract class TickUseCasesModule {
      */
     @Binds
     abstract fun bindGetTicksSumByFlow(impl: GetTicksSumByFlowImpl): GetTicksSumByFlow
+
+    /**
+     * Binds Implementation to interface
+     */
+    @Binds
+    abstract fun bindTicksToGraphPoints(impl: TicksToGraphPointsImpl): TicksToGraphPoints
 }

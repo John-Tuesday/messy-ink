@@ -39,6 +39,7 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
@@ -80,6 +81,7 @@ class CounterHistoryViewModel @Inject constructor(
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
     private val _deleteTick: DeleteTicks,
+    private val _ticksToGraphPoints: TicksToGraphPoints,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
@@ -150,6 +152,14 @@ class CounterHistoryViewModel @Inject constructor(
      * Domain for all graphs
      */
     val graphDomain = _graphDomain.asStateFlow()
+    private val _graphRange = combine(ticks, graphDomain, tickSortState) { tickList, domain, sort ->
+        tickList
+            .filter { it.fromSort(sort) in domain }
+            .minAndMaxOfOrNull { it.amount }?.let {
+                if (it.min == it.max) minMaxOf(it.min, if (it.min == 0.00) 1.00 else 0.00)
+                else it
+            } ?: minMaxOf(0.00, 1.00)
+    }.stateInViewModel(minMaxOf(0.00, 1.00))
 
     /**
      * Maximum limits the domain should ever be
@@ -162,23 +172,24 @@ class CounterHistoryViewModel @Inject constructor(
     /**
      * Points to be graphed which represent the current [ticks] within [graphDomain] sorted by [tickSortState]
      */
+//    val graphPoints: StateFlow<List<PointByPercent>> =
+//        combine(ticks, graphDomain, tickSortState) { tickList, domain, tickSort ->
+//            val boundTicks = tickList.filter { it.fromSort(tickSort) in domain }
+//            val width = (domain.start - domain.end).absoluteValue
+//            val height = boundTicks.minAndMaxOfOrNull { it.amount }?.let {
+//                if (it.min == it.max) minMaxOf(it.min, if (it.min == 0.00) 1.00 else 0.00)
+//                else it
+//            } ?: MinMax(min = 0.00, max = 1.00)
+//            boundTicks.map { tick ->
+//                PointByPercent(
+//                    x = (tick.fromSort(tickSort) - domain.start) / width,
+//                    y = (tick.amount - height.min) / (height.max - height.min)
+//                )
+//            }
+//        }.stateInViewModel(listOf())
     val graphPoints: StateFlow<List<PointByPercent>> =
-        combine(ticks, graphDomain, tickSortState) { tickList, domain, tickSort ->
-            println("domain: ${domain.start} .. ${domain.end}")
-            println("tickSort: $tickSort")
-
-            val boundTicks = tickList.filter { it.fromSort(tickSort) in domain }
-            val width = (domain.start - domain.end).absoluteValue
-            val height = boundTicks.minAndMaxOfOrNull { it.amount }?.let {
-                if (it.min == it.max) minMaxOf(it.min, if (it.min == 0.00) 1.00 else 0.00)
-                else it
-            } ?: MinMax(min = 0.00, max = 1.00)
-            boundTicks.map { tick ->
-                PointByPercent(
-                    x = (tick.fromSort(tickSort) - domain.start) / width,
-                    y = (tick.amount - height.min) / (height.max - height.min)
-                )
-            }
+        combine(ticks, graphDomain, _graphRange, tickSortState) { tickList, domain, range, tickSort ->
+            _ticksToGraphPoints(ticks = tickList, domain = domain, range = range, sort = tickSort)
         }.stateInViewModel(listOf())
 
     init {

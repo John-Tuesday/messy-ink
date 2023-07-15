@@ -5,6 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.common.math.MinMax
+import org.calamarfederal.messyink.common.math.minAndMaxOfOrNull
+import org.calamarfederal.messyink.common.math.minMaxOf
+import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
@@ -14,14 +18,19 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.getTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 /**
  * Default Implementation
@@ -137,4 +146,25 @@ class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRe
 class GetTicksSumByFlowImpl @Inject constructor(private val repo: CountersRepo) :
     GetTicksSumByFlow {
     override fun invoke(): Flow<Map<Long, Double>> = repo.getTicksSumByFlow()
+}
+
+class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
+    override fun invoke(
+        ticks: List<UiTick>,
+        sort: TimeType,
+        domain: TimeDomain,
+        range: ClosedRange<Double>
+    ): List<PointByPercent> {
+        val boundTicks = ticks.filter { it.getTime(sort) in domain }
+        val width = (domain.start - domain.end).absoluteValue
+        val height = (range.start - range.endInclusive).absoluteValue
+        return boundTicks.map { tick ->
+            PointByPercent(
+                x = (tick.getTime(sort) - domain.start) / width,
+                y = (tick.amount - range.start) / (height)
+            )
+        }
+    }
+
+
 }

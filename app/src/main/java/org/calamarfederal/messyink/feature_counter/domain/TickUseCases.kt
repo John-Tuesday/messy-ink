@@ -2,7 +2,9 @@ package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
@@ -151,4 +153,19 @@ fun interface GetTicksSumByFlow {
      * @return Flow emits empty map if non exists
      */
     operator fun invoke(): Flow<Map<Long, Double>>
+}
+
+/**
+ * Converter for Ticks -> Graph points
+ */
+fun interface TicksToGraphPoints {
+    /**
+     * Sort ticks by [sort] and cull any out of [domain] or out of [range]
+     */
+    operator fun invoke(
+        ticks: List<UiTick>,
+        sort: TimeType,
+        domain: TimeDomain,
+        range: ClosedRange<Double>,
+    ): List<PointByPercent>
 }
