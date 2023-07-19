@@ -3,6 +3,8 @@ package org.calamarfederal.messyink.feature_counter.presentation.state
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -67,6 +69,15 @@ data class UiTick(
     val parentId: Long,
     val id: Long,
 )
+
+/**
+ * Get the associated time
+ */
+fun UiTick.getTime(timeType: TickSort.TimeType): Instant = when (timeType) {
+    TimeType.TimeModified -> timeModified
+    TimeType.TimeCreated  -> timeCreated
+    TimeType.TimeForData  -> timeForData
+}
 
 /**
  * @property[amountInput]

@@ -7,18 +7,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.performTouchInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
@@ -73,24 +69,18 @@ class CounterHistoryScreenTest {
             }
 
             CounterHistoryScreen(
-                counter = counter,
                 ticks = ticks,
                 tickEdit = tickSupport,
                 graphPoints = listOf(),
-                tickSum = tickSum,
-                tickAverage = tickAverage,
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
                 changeGraphDomain = {},
-                onAddTick = {},
                 onDeleteTick = {},
                 onEditTick = {},
                 onEditTickChanged = {},
                 onFinalizeEditTick = {},
                 onCancelEditTick = {},
-                onResetCounter = {},
-                onCounterChange = {},
                 onNavigateUp = {},
             )
         }

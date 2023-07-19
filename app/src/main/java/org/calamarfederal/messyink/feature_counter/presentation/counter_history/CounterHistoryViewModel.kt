@@ -19,9 +19,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,24 +37,21 @@ import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
-import org.calamarfederal.messyink.feature_counter.domain.getTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.getTime
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
-private fun UiTick.fromSort(sort: TickSort.TimeType) = when (sort) {
-    TickSort.TimeType.TimeCreated  -> timeCreated
-    TickSort.TimeType.TimeModified -> timeModified
-    TickSort.TimeType.TimeForData  -> timeForData
-}
-
-private fun _tickGraphMaxBounds(
+/**
+ * find the min and max [UiTick.amount] and time (chosen by [sort]) of [ticks]
+ */
+private fun minMaxOfDomainRange(
     ticks: List<UiTick>,
     sort: TimeType,
 ): Pair<TimeDomain?, ClosedRange<Double>?> {
@@ -115,26 +110,47 @@ class CounterHistoryViewModel @Inject constructor(
     private val _tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
     private val _timeDomainState =
         MutableStateFlow(TimeDomain(_currentTime().let { it - 1.days .. it }))
+
+    /**
+     * User-chosen domain for the graph
+     */
     val timeDomainState: StateFlow<TimeDomain> = _timeDomainState.asStateFlow()
     private val _amountRangeState = MutableStateFlow<ClosedRange<Double>>(0.00 .. 1.00)
+
+    /**
+     * User-chosen range for the graph
+     */
     val amountRangeState = _amountRangeState.asStateFlow()
 
     private val _editTickSupportState = MutableStateFlow<UiTickSupport?>(null)
+
+    /**
+     * Tick in edit-workspace
+     */
     val editTickSupportState = _editTickSupportState.asStateFlow()
 
+    /**
+     * Unfiltered ticks of chosen counter
+     */
     val allTicksState = combineTransform(_tickSortState, counterIdState) { sort, parentId ->
         emitAll(_getAllTicks(parentId = parentId, sort = sort))
     }.stateInIo(listOf())
 
     private val domainRangeLimitsState = combine(allTicksState, _tickSortState) { ticks, sort ->
-        _tickGraphMaxBounds(ticks, sort)
+        minMaxOfDomainRange(ticks, sort)
     }.stateInIo(null)
 
+    /**
+     * Actual min and max domain values in [allTicksState]
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     val domainLimitState =
         domainRangeLimitsState.mapLatest { it?.first ?: TimeDomain.AllTime }
             .stateInViewModel(TimeDomain.AllTime)
 
+    /**
+     * Actual min and max domain values in [allTicksState]
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     val rangeLimitState =
         domainRangeLimitsState.mapLatest { it?.second ?: 0.00 .. 1.00 }
@@ -146,9 +162,12 @@ class CounterHistoryViewModel @Inject constructor(
         _timeDomainState,
         _amountRangeState
     ) { ticks, sort, domain, range ->
-        ticks.filter { it.fromSort(sort) in domain && it.amount in range }
+        ticks.filter { it.getTime(sort) in domain && it.amount in range }
     }.stateInWork(listOf())
 
+    /**
+     * Points to be graphed
+     */
     val tickGraphPointsState = combine(
         filteredTicksState,
         _tickSortState,

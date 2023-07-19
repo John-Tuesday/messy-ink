@@ -38,12 +38,6 @@ fun Tick.getTime(timeType: TickSort.TimeType): Instant = when (timeType) {
     TimeType.TimeForData  -> timeForData
 }
 
-fun UiTick.getTime(timeType: TickSort.TimeType): Instant = when (timeType) {
-    TimeType.TimeModified -> timeModified
-    TimeType.TimeCreated  -> timeCreated
-    TimeType.TimeForData  -> timeForData
-}
-
 /**
  * Sort counters by this
  */
