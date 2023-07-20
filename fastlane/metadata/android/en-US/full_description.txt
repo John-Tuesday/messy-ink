@@ -1,0 +1,1 @@
+Create a category then record Amounts. View the change in amounts over time in a list or graph view. Edit or delete specific records after it has been created.
