@@ -1,14 +1,9 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -19,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
-import org.calamarfederal.messyink.feature_counter.presentation.counter_history.EditTickScreen
 
 /**
  * # History and Details

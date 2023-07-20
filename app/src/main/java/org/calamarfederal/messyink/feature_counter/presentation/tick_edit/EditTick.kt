@@ -1,5 +1,6 @@
-package org.calamarfederal.messyink.feature_counter.presentation.counter_history
+package org.calamarfederal.messyink.feature_counter.presentation.tick_edit
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -24,9 +27,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -35,6 +43,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
+import org.calamarfederal.messyink.common.presentation.format.formatToString
+import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 
 /**
@@ -149,40 +165,119 @@ private fun EditTickLayout(
     onChangeTick: (UiTickSupport) -> Unit,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
     Surface(modifier = modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val fc = remember { FocusRequester() }
-                Text(
-                    text = "Amount",
-                    modifier = Modifier.alignByBaseline(),
-                )
-                OutlinedTextField(
-                    value = tickSupport.amountInput,
-                    onValueChange = { onChangeTick(tickSupport.copy(amountInput = it)) },
-                    isError = tickSupport.amountError,
-                    supportingText = { tickSupport.amountHelp?.let { Text(it) } },
-                    keyboardActions = KeyboardActions { onDone() },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Done
-                    ),
-                    modifier = Modifier
-                        .alignByBaseline()
-                        .focusRequester(fc)
-                        .focusable()
-                )
+            var pickerOpenT by remember {
+                mutableStateOf<TickSort.TimeType?>(null)
+            }
+            AmountRow(tickSupport = tickSupport, onChangeTick = onChangeTick, onDone = onDone)
+            TimeRow(
+                time = tickSupport.timeForDataInput.toLocalDateTime(timeZone),
+                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeForData,
+                requestDialogChange = {
+                    pickerOpenT = if (it) TickSort.TimeType.TimeForData else null
+                },
+                changeTime = { onChangeTick(tickSupport.copy(timeForDataInput = it)) },
+                label = "Time",
+            )
+        }
+    }
+}
 
-                LaunchedEffect(Unit) {
-                    fc.requestFocus()
+@Composable
+private fun AmountRow(
+    tickSupport: UiTickSupport,
+    onChangeTick: (UiTickSupport) -> Unit,
+    modifier: Modifier = Modifier,
+    onDone: () -> Unit = {},
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        val fc = remember { FocusRequester() }
+        Text(
+            text = "Amount",
+            modifier = Modifier.alignByBaseline(),
+        )
+        OutlinedTextField(
+            value = tickSupport.amountInput,
+            onValueChange = { onChangeTick(tickSupport.copy(amountInput = it)) },
+            isError = tickSupport.amountError,
+            supportingText = { tickSupport.amountHelp?.let { Text(it) } },
+            keyboardActions = KeyboardActions { onDone() },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done
+            ),
+            modifier = Modifier
+                .alignByBaseline()
+                .focusRequester(fc)
+                .focusable()
+        )
+
+        LaunchedEffect(Unit) {
+            fc.requestFocus()
+        }
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimeRow(
+    time: LocalDateTime,
+    isPickerOpen: Boolean,
+    requestDialogChange: (Boolean) -> Unit,
+    changeTime: (Instant) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "Time",
+    dateTimeFormatter: DateTimeFormat = DateTimeFormat(),
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.alignByBaseline(),
+        )
+        TextButton(onClick = { requestDialogChange(true) }, modifier = Modifier.alignByBaseline()) {
+            Text(text = time.formatToString(dateTimeFormatter))
+        }
+        if (isPickerOpen) {
+            val dateState = rememberDatePickerState(
+                initialSelectedDateMillis = time.date.toUtcMillis(),
+            )
+            val confirmEnabled by derivedStateOf { dateState.selectedDateMillis != null }
+            DatePickerDialog(
+                onDismissRequest = { requestDialogChange(false) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            dateState.selectedDateMillis?.let {
+                                changeTime(Instant.fromEpochMilliseconds(it))
+                                requestDialogChange(false)
+                            }
+                        },
+                        enabled = confirmEnabled,
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { requestDialogChange(false) }) {
+                        Text("Cancel")
+                    }
                 }
+            ) {
+                DatePicker(state = dateState)
             }
         }
     }
+
 }
 
 @Preview

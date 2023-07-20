@@ -124,7 +124,7 @@ private fun TickListItem(
                     fontStyle = FontStyle.Italic
                 )
             }
-            val timeForData by remember(tick.timeForData) {
+            val timeForData by remember(tick.timeForData, timeZone, dateTimeFormat) {
                 derivedStateOf {
                     "data: ${
                         tick.timeForData
@@ -133,7 +133,7 @@ private fun TickListItem(
                     }"
                 }
             }
-            val timeModified by remember(tick.timeModified) {
+            val timeModified by remember(tick.timeModified, timeZone, dateTimeFormat) {
                 derivedStateOf {
                     "modified: ${
                         tick.timeModified
@@ -142,7 +142,7 @@ private fun TickListItem(
                     }"
                 }
             }
-            val timeCreated by remember(tick.timeCreated) {
+            val timeCreated by remember(tick.timeCreated, timeZone, dateTimeFormat) {
                 derivedStateOf {
                     "created: ${
                         tick.timeCreated

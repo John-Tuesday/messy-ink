@@ -40,12 +40,12 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_history.
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
+import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickScreenDialog
 
 /**
  * # Counter History and Details Screen
