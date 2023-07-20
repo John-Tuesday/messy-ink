@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
@@ -48,6 +49,11 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeCreated
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeForData
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeModified
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MaterialLevel
@@ -63,6 +69,7 @@ internal fun TickLogsLayout(
     ticks: List<UiTick>,
     onDelete: (Long) -> Unit,
     onEdit: (Long) -> Unit,
+    sort: TickSort.TimeType,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
@@ -72,14 +79,17 @@ internal fun TickLogsLayout(
             Box {
                 TickListItem(
                     tick = tick,
+                    sort = sort,
                     selected = showOptions,
-                    modifier = Modifier.combinedClickable(
-                        onLongClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showOptions = true
-                        },
-                        onClick = { showOptions = false },
-                    ).testTag(CounterHistoryTestTags.TickLogEntry)
+                    modifier = Modifier
+                        .combinedClickable(
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showOptions = true
+                            },
+                            onClick = { showOptions = false },
+                        )
+                        .testTag(CounterHistoryTestTags.TickLogEntry),
                 )
                 TickOptions(
                     visible = showOptions,
@@ -98,70 +108,68 @@ private fun TickListItem(
     tick: UiTick,
     selected: Boolean,
     modifier: Modifier = Modifier,
+    sort: TimeType? = null,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     dateTimeFormat: DateTimeFormat = DateTimeFormat(),
 ) {
-    ListItem(
-        modifier = modifier,
-        headlineContent = {
-            Text(
-                text = tick.amount.toStringAllowShorten(),
-                style = MaterialTheme.typography.titleLarge.let {
-                    if (selected) it + TextStyle(
-                        fontWeight = FontWeight.ExtraBold,
-                        fontStyle = FontStyle.Italic
-                    ) else it
-                },
-            )
-        },
-        supportingContent = {
-            val style = MaterialTheme.typography.titleSmall.let {
+    ListItem(modifier = modifier, headlineContent = {
+        Text(
+            text = tick.amount.toStringAllowShorten(),
+            style = MaterialTheme.typography.titleLarge.let {
                 if (selected) it + TextStyle(
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal
-                ) else it + TextStyle(
-                    fontWeight = FontWeight.Light,
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            val timeForData by remember(tick.timeForData, timeZone, dateTimeFormat) {
-                derivedStateOf {
-                    "data: ${
-                        tick.timeForData
-                            .toLocalDateTime(timeZone)
-                            .formatToString(dateTimeFormat)
-                    }"
-                }
-            }
-            val timeModified by remember(tick.timeModified, timeZone, dateTimeFormat) {
-                derivedStateOf {
-                    "modified: ${
-                        tick.timeModified
-                            .toLocalDateTime(timeZone)
-                            .formatToString(dateTimeFormat)
-                    }"
-                }
-            }
-            val timeCreated by remember(tick.timeCreated, timeZone, dateTimeFormat) {
-                derivedStateOf {
-                    "created: ${
-                        tick.timeCreated
-                            .toLocalDateTime(timeZone)
-                            .formatToString(dateTimeFormat)
-                    }"
-                }
-            }
-            Column {
-                Text(text = timeForData, style = style)
-                Text(text = timeCreated, style = style)
-                Text(text = timeModified, style = style)
-            }
-        },
-        tonalElevation = LocalAbsoluteTonalElevation.current.let {
-            if (selected) it.toMaterialLevelCiel().coerceAtLeast(MaterialLevel(3)).elevation
-            else it
+                    fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic
+                ) else it
+            },
+        )
+    }, supportingContent = {
+        val style = MaterialTheme.typography.titleSmall.let {
+            if (selected) it + TextStyle(
+                fontWeight = FontWeight.Medium, fontStyle = FontStyle.Normal
+            ) else it + TextStyle(
+                fontWeight = FontWeight.Light, fontStyle = FontStyle.Italic
+            )
         }
-    )
+        val pickedMod = TextStyle(fontWeight = FontWeight.SemiBold)
+        val timeForData by remember(tick.timeForData, timeZone, dateTimeFormat) {
+            derivedStateOf {
+                "data: ${
+                    tick.timeForData.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
+                }"
+            }
+        }
+        val timeModified by remember(tick.timeModified, timeZone, dateTimeFormat) {
+            derivedStateOf {
+                "modified: ${
+                    tick.timeModified.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
+                }"
+            }
+        }
+        val timeCreated by remember(tick.timeCreated, timeZone, dateTimeFormat) {
+            derivedStateOf {
+                "created: ${
+                    tick.timeCreated.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
+                }"
+            }
+        }
+        Column {
+
+            Text(
+                text = timeForData,
+                style = style.merge(if (sort == TimeForData) pickedMod else null)
+            )
+            Text(
+                text = timeModified,
+                style = style.merge(if (sort == TimeModified) pickedMod else null)
+            )
+            Text(
+                text = timeCreated,
+                style = style.merge(if (sort == TimeCreated) pickedMod else null)
+            )
+        }
+    }, tonalElevation = LocalAbsoluteTonalElevation.current.let {
+        if (selected) it.toMaterialLevelCiel().coerceAtLeast(MaterialLevel(3)).elevation
+        else it
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -219,6 +227,7 @@ private fun TickOptions(
 private fun TickLogsScreenPreview() {
     TickLogsLayout(
         ticks = previewUiTicks(1L).take(15).toList(),
+        sort = TimeForData,
         onDelete = {},
         onEdit = {},
     )

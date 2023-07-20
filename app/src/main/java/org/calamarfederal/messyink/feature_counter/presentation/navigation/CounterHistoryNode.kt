@@ -52,6 +52,7 @@ internal object CounterHistoryNode : CounterGraphNode {
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
             val ticks by viewModel.allTicksState.collectAsState()
+            val tickSort by viewModel.tickSortState.collectAsState()
             val tickEdit by viewModel.editTickSupportState.collectAsState()
             val graphPoints by viewModel.tickGraphPointsState.collectAsState()
             val graphRange by viewModel.amountRangeState.collectAsState()
@@ -71,6 +72,8 @@ internal object CounterHistoryNode : CounterGraphNode {
                 onCancelEditTick = viewModel::discardTickEdit,
                 onFinalizeEditTick = viewModel::finalizeTickEdit,
                 onEditTickChanged = viewModel::updateTickEdit,
+                tickSort = tickSort,
+                onChangeSort = viewModel::changeTickSort,
                 onNavigateUp = onNavigateUp,
             )
         }

@@ -68,6 +68,10 @@ import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeCreated
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeForData
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeModified
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
@@ -77,6 +81,7 @@ import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 @Composable
 internal fun TicksOverTimeLayout(
+    tickSort: TickSort.TimeType,
     graphPoints: List<PointByPercent>,
     pointInfo: (Int) -> String,
     range: ClosedRange<Double>,
@@ -104,7 +109,13 @@ internal fun TicksOverTimeLayout(
                 size = graphSize,
                 title = {
                     Text(
-                        text = "Amount vs Time",
+                        text = "Amount vs ${
+                            when (tickSort) {
+                                TimeForData -> "Time Data"
+                                TimeCreated -> "Time Created"
+                                TimeModified -> "Time Modified"
+                            }
+                        }",
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 },
@@ -377,6 +388,7 @@ private fun TickAmountOverTimePreview() {
             val ticks = previewUiTicks(1L).take(10).toList()
             val domain = TimeDomain(ticks.last().timeForData .. ticks.first().timeForData)
             TicksOverTimeLayout(
+                tickSort = TickSort.TimeType.TimeForData,
                 graphPoints = listOf(),
                 pointInfo = { "" },
                 range = ticks.first().amount .. ticks.last().amount,

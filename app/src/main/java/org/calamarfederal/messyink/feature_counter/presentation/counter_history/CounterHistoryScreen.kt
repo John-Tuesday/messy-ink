@@ -15,6 +15,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,14 +31,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeForData
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
@@ -74,6 +82,8 @@ fun CounterHistoryScreen(
     onEditTickChanged: (UiTickSupport) -> Unit,
     onCancelEditTick: () -> Unit,
     onFinalizeEditTick: () -> Unit,
+    tickSort: TickSort.TimeType,
+    onChangeSort: (TickSort.TimeType) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -98,6 +108,8 @@ fun CounterHistoryScreen(
             HistoryTopBar(
                 selectedIndex = currentIndex,
                 onNavigateUp = onNavigateUp,
+                tickSort = tickSort,
+                changeSort = onChangeSort,
                 scrollBehavior = topBarScrollBehavior,
             )
         },
@@ -110,6 +122,7 @@ fun CounterHistoryScreen(
     ) { padding ->
         TabbedLayout(
             ticks = ticks,
+            tickSort = tickSort,
             tickSupport = tickEdit,
             onDeleteTick = onDeleteTick,
             onEditTick = onEditTick,
@@ -134,6 +147,7 @@ fun CounterHistoryScreen(
 @Composable
 private fun TabbedLayout(
     ticks: List<UiTick>,
+    tickSort: TimeType,
     tickSupport: UiTickSupport?,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
@@ -164,11 +178,13 @@ private fun TabbedLayout(
             when (CounterHistoryTab.fromIndex(index)) {
                 TickLogs -> TickLogsLayout(
                     ticks = ticks,
+                    sort = tickSort,
                     onDelete = onDeleteTick,
                     onEdit = onEditTick,
                 )
 
                 TickGraphs -> TicksOverTimeLayout(
+                    tickSort = tickSort,
                     graphPoints = graphPoints,
                     pointInfo = { "${ticks[it].amount}" },
                     range = graphRange,
@@ -206,9 +222,12 @@ private fun TabbedLayout(
 private fun HistoryTopBar(
     selectedIndex: Int,
     onNavigateUp: () -> Unit,
+    tickSort: TimeType,
+    changeSort: (TickSort.TimeType) -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    var showSortOptions by remember { mutableStateOf(false) }
     TopAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
@@ -218,6 +237,40 @@ private fun HistoryTopBar(
                 Icon(Icons.Filled.ArrowBack, "navigate up")
             }
         },
+        actions = {
+            IconButton(onClick = { showSortOptions = !showSortOptions }) {
+                Icon(Icons.Filled.Sort, "Change sort")
+            }
+            DropdownMenu(
+                expanded = showSortOptions,
+                onDismissRequest = { showSortOptions = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Time Data") },
+                    onClick = {
+                        changeSort(TickSort.TimeType.TimeForData)
+                        showSortOptions = false
+                    },
+                    enabled = tickSort != TimeType.TimeForData
+                )
+                DropdownMenuItem(
+                    text = { Text("Time Modified") },
+                    onClick = {
+                        changeSort(TickSort.TimeType.TimeModified)
+                        showSortOptions = false
+                    },
+                    enabled = tickSort != TimeType.TimeModified
+                )
+                DropdownMenuItem(
+                    text = { Text("Time Created") },
+                    onClick = {
+                        changeSort(TickSort.TimeType.TimeCreated)
+                        showSortOptions = false
+                    },
+                    enabled = tickSort != TimeType.TimeCreated
+                )
+            }
+        }
     )
 }
 
@@ -244,6 +297,8 @@ private fun CounterHistoryScreenPreview() {
         onFinalizeEditTick = {},
         onCancelEditTick = {},
         onEditTick = {},
+        tickSort = TimeForData,
+        onChangeSort = {},
         onNavigateUp = {},
     )
 }

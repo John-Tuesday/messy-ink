@@ -7,20 +7,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -108,6 +114,7 @@ class CounterHistoryViewModel @Inject constructor(
         savedStateHandle.getStateFlow(CounterHistoryNode.COUNTER_ID, NOID)
 
     private val _tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
+    val tickSortState = _tickSortState.asStateFlow()
     private val _timeDomainState =
         MutableStateFlow(TimeDomain(_currentTime().let { it - 1.days .. it }))
 
@@ -132,9 +139,10 @@ class CounterHistoryViewModel @Inject constructor(
     /**
      * Unfiltered ticks of chosen counter
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     val allTicksState = combineTransform(_tickSortState, counterIdState) { sort, parentId ->
-        emitAll(_getAllTicks(parentId = parentId, sort = sort))
-    }.stateInIo(listOf())
+        emit(_getAllTicks(parentId = parentId, sort = sort))
+    }.transformLatest { emitAll(it) }.stateInIo(listOf())
 
     private val domainRangeLimitsState = combine(allTicksState, _tickSortState) { ticks, sort ->
         minMaxOfDomainRange(ticks, sort)
@@ -194,6 +202,10 @@ class CounterHistoryViewModel @Inject constructor(
     fun changeGraphZoom(domain: TimeDomain? = null, range: ClosedRange<Double>? = null) {
         _timeDomainState.update { domain ?: it }
         _amountRangeState.update { range ?: it }
+    }
+
+    fun changeTickSort(sort: TickSort.TimeType) {
+        _tickSortState.value = sort
     }
 
     /**
