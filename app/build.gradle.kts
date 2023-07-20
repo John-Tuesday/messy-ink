@@ -51,7 +51,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.0"
     }
 //    packagingOptions {
     packaging {
@@ -110,11 +110,11 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
 
     // Hilt
-    val hiltVersion = "2.46.1"
+    val hiltVersion = "2.47"
 
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
-    implementation("com.google.dagger:hilt-android:2.46.1")
+    implementation("com.google.dagger:hilt-android:2.47")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
 }
