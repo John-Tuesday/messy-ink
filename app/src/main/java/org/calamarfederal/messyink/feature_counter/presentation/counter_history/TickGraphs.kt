@@ -77,6 +77,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
+import kotlin.math.absoluteValue
 
 
 @Composable
@@ -89,7 +90,9 @@ internal fun TicksOverTimeLayout(
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
     modifier: Modifier = Modifier,
-    graphSize: GraphSize2d = GraphSize2d(),
+    graphSize: GraphSize2d = GraphSize2d(
+        xAxisAt = -(range.start / (range.start - range.endInclusive).absoluteValue).toFloat()
+    )
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {

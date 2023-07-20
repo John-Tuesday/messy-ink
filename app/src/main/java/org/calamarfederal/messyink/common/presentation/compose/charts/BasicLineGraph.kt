@@ -68,6 +68,8 @@ data class GraphSize2d(
      * the number of divisions along the y axis (for grid lines)
      */
     val yAxisChunks: Int = 10,
+    val yAxisAt: Float? = null,
+    val xAxisAt: Float? = null,
     /**
      * the stroke width of the drawn line
      */
@@ -192,12 +194,32 @@ fun BasicLineGraph(
                     end = Offset(x = x, y = size.height),
                     strokeWidth = graphSize.xAxisGridWidth.toPx(),
                 )
+            }
+            for (chunk in 1 until graphSize.yAxisChunks) {
                 val y = (size.height / graphSize.yAxisChunks) * chunk
                 drawLine(
                     color = graphColors.gridColor,
                     start = Offset(x = 0f, y = y),
                     end = Offset(x = size.width, y = y),
                     strokeWidth = graphSize.yAxisGridWidth.toPx(),
+                )
+            }
+            graphSize.xAxisAt?.let {
+                val y = (1 - graphSize.xAxisAt) * size.height
+                drawLine(
+                    color = graphColors.axisColor,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = graphSize.xAxisWidth.toPx(),
+                )
+            }
+            graphSize.yAxisAt?.let {
+                val x = graphSize.yAxisAt * size.width
+                drawLine(
+                    color = graphColors.axisColor,
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
+                    strokeWidth = graphSize.yAxisWidth.toPx(),
                 )
             }
             // Draw line
