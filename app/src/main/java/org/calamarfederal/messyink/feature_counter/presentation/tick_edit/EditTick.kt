@@ -1,6 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tick_edit
 
 import android.annotation.SuppressLint
+import android.app.TimePickerDialog
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -27,7 +29,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -44,14 +49,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.TimeZone.Companion
+import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 
 /**
  * Screen Version of Edit Tick. Uses [Scaffold]
@@ -179,7 +191,10 @@ private fun EditTickLayout(
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeForData else null
                 },
-                changeTime = { onChangeTick(tickSupport.copy(timeForDataInput = it)) },
+                changeTime = {
+                    onChangeTick(tickSupport.copy(timeForDataInput = it))
+                    pickerOpenT = null
+                },
                 label = "Time",
             )
             TimeRow(
@@ -188,7 +203,10 @@ private fun EditTickLayout(
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeModified else null
                 },
-                changeTime = { onChangeTick(tickSupport.copy(timeModifiedInput = it)) },
+                changeTime = {
+                    onChangeTick(tickSupport.copy(timeModifiedInput = it))
+                    pickerOpenT = null
+                },
                 label = "Modified",
             )
             TimeRow(
@@ -197,7 +215,10 @@ private fun EditTickLayout(
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeCreated else null
                 },
-                changeTime = { onChangeTick(tickSupport.copy(timeCreatedInput = it)) },
+                changeTime = {
+                    onChangeTick(tickSupport.copy(timeCreatedInput = it))
+                    pickerOpenT = null
+                },
                 label = "Created",
             )
         }
@@ -253,6 +274,7 @@ private fun TimeRow(
     modifier: Modifier = Modifier,
     label: String = "Time",
     dateTimeFormatter: DateTimeFormat = DateTimeFormat(),
+    timeZone: TimeZone = Companion.currentSystemDefault(),
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -266,36 +288,101 @@ private fun TimeRow(
             Text(text = time.formatToString(dateTimeFormatter))
         }
         if (isPickerOpen) {
-            val dateState = rememberDatePickerState(
-                initialSelectedDateMillis = time.date.toUtcMillis(),
-            )
-            val confirmEnabled by derivedStateOf { dateState.selectedDateMillis != null }
-            DatePickerDialog(
-                onDismissRequest = { requestDialogChange(false) },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            dateState.selectedDateMillis?.let {
-                                changeTime(Instant.fromEpochMilliseconds(it))
-                                requestDialogChange(false)
-                            }
-                        },
-                        enabled = confirmEnabled,
-                    ) {
-                        Text("Save")
-                    }
+            var showDate by remember { mutableStateOf(true) }
+            var chosenDate by remember { mutableStateOf<LocalDate?>(null) }
+            DateGetter(
+                visible = showDate,
+                onDismiss = { requestDialogChange(false) },
+                onSubmit = {
+                    chosenDate = it
+                    showDate = false
                 },
-                dismissButton = {
-                    TextButton(onClick = { requestDialogChange(false) }) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(state = dateState)
-            }
+                dateState = rememberDatePickerState(initialSelectedDateMillis = time.date.toUtcMillis())
+            )
+            TimeGetter(
+                visible = !showDate,
+                onDismiss = { showDate = true },
+                onSubmit = {
+                    changeTime(chosenDate!!.atTime(it).toInstant(timeZone))
+                },
+                timeState = rememberTimePickerState(
+                    initialHour = time.hour,
+                    initialMinute = time.minute
+                ),
+            )
         }
     }
+}
 
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateGetter(
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    onSubmit: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    dateState: DatePickerState = rememberDatePickerState(),
+) {
+    if (visible) {
+        val confirmEnabled by derivedStateOf { dateState.selectedDateMillis != null }
+        DatePickerDialog(
+            modifier = modifier,
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        dateState.selectedDateMillis?.let {
+                            onSubmit(epochMillisToDate(it, TimeZone.UTC))
+                        }
+                    },
+                    enabled = confirmEnabled,
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = dateState)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimeGetter(
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    onSubmit: (LocalTime) -> Unit,
+    modifier: Modifier = Modifier,
+    timeState: TimePickerState = rememberTimePickerState(),
+) {
+    if (visible) {
+        DatePickerDialog(
+            modifier = modifier,
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onSubmit(LocalTime(hour = timeState.hour, minute = timeState.minute))
+                    },
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            TimePicker(state = timeState)
+        }
+    }
 }
 
 @Preview
