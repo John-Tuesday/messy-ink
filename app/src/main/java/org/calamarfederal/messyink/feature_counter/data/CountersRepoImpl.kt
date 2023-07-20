@@ -108,7 +108,7 @@ class CountersRepoImpl @Inject constructor(
         0 < dao.updateCounter(counter.copy(timeModified = getCurrentTime()).toEntity())
 
     override suspend fun updateTick(tick: Tick) =
-        0 < dao.updateTick(tick.copy(timeModified = getCurrentTime()).toEntity())
+        0 < dao.updateTick(tick.toEntity())
 
     override suspend fun deleteCounter(id: Long) = dao.deleteCounter(id)
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)

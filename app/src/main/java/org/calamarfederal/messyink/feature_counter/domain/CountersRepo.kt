@@ -58,7 +58,7 @@ interface CountersRepo {
     suspend fun updateCounter(counter: Counter): Boolean
 
     /**
-     * Update old [Tick] to [tick] and set [Tick.timeModified]
+     * Update old [Tick] to [tick]
      *
      * if old [tick] cannot be found; then this does nothing
      */

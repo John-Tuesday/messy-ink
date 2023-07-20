@@ -86,6 +86,12 @@ fun UiTick.getTime(timeType: TickSort.TimeType): Instant = when (timeType) {
  * @property[timeForDataInput]
  * @property[timeForDataHelp]
  * @property[timeForDataError]
+ * @property[timeCreatedInput]
+ * @property[timeCreatedHelp]
+ * @property[timeCreatedError]
+ * @property[timeModifiedInput]
+ * @property[timeModifiedHelp]
+ * @property[timeModifiedError]
  * @property[parentId]
  * @property[id]
  */
@@ -97,11 +103,17 @@ data class UiTickSupport(
     val timeForDataInput: Instant = Instant.DISTANT_PAST,
     val timeForDataHelp: String? = null,
     val timeForDataError: Boolean = false,
+    val timeModifiedInput: Instant = Instant.DISTANT_PAST,
+    val timeModifiedHelp: String? = null,
+    val timeModifiedError: Boolean = false,
+    val timeCreatedInput: Instant = Instant.DISTANT_PAST,
+    val timeCreatedHelp: String? = null,
+    val timeCreatedError: Boolean = false,
     val parentId: Long,
     val id: Long? = null,
 )
 
-val UiTickSupport.error: Boolean get() = amountError || timeForDataError
+val UiTickSupport.error: Boolean get() = amountError || timeForDataError || timeModifiedError || timeCreatedError
 
 /**
  * # Preview Generator

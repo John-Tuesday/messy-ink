@@ -182,6 +182,24 @@ private fun EditTickLayout(
                 changeTime = { onChangeTick(tickSupport.copy(timeForDataInput = it)) },
                 label = "Time",
             )
+            TimeRow(
+                time = tickSupport.timeModifiedInput.toLocalDateTime(timeZone),
+                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeModified,
+                requestDialogChange = {
+                    pickerOpenT = if (it) TickSort.TimeType.TimeModified else null
+                },
+                changeTime = { onChangeTick(tickSupport.copy(timeModifiedInput = it)) },
+                label = "Modified",
+            )
+            TimeRow(
+                time = tickSupport.timeCreatedInput.toLocalDateTime(timeZone),
+                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeCreated,
+                requestDialogChange = {
+                    pickerOpenT = if (it) TickSort.TimeType.TimeCreated else null
+                },
+                changeTime = { onChangeTick(tickSupport.copy(timeCreatedInput = it)) },
+                label = "Created",
+            )
         }
     }
 }

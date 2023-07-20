@@ -48,6 +48,12 @@ class GetTickSupportImpl @Inject constructor(private val repo: CountersRepo) : G
                 timeForDataInput = it.timeForData,
                 timeForDataHelp = null,
                 timeForDataError = false,
+                timeModifiedInput = it.timeModified,
+                timeModifiedHelp = null,
+                timeModifiedError = false,
+                timeCreatedInput = it.timeModified,
+                timeCreatedHelp = null,
+                timeCreatedError = false,
                 parentId = it.parentId,
                 id = it.id
             )
@@ -82,6 +88,8 @@ class UpdateTickFromSupportImpl @Inject constructor(private val repo: CountersRe
             tick.copy(
                 amount = support.amountInput.toDoubleOrNull() ?: return false,
                 timeForData = support.timeForDataInput,
+                timeCreated = support.timeCreatedInput,
+                timeModified = support.timeModifiedInput,
             )
         )
     }
