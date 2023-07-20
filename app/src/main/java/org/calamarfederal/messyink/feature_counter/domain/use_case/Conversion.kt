@@ -2,8 +2,12 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 
 import org.calamarfederal.messyink.feature_counter.domain.Counter
 import org.calamarfederal.messyink.feature_counter.domain.Tick
+import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
+import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 
 
 internal fun Counter.toUI() = UiCounter(
@@ -37,3 +41,16 @@ internal fun UiTick.toTick() = Tick(
     parentId = parentId,
     id = id,
 )
+
+internal fun UiTickSupport.toTickOrNull(): Tick? {
+    if (this.error) return null
+
+    return Tick(
+        amount = amountInput.toDoubleOrNull() ?: return null,
+        timeModified = timeModifiedInput,
+        timeCreated = timeCreatedInput,
+        timeForData = timeForDataInput,
+        parentId = parentId,
+        id = id ?: NOID,
+    )
+}

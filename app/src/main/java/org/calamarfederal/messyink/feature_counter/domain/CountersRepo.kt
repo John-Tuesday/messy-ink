@@ -51,7 +51,7 @@ interface CountersRepo {
     suspend fun createTick(tick: Tick): Tick
 
     /**
-     * Update old [Counter] to [counter] and update [Counter.timeModified]
+     * Update old [Counter] to [counter]
      *
      * if old [counter] cannot be found; then this does nothing
      */

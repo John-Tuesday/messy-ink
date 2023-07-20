@@ -84,14 +84,7 @@ class UpdateTickFromSupportImpl @Inject constructor(private val repo: CountersRe
         if (support.error || support.id == null) return false
 
         val tick = repo.getTickFlow(support.id).singleOrNull() ?: return false
-        return repo.updateTick(
-            tick.copy(
-                amount = support.amountInput.toDoubleOrNull() ?: return false,
-                timeForData = support.timeForDataInput,
-                timeCreated = support.timeCreatedInput,
-                timeModified = support.timeModifiedInput,
-            )
-        )
+        return repo.updateTick(support.toTickOrNull() ?: return false)
     }
 }
 
