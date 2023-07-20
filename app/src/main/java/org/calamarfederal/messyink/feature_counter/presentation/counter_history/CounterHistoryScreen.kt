@@ -14,13 +14,16 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -251,7 +254,10 @@ private fun HistoryTopBar(
                         changeSort(TickSort.TimeType.TimeForData)
                         showSortOptions = false
                     },
-                    enabled = tickSort != TimeType.TimeForData
+                    trailingIcon = {
+                        if (tickSort == TimeType.TimeForData)
+                            Icon(Icons.Filled.Check, "chosen")
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Time Modified") },
@@ -259,7 +265,10 @@ private fun HistoryTopBar(
                         changeSort(TickSort.TimeType.TimeModified)
                         showSortOptions = false
                     },
-                    enabled = tickSort != TimeType.TimeModified
+                    trailingIcon = {
+                        if (tickSort == TimeType.TimeModified)
+                            Icon(Icons.Filled.Check, "chosen")
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Time Created") },
@@ -267,7 +276,10 @@ private fun HistoryTopBar(
                         changeSort(TickSort.TimeType.TimeCreated)
                         showSortOptions = false
                     },
-                    enabled = tickSort != TimeType.TimeCreated
+                    trailingIcon = {
+                        if (tickSort == TimeType.TimeCreated)
+                            Icon(Icons.Filled.Check, "chosen")
+                    },
                 )
             }
         }
