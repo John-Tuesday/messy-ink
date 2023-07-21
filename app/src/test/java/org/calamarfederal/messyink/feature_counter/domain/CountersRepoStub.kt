@@ -18,6 +18,10 @@ open class CountersRepoStub : CountersRepo {
         TODO("Not yet implemented")
     }
 
+    override fun getTickFlow(id: Long): Flow<Tick?> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun createCounter(counter: Counter): Counter {
         TODO("Not yet implemented")
     }
@@ -71,5 +75,4 @@ open class CountersRepoStub : CountersRepo {
     override fun getTicksSumByFlow(): Flow<Map<Long, Double>> {
         TODO("Not yet implemented")
     }
-
 }

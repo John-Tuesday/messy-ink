@@ -29,7 +29,7 @@ android {
 
     buildTypes {
         release {
-            isDebuggable = false
+            isDebuggable = true
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -64,15 +64,19 @@ android {
 
 dependencies {
     // Essentials
+    testImplementation("junit:junit:4.13.2")
     implementation(platform("androidx.compose:compose-bom:2023.06.01"))
     implementation("androidx.navigation:navigation-ui-ktx:2.7.0-beta02")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.0-beta02")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.0-beta02")
     implementation("androidx.navigation:navigation-compose:2.7.0-beta02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.core:core-ktx:1.12.0-alpha05")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha10")
     implementation("androidx.compose.ui:ui:1.6.0-alpha01")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.0-alpha01")
     implementation("androidx.compose.ui:ui-graphics:1.6.0-alpha01")
@@ -80,21 +84,19 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0-alpha03")
     implementation("androidx.activity:activity-ktx:1.8.0-alpha06")
     implementation("androidx.activity:activity-compose:1.8.0-alpha06")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha10")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("junit:junit:4.13.2")
+    // force upgrade to 1.1.0 because its required by androidTestImplementation,
+    // and without this statement AGP will silently downgrade to tracing:1.0.0
+    implementation("androidx.tracing:tracing:1.1.0")
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.0-alpha01")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.0-alpha01")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.06.01"))
     androidTestImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:runner:1.6.0-alpha03")
     androidTestImplementation("androidx.test:core:1.6.0-alpha01")
     androidTestImplementation("androidx.test:core-ktx:1.6.0-alpha01")
     androidTestImplementation("androidx.test.ext:junit:1.2.0-alpha01")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.2.0-alpha01")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0-alpha01")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.0-beta02")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.0-alpha01")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
