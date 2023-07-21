@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -42,8 +43,8 @@ internal object CounterOverviewNode : CounterGraphNode {
             onEntry(entry)
 
             val viewModel: CounterOverviewViewModel = hiltViewModel()
-            val counters by viewModel.countersState.collectAsState()
-            val tickSums by viewModel.ticksSumState.collectAsState()
+            val counters by viewModel.countersState.collectAsStateWithLifecycle()
+            val tickSums by viewModel.ticksSumState.collectAsStateWithLifecycle()
 
             CounterOverviewScreen(
                 counters = counters,

@@ -71,6 +71,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.0-beta02")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation("androidx.core:core-ktx:1.12.0-alpha05")
     implementation("androidx.compose.ui:ui:1.6.0-alpha01")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.0-alpha01")

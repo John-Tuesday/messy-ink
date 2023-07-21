@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -51,13 +52,13 @@ internal object CounterHistoryNode : CounterGraphNode {
 
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
-            val ticks by viewModel.allTicksState.collectAsState()
-            val tickSort by viewModel.tickSortState.collectAsState()
-            val tickEdit by viewModel.editTickSupportState.collectAsState()
-            val graphPoints by viewModel.tickGraphPointsState.collectAsState()
-            val graphRange by viewModel.amountRangeState.collectAsState()
-            val graphDomain by viewModel.timeDomainState.collectAsState()
-            val graphDomainLimits by viewModel.domainLimitState.collectAsState()
+            val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
+            val tickSort by viewModel.tickSortState.collectAsStateWithLifecycle()
+            val tickEdit by viewModel.editTickSupportState.collectAsStateWithLifecycle()
+            val graphPoints by viewModel.tickGraphPointsState.collectAsStateWithLifecycle()
+            val graphRange by viewModel.amountRangeState.collectAsStateWithLifecycle()
+            val graphDomain by viewModel.timeDomainState.collectAsStateWithLifecycle()
+            val graphDomainLimits by viewModel.domainLimitState.collectAsStateWithLifecycle()
 
             CounterHistoryScreen(
                 ticks = ticks,

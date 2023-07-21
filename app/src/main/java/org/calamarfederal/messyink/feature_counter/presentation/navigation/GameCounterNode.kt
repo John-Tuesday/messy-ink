@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -57,10 +58,10 @@ internal object GameCounterNode : CounterGraphNode {
 
             val viewModel: GameCounterViewModel = hiltViewModel(entry)
 
-            val counter by viewModel.counter.collectAsState()
-            val tickSum by viewModel.tickSum.collectAsState()
-            val primaryIncrement by viewModel.primaryIncrement.collectAsState()
-            val secondaryIncrement by viewModel.secondaryIncrement.collectAsState()
+            val counter by viewModel.counter.collectAsStateWithLifecycle()
+            val tickSum by viewModel.tickSum.collectAsStateWithLifecycle()
+            val primaryIncrement by viewModel.primaryIncrement.collectAsStateWithLifecycle()
+            val secondaryIncrement by viewModel.secondaryIncrement.collectAsStateWithLifecycle()
 
             GameCounterScreen(
                 counter = counter,
