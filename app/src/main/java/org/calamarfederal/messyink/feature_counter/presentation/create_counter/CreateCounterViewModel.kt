@@ -58,7 +58,13 @@ class CreateCounterViewModel @Inject constructor(
     init {
         val id: Long? = savedStateHandle[CreateCounterNode.INIT_COUNTER_ID]
         if (id != null && id != NOID)
-            ioScope.launch { _getCounter(id)?.let { _counterSupport.value = it } }
+            ioScope.launch {
+                _getCounter(id)?.let {
+                    _counterSupport.value = it.also { println("Got counter: $it") }
+                } ?: println("Could not find counter")
+            }.also { println("Found Id: $id") }
+        else
+            println("Did not find id")
 
         _counterSupport
             .distinctUntilChanged { old, new -> old.nameInput == new.nameInput }

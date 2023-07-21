@@ -4,6 +4,7 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.singleOrNull
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort
@@ -46,16 +47,8 @@ class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : 
  */
 class GetCounterAsSupportImpl @Inject constructor(private val repo: CountersRepo) :
     GetCounterAsSupportOrNull {
-    override suspend fun invoke(id: Long): UiCounterSupport? {
-        return repo.getCounterFlow(id).singleOrNull()?.let {
-            UiCounterSupport(
-                nameInput = it.name,
-                id = it.id,
-                nameHelp = null,
-                nameError = false,
-            )
-        }
-    }
+    override suspend fun invoke(id: Long): UiCounterSupport? =
+        repo.getCounterFlow(id).firstOrNull()?.toSupport()
 }
 
 /**

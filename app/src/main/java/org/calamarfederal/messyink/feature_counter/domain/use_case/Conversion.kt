@@ -42,6 +42,13 @@ internal fun UiTick.toTick() = Tick(
     id = id,
 )
 
+internal fun Counter.toSupport(): UiCounterSupport = UiCounterSupport(
+    nameInput = name,
+    nameError = false,
+    nameHelp = null,
+    id = id,
+)
+
 internal fun UiTickSupport.toTickOrNull(): Tick? {
     if (this.error) return null
 
