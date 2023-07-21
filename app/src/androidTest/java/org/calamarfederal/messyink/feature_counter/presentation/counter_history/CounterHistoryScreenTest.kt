@@ -21,6 +21,7 @@ import org.calamarfederal.messyink.feature_counter.data.generateCounters
 import org.calamarfederal.messyink.feature_counter.data.generateTicks
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toTick
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
@@ -37,6 +38,7 @@ class CounterHistoryScreenTest {
 
     lateinit var counterState: MutableStateFlow<UiCounter>
     lateinit var ticksState: MutableStateFlow<List<UiTick>>
+    lateinit var tickSortState: MutableStateFlow<TickSort.TimeType>
     lateinit var ticksSupportState: MutableStateFlow<UiTickSupport?>
 
     @Before
@@ -46,11 +48,13 @@ class CounterHistoryScreenTest {
             generateTicks(parentId = counterState.value.id).take(10).map { it.toTick().toUi() }
                 .toList()
         )
+        tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
         ticksSupportState = MutableStateFlow(null)
 
         composeRule.setContent {
             val counter by counterState.collectAsState()
             val ticks by ticksState.collectAsState()
+            val tickSort by tickSortState.collectAsState()
             val tickSupport by ticksSupportState.collectAsState()
             val tickSum by remember {
                 derivedStateOf { ticks.sumOf { it.amount } }
@@ -70,11 +74,13 @@ class CounterHistoryScreenTest {
 
             CounterHistoryScreen(
                 ticks = ticks,
+                tickSort = tickSort,
                 tickEdit = tickSupport,
                 graphPoints = listOf(),
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
+                onChangeSort = {},
                 changeGraphDomain = {},
                 onDeleteTick = {},
                 onEditTick = {},
