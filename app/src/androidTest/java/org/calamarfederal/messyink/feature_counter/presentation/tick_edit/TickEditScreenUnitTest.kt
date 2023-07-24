@@ -19,6 +19,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.text.TextRange
@@ -146,6 +148,14 @@ class TickEditScreenUnitTest {
         assert(expected.length > 0)
         assert(selected.start == expected.start)
         assert(selected.end == expected.end)
+    }
+
+    @Test
+    fun `Amount field receives ime actions correctly`() {
+        val expect = "othertest"
+        onAmountField.performTextClearance()
+        onAmountField.performTextInput(expect)
+        onAmountField.assertTextContains(expect)
     }
 
     @Test
