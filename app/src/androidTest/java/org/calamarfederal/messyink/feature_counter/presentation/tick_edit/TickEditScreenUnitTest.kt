@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.semantics.textSelectionRange
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
@@ -20,6 +21,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.printToString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,7 +73,25 @@ class TickEditScreenUnitTest {
         onDoneCalled = MutableStateFlow(false)
 
         val parentId = 1L
-        tickSupportState = MutableStateFlow(UiTickSupport(parentId = parentId))
+        val testDate = LocalDateTime(
+            year = 2020,
+            monthNumber = 5,
+            dayOfMonth = 7,
+            hour = 8,
+            minute = 22,
+            second = 29
+        ).toInstant(timeZone)
+        tickSupportState =
+            MutableStateFlow(
+                UiTickSupport(
+                    amountInput = "abcdef",
+                    timeForDataInput = testDate + 1.days,
+                    timeModifiedInput = testDate + 300.days,
+                    timeCreatedInput = testDate,
+                    parentId = parentId,
+                )
+
+            )
 
         composeRule.setContent {
             val tickSupport by tickSupportState.collectAsState()
@@ -117,8 +137,15 @@ class TickEditScreenUnitTest {
     }
 
     @Test
-    fun `Amount field is focused on start`() {
-        onAmountField.assertIsFocused()
+    fun `Amount field is focused and highlighting all in text field on start`() {
+        val selected = onAmountField
+            .assertIsFocused()
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.TextSelectionRange]
+        val expected = TextRange(0, tickSupportState.value.amountInput.length)
+        assert(expected.length > 0)
+        assert(selected.start == expected.start)
+        assert(selected.end == expected.end)
     }
 
     @Test
@@ -144,23 +171,7 @@ class TickEditScreenUnitTest {
 
     @Test
     fun `Amount and Time Fields are initialized`() {
-        val testDate = LocalDateTime(
-            year = 2020,
-            monthNumber = 5,
-            dayOfMonth = 7,
-            hour = 8,
-            minute = 22,
-            second = 29
-        ).toInstant(timeZone)
-        val support = tickSupportState.updateAndGet {
-            UiTickSupport(
-                amountInput = "abcdef",
-                timeForDataInput = testDate + 1.days,
-                timeModifiedInput = testDate + 300.days,
-                timeCreatedInput = testDate,
-                parentId = it.parentId,
-            )
-        }
+        val support = tickSupportState.value
         onAmountField.assertTextContains(support.amountInput)
         onTimeForDataNode.assertTextContains(
             support

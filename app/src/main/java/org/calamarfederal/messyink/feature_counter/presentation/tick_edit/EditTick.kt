@@ -1,8 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tick_edit
 
 import android.annotation.SuppressLint
-import android.app.TimePickerDialog
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -15,10 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -31,47 +25,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.TimeZone.Companion
-import kotlinx.datetime.atTime
-import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
-import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
 
 /**
@@ -102,7 +88,6 @@ fun EditTickScreen(
                 actions = {
                     FilledTonalIconButton(
                         onClick = onDone,
-//                        enabled = isDoneEnabled,
                         enabled = !uiTickSupport.error,
                         modifier = Modifier.testTag(EditTickTestTags.SubmitButton)
                     ) {
@@ -123,68 +108,6 @@ fun EditTickScreen(
     }
 }
 
-/**
- * [AlertDialog] version of edit tick. Only exists because modalbottomsheet isn't working
- */
-@Composable
-fun EditTickDialog(
-    uiTickSupport: UiTickSupport,
-    onChangeTick: (UiTickSupport) -> Unit,
-    onDone: () -> Unit,
-    onClose: () -> Unit,
-    isDoneEnabled: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = onClose,
-        confirmButton = {
-            TextButton(onClick = onDone, enabled = isDoneEnabled) { Text("Save") }
-        },
-        dismissButton = {
-            TextButton(onClick = onClose) { Text("Cancel") }
-        },
-        title = {
-            Text("Edit Tick")
-        },
-        text = {
-            EditTickLayout(
-                tickSupport = uiTickSupport,
-                onChangeTick = onChangeTick,
-                onDone = { if (isDoneEnabled) onDone() },
-            )
-        }
-    )
-}
-
-/**
- * [AlertDialog] meant to take up the whole screen
- * and its content are literally [EditTickScreen]
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditTickScreenDialog(
-    uiTickSupport: UiTickSupport,
-    onChangeTick: (UiTickSupport) -> Unit,
-    onDone: () -> Unit,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    AlertDialog(
-        onDismissRequest = onClose,
-        modifier = modifier,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        EditTickScreen(
-            uiTickSupport = uiTickSupport,
-            onChangeTick = onChangeTick,
-            onDone = onDone,
-            onClose = onClose,
-        )
-    }
-
-}
-
 @Composable
 private fun EditTickLayout(
     tickSupport: UiTickSupport,
@@ -198,7 +121,26 @@ private fun EditTickLayout(
             var pickerOpenT by remember {
                 mutableStateOf<TickSort.TimeType?>(null)
             }
-            AmountRow(tickSupport = tickSupport, onChangeTick = onChangeTick, onDone = onDone)
+            val amountFocusRequester = remember { FocusRequester() }
+            var amountInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+                mutableStateOf(
+                    TextFieldValue(
+                        tickSupport.amountInput,
+                        TextRange(0, tickSupport.amountInput.length)
+                    )
+                )
+            }
+            AmountRow(
+                amountInput = amountInput,
+                onAmountChange = {
+                    amountInput = it
+                    onChangeTick(tickSupport.copy(amountInput = it.text))
+                },
+                isError = tickSupport.error,
+                helpText = tickSupport.amountHelp,
+                focusRequester = amountFocusRequester,
+                onDone = onDone,
+            )
             TimeRow(
                 time = tickSupport.timeForDataInput.toLocalDateTime(timeZone),
                 isError = tickSupport.timeForDataError,
@@ -244,31 +186,36 @@ private fun EditTickLayout(
                 label = "Created",
                 testTag = EditTickTestTags.TimeCreatedField,
             )
+            LaunchedEffect(Unit) {
+                amountFocusRequester.requestFocus()
+            }
         }
     }
 }
 
 @Composable
 private fun AmountRow(
-    tickSupport: UiTickSupport,
-    onChangeTick: (UiTickSupport) -> Unit,
+    amountInput: TextFieldValue,
+    onAmountChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     onDone: () -> Unit = {},
+    isError: Boolean = false,
+    helpText: String? = null,
+    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
     ) {
-        val fc = remember { FocusRequester() }
         Text(
             text = "Amount",
             modifier = Modifier.alignByBaseline(),
         )
         OutlinedTextField(
-            value = tickSupport.amountInput,
-            onValueChange = { onChangeTick(tickSupport.copy(amountInput = it)) },
-            isError = tickSupport.amountError,
-            supportingText = { tickSupport.amountHelp?.let { Text(it) } },
+            value = amountInput,
+            onValueChange = onAmountChange,
+            isError = isError,
+            supportingText = { helpText?.let { Text(it) } },
             keyboardActions = KeyboardActions { onDone() },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
@@ -276,13 +223,9 @@ private fun AmountRow(
             ),
             modifier = Modifier
                 .alignByBaseline()
-                .focusRequester(fc)
+                .focusRequester(focusRequester)
                 .testTag(EditTickTestTags.AmountField)
         )
-
-        LaunchedEffect(Unit) {
-            fc.requestFocus()
-        }
     }
 }
 
@@ -349,18 +292,6 @@ private fun TimeRow(
 private fun EditTickScreenPreview() {
     val tick = UiTickSupport(id = 1L, parentId = 2L)
     EditTickScreen(
-        uiTickSupport = tick,
-        onChangeTick = {},
-        onDone = {},
-        onClose = {},
-    )
-}
-
-@Preview
-@Composable
-private fun EditTickScreenDialogPreview() {
-    val tick = UiTickSupport(id = 1L, parentId = 2L)
-    EditTickScreenDialog(
         uiTickSupport = tick,
         onChangeTick = {},
         onDone = {},

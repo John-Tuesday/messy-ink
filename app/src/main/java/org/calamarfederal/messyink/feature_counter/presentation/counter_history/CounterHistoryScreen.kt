@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
@@ -53,10 +55,9 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickScreenDialog
+import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickScreen
 
 /**
  * # Counter History and Details Screen
@@ -200,22 +201,20 @@ private fun TabbedLayout(
     )
 
     if (tickSupport != null) {
-        EditTickScreenDialog(
-            uiTickSupport = tickSupport,
-            onChangeTick = onEditTickChanged,
-            onDone = onFinalizeEditTick,
-            onClose = onCancelEditTick,
-        )
-//        ModalBottomSheet(onDismissRequest = onCancelEditTick) {
-//            EditTickScreen(
-//                uiTickSupport = tickSupport,
-//                onChangeTick = onEditTickChanged,
-//                onDone = onFinalizeEditTick,
-//                onClose = onCancelEditTick,
-//                isDoneEnabled = !tickSupport.error,
-//                modifier = Modifier.fillMaxSize()
-//            )
-//        }
+        AlertDialog(
+            onDismissRequest = onCancelEditTick,
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+            )
+        ) {
+            EditTickScreen(
+                uiTickSupport = tickSupport,
+                onChangeTick = onEditTickChanged,
+                onDone = onFinalizeEditTick,
+                onClose = onCancelEditTick,
+            )
+        }
     }
 }
 
