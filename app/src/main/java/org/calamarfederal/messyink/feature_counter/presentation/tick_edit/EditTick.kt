@@ -23,6 +23,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -43,6 +45,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,12 +65,14 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
+import org.calamarfederal.messyink.feature_counter.presentation.state.error
 
 /**
  * Screen Version of Edit Tick. Uses [Scaffold]
@@ -75,7 +84,6 @@ fun EditTickScreen(
     onChangeTick: (UiTickSupport) -> Unit,
     onDone: () -> Unit,
     onClose: () -> Unit,
-    isDoneEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -84,12 +92,20 @@ fun EditTickScreen(
             MediumTopAppBar(
                 title = { Text("Edit Tick") },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
+                    IconButton(
+                        onClick = onClose,
+                        modifier = Modifier.testTag(EditTickTestTags.CloseButton)
+                    ) {
                         Icon(Icons.Filled.Close, "discard changes")
                     }
                 },
                 actions = {
-                    FilledTonalIconButton(onClick = onDone, enabled = isDoneEnabled) {
+                    FilledTonalIconButton(
+                        onClick = onDone,
+//                        enabled = isDoneEnabled,
+                        enabled = !uiTickSupport.error,
+                        modifier = Modifier.testTag(EditTickTestTags.SubmitButton)
+                    ) {
                         Icon(Icons.Filled.Done, "save changes")
                     }
                 }
@@ -99,7 +115,7 @@ fun EditTickScreen(
         EditTickLayout(
             tickSupport = uiTickSupport,
             onChangeTick = onChangeTick,
-            onDone = { if (isDoneEnabled) onDone() },
+            onDone = { if (!uiTickSupport.error) onDone() },
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -152,7 +168,6 @@ fun EditTickScreenDialog(
     onChangeTick: (UiTickSupport) -> Unit,
     onDone: () -> Unit,
     onClose: () -> Unit,
-    isDoneEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     AlertDialog(
@@ -165,7 +180,6 @@ fun EditTickScreenDialog(
             onChangeTick = onChangeTick,
             onDone = onDone,
             onClose = onClose,
-            isDoneEnabled = isDoneEnabled,
         )
     }
 
@@ -177,7 +191,7 @@ private fun EditTickLayout(
     onChangeTick: (UiTickSupport) -> Unit,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    timeZone: TimeZone = LocalTimeZone.current,
 ) {
     Surface(modifier = modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -187,6 +201,8 @@ private fun EditTickLayout(
             AmountRow(tickSupport = tickSupport, onChangeTick = onChangeTick, onDone = onDone)
             TimeRow(
                 time = tickSupport.timeForDataInput.toLocalDateTime(timeZone),
+                isError = tickSupport.timeForDataError,
+                helpText = tickSupport.timeForDataHelp,
                 isPickerOpen = pickerOpenT == TickSort.TimeType.TimeForData,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeForData else null
@@ -196,9 +212,12 @@ private fun EditTickLayout(
                     pickerOpenT = null
                 },
                 label = "Time",
+                testTag = EditTickTestTags.TimeForDataField,
             )
             TimeRow(
                 time = tickSupport.timeModifiedInput.toLocalDateTime(timeZone),
+                isError = tickSupport.timeModifiedError,
+                helpText = tickSupport.timeModifiedHelp,
                 isPickerOpen = pickerOpenT == TickSort.TimeType.TimeModified,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeModified else null
@@ -208,9 +227,12 @@ private fun EditTickLayout(
                     pickerOpenT = null
                 },
                 label = "Modified",
+                testTag = EditTickTestTags.TimeModifiedField,
             )
             TimeRow(
                 time = tickSupport.timeCreatedInput.toLocalDateTime(timeZone),
+                isError = tickSupport.timeCreatedError,
+                helpText = tickSupport.timeCreatedHelp,
                 isPickerOpen = pickerOpenT == TickSort.TimeType.TimeCreated,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeType.TimeCreated else null
@@ -220,6 +242,7 @@ private fun EditTickLayout(
                     pickerOpenT = null
                 },
                 label = "Created",
+                testTag = EditTickTestTags.TimeCreatedField,
             )
         }
     }
@@ -254,7 +277,7 @@ private fun AmountRow(
             modifier = Modifier
                 .alignByBaseline()
                 .focusRequester(fc)
-                .focusable()
+                .testTag(EditTickTestTags.AmountField)
         )
 
         LaunchedEffect(Unit) {
@@ -272,115 +295,51 @@ private fun TimeRow(
     requestDialogChange: (Boolean) -> Unit,
     changeTime: (Instant) -> Unit,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    helpText: String? = null,
+    helpStyle: TextStyle = TextStyle(
+        color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current,
+        fontStyle = FontStyle.Italic
+    ),
+    testTag: String = "",
     label: String = "Time",
     dateTimeFormatter: DateTimeFormat = DateTimeFormat(),
-    timeZone: TimeZone = Companion.currentSystemDefault(),
+    timeZone: TimeZone = LocalTimeZone.current,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = label,
-            modifier = Modifier.alignByBaseline(),
-        )
-        TextButton(onClick = { requestDialogChange(true) }, modifier = Modifier.alignByBaseline()) {
-            Text(text = time.formatToString(dateTimeFormatter))
-        }
-        if (isPickerOpen) {
-            var showDate by remember { mutableStateOf(true) }
-            var chosenDate by remember { mutableStateOf<LocalDate?>(null) }
-            DateGetter(
-                visible = showDate,
-                onDismiss = { requestDialogChange(false) },
-                onSubmit = {
-                    chosenDate = it
-                    showDate = false
-                },
-                dateState = rememberDatePickerState(initialSelectedDateMillis = time.date.toUtcMillis())
+    Column(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = label,
+                modifier = Modifier.alignByBaseline(),
             )
-            TimeGetter(
-                visible = !showDate,
-                onDismiss = { showDate = true },
-                onSubmit = {
-                    changeTime(chosenDate!!.atTime(it).toInstant(timeZone))
-                },
-                timeState = rememberTimePickerState(
-                    initialHour = time.hour,
-                    initialMinute = time.minute
-                ),
-            )
-        }
-    }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DateGetter(
-    visible: Boolean,
-    onDismiss: () -> Unit,
-    onSubmit: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier,
-    dateState: DatePickerState = rememberDatePickerState(),
-) {
-    if (visible) {
-        val confirmEnabled by derivedStateOf { dateState.selectedDateMillis != null }
-        DatePickerDialog(
-            modifier = modifier,
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        dateState.selectedDateMillis?.let {
-                            onSubmit(epochMillisToDate(it, TimeZone.UTC))
-                        }
-                    },
-                    enabled = confirmEnabled,
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+            TextButton(
+                onClick = { requestDialogChange(true) },
+                modifier = Modifier
+                    .alignByBaseline()
+                    .testTag(testTag)
+                    .semantics { if (isError) error("Invalid Date") },
+            ) {
+                Text(
+                    text = time.formatToString(dateTimeFormatter),
+                    color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
+                )
+                helpText?.let {
+                    Text(
+                        text = it,
+                        style = helpStyle,
+                    )
                 }
             }
-        ) {
-            DatePicker(state = dateState)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TimeGetter(
-    visible: Boolean,
-    onDismiss: () -> Unit,
-    onSubmit: (LocalTime) -> Unit,
-    modifier: Modifier = Modifier,
-    timeState: TimePickerState = rememberTimePickerState(),
-) {
-    if (visible) {
-        DatePickerDialog(
-            modifier = modifier,
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onSubmit(LocalTime(hour = timeState.hour, minute = timeState.minute))
-                    },
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text("Cancel")
-                }
+            if (isPickerOpen) {
+                DateTimePicker(
+                    initialDateTime = time,
+                    onDismissRequest = { requestDialogChange(false) },
+                    onSubmit = { changeTime(it.toInstant(timeZone)) },
+                )
             }
-        ) {
-            TimePicker(state = timeState)
         }
     }
 }
@@ -394,7 +353,6 @@ private fun EditTickScreenPreview() {
         onChangeTick = {},
         onDone = {},
         onClose = {},
-        isDoneEnabled = true
     )
 }
 
@@ -407,6 +365,5 @@ private fun EditTickScreenDialogPreview() {
         onChangeTick = {},
         onDone = {},
         onClose = {},
-        isDoneEnabled = true
     )
 }

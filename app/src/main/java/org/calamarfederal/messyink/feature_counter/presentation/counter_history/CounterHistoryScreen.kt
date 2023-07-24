@@ -205,7 +205,6 @@ private fun TabbedLayout(
             onChangeTick = onEditTickChanged,
             onDone = onFinalizeEditTick,
             onClose = onCancelEditTick,
-            isDoneEnabled = !tickSupport.error,
         )
 //        ModalBottomSheet(onDismissRequest = onCancelEditTick) {
 //            EditTickScreen(
