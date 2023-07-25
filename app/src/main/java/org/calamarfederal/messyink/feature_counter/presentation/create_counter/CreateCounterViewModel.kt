@@ -1,18 +1,17 @@
 package org.calamarfederal.messyink.feature_counter.presentation.create_counter
 
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
@@ -48,31 +47,39 @@ class CreateCounterViewModel @Inject constructor(
 ) : ViewModel() {
     private val ioScope: CoroutineScope get() = viewModelScope + ioDispatcher
 
-    private val _counterSupport = MutableStateFlow(UiCounterSupport())
+    /**
+     * Tentative Name of the counter
+     */
+    var counterName by mutableStateOf(TextFieldValue(text = ""))
+        private set
 
     /**
-     * UI State for current Counter input with errors and support
+     * True if there are any errors in name preventing save
      */
-    val counterSupport: StateFlow<UiCounterSupport> get() = _counterSupport
+    val counterNameError by derivedStateOf {
+        counterName.text.isBlank()
+    }
+
+    /**
+     * Instructions on how to correct [counterNameError] or any relevant warning
+     */
+    val counterHelp by derivedStateOf {
+        if (counterName.text.isBlank()) "Please enter non-whitespace text" else null
+    }
 
     init {
         val id: Long? = savedStateHandle[CreateCounterNode.INIT_COUNTER_ID]
         if (id != null && id != NOID)
             ioScope.launch {
                 _getCounter(id)?.let {
-                    _counterSupport.value = it.also { println("Got counter: $it") }
+                    counterName = TextFieldValue(
+                        text = it.nameInput,
+                        selection = TextRange(0, it.nameInput.length)
+                    )
                 } ?: println("Could not find counter")
             }.also { println("Found Id: $id") }
         else
             println("Did not find id")
-
-        _counterSupport
-            .distinctUntilChanged { old, new -> old.nameInput == new.nameInput }
-            .conflate()
-            .onEach {
-                _counterSupport.compareAndSet(it, _updateCounterSupport(it))
-            }
-            .launchIn(ioScope)
     }
 
     /**
@@ -80,15 +87,16 @@ class CreateCounterViewModel @Inject constructor(
      *
      * triggers support logic
      */
-    fun changeName(name: String) {
-        _counterSupport.update { it.copy(nameInput = name) }
+    fun changeName(name: TextFieldValue) {
+        counterName = name
     }
 
     /**
-     * resets [counterSupport] to blank including its id
+     * resets counter to blank including its id
      */
     fun discardCounter() {
-        _counterSupport.update { UiCounterSupport() }
+        counterName = TextFieldValue()
+        savedStateHandle[CreateCounterNode.INIT_COUNTER_ID] = null
     }
 
     /**
@@ -98,7 +106,13 @@ class CreateCounterViewModel @Inject constructor(
      */
     fun finalizeCounter() {
         ioScope.launch {
-            val support = counterSupport.value
+            val support = UiCounterSupport(
+                nameInput = counterName.text,
+                nameError = counterNameError,
+                nameHelp = counterHelp,
+                id = savedStateHandle.get<Long?>(CreateCounterNode.INIT_COUNTER_ID)
+                    ?.let { it: Long -> if (it == NOID) null else it }
+            )
             if (support.id == null) _createCounter(support)
             else _updateCounter(support)
         }

@@ -1,6 +1,5 @@
 package org.calamarfederal.messyink.feature_counter.presentation.create_counter
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,30 +17,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
@@ -53,10 +43,13 @@ import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCounterScreen(
-    counterSupport: UiCounterSupport,
-    onNameChange: (String) -> Unit,
+    counterName: TextFieldValue,
+    counterNameError: Boolean,
+    counterNameHelp: String?,
+    onNameChange: (TextFieldValue) -> Unit,
     onCancel: () -> Unit,
     onDone: () -> Unit,
+    isEditCounter: Boolean,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -64,10 +57,9 @@ fun CreateCounterScreen(
             CreateCounterAppBar(
                 onClose = onCancel,
                 onDone = onDone,
-                enableDone = !counterSupport.error,
+                enableDone = !counterNameError,
                 scrollBehavior = scrollBehavior,
-                title = if (counterSupport.id == null || counterSupport.id == NOID)
-                    "Create Counter" else "Edit Counter",
+                title = if (isEditCounter) "Edit Counter" else "Create Counter",
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -78,7 +70,9 @@ fun CreateCounterScreen(
                 .consumeWindowInsets(padding)
         ) {
             CreateCounterLayout(
-                counterSupport = counterSupport,
+                counterName = counterName,
+                counterNameError = counterNameError,
+                counterNameHelp = counterNameHelp,
                 onNameChange = onNameChange,
                 onDone = onDone,
             )
@@ -93,8 +87,10 @@ fun CreateCounterScreen(
  */
 @Composable
 private fun CreateCounterLayout(
-    counterSupport: UiCounterSupport,
-    onNameChange: (String) -> Unit,
+    counterName: TextFieldValue,
+    counterNameError: Boolean,
+    counterNameHelp: String?,
+    onNameChange: (TextFieldValue) -> Unit,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -105,29 +101,21 @@ private fun CreateCounterLayout(
     ) {
         val titleFocusRequester = remember { FocusRequester() }
 
-        var titleTextInput by remember(counterSupport.id) {
-            mutableStateOf(
-                TextFieldValue(
-                    text = counterSupport.nameInput,
-                    selection = TextRange(0, counterSupport.nameInput.length)
-                )
-            )
-        }
-
-
         EditTitleField(
-            title = counterSupport.nameInput,
-            titleInput = titleTextInput,
-            onTitleChange = { titleTextInput = it; onNameChange(it.text) },
-            onDone = { if (!counterSupport.error) onDone() },
-            isError = counterSupport.nameError,
-            helpText = counterSupport.nameHelp,
+            title = "",
+            titleInput = counterName,
+            onTitleChange = { onNameChange(it) },
+            onDone = { if (!counterNameError) onDone() },
+            isError = counterNameError,
+            helpText = counterNameHelp,
             focusRequester = titleFocusRequester,
         )
 
         Divider()
 
-        LaunchedEffect(Unit) { titleFocusRequester.requestFocus() }
+        LaunchedEffect(Unit) {
+            titleFocusRequester.requestFocus()
+        }
     }
 }
 
@@ -178,7 +166,10 @@ private fun EditTitleField(
 private fun PreviewCreateScreen() {
     MessyInkTheme {
         CreateCounterScreen(
-            counterSupport = UiCounterSupport(),
+            counterName = TextFieldValue("sldfkj"),
+            counterNameError = false,
+            counterNameHelp = null,
+            isEditCounter = false,
             onNameChange = {},
             onDone = {},
             onCancel = {},

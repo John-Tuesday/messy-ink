@@ -1,10 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -21,7 +18,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 /**
  * # Create / Edit Counter Node
  */
-internal object CreateCounterNode : CounterGraphNode {
+internal data object CreateCounterNode : CounterGraphNode {
     private const val BASE_ROUTE = "create_counter"
     const val INIT_COUNTER_ID = "init_counter_id"
 
@@ -59,10 +56,13 @@ internal object CreateCounterNode : CounterGraphNode {
             onEntry(entry)
 
             val viewModel: CreateCounterViewModel = hiltViewModel(entry)
-            val counterSupport by viewModel.counterSupport.collectAsStateWithLifecycle()
+            val counterId = entry.arguments?.getLong(INIT_COUNTER_ID)
 
             CreateCounterScreen(
-                counterSupport = counterSupport,
+                counterName = viewModel.counterName,
+                counterNameError = viewModel.counterNameError,
+                counterNameHelp = viewModel.counterHelp,
+                isEditCounter = counterId != null && counterId != NOID,
                 onNameChange = viewModel::changeName,
                 onCancel = { viewModel.discardCounter(); onCancel() },
                 onDone = { viewModel.finalizeCounter(); onDone() },
