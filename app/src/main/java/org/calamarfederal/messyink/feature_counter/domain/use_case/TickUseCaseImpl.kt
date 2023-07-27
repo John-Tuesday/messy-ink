@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
@@ -15,7 +16,6 @@ import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
@@ -24,21 +24,20 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
-import org.calamarfederal.messyink.feature_counter.presentation.state.getTime
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 /**
  * Default Implementation
  */
-class GetTicksOfFlowImpl @Inject constructor(private val repo: CountersRepo) : GetTicksOfFlow {
+class GetTicksOfFlowImpl @Inject constructor(private val repo: TickRepository) : GetTicksOfFlow {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>> =
+    override fun invoke(parentId: Long, sort: TickSort): Flow<List<UiTick>> =
         repo.getTicksFlow(parentId = parentId, sort = sort)
             .mapLatest { it.map { item -> item.toUi() } }
 }
 
-class GetTickSupportImpl @Inject constructor(private val repo: CountersRepo) : GetTickSupport {
+class GetTickSupportImpl @Inject constructor(private val repo: TickRepository) : GetTickSupport {
     override suspend fun invoke(id: Long): UiTickSupport? {
         return repo.getTickFlow(id).singleOrNull()?.let {
             UiTickSupport(
@@ -64,7 +63,7 @@ class GetTickSupportImpl @Inject constructor(private val repo: CountersRepo) : G
 /**
  * Default Implementation
  */
-class CreateTickImpl @Inject constructor(private val repo: CountersRepo) : CreateTick {
+class CreateTickImpl @Inject constructor(private val repo: TickRepository) : CreateTick {
     override suspend fun invoke(tick: UiTick): UiTick {
         require(tick.parentId != NOID) { "Cannot create a Tick without a valid Parent ID" }
         return repo.createTick(tick.toTick()).toUi()
@@ -74,11 +73,11 @@ class CreateTickImpl @Inject constructor(private val repo: CountersRepo) : Creat
 /**
  * Default Implementation
  */
-class UpdateTickImpl @Inject constructor(private val repo: CountersRepo) : UpdateTick {
+class UpdateTickImpl @Inject constructor(private val repo: TickRepository) : UpdateTick {
     override suspend fun invoke(changed: UiTick) = repo.updateTick(changed.toTick())
 }
 
-class UpdateTickFromSupportImpl @Inject constructor(private val repo: CountersRepo) :
+class UpdateTickFromSupportImpl @Inject constructor(private val repo: TickRepository) :
     UpdateTickFromSupport {
     override suspend fun invoke(support: UiTickSupport): Boolean {
         if (support.error || support.id == null) return false
@@ -91,7 +90,7 @@ class UpdateTickFromSupportImpl @Inject constructor(private val repo: CountersRe
 /**
  * Default Implementation
  */
-class DeleteTicksImpl @Inject constructor(private val repo: CountersRepo) : DeleteTicks {
+class DeleteTicksImpl @Inject constructor(private val repo: TickRepository) : DeleteTicks {
     override suspend fun invoke(ids: List<Long>) = repo.deleteTicks(ids)
     override suspend fun invoke(id: Long) = repo.deleteTick(id)
 }
@@ -99,18 +98,18 @@ class DeleteTicksImpl @Inject constructor(private val repo: CountersRepo) : Dele
 /**
  * Default Implementation
  */
-class DeleteTicksOfImpl @Inject constructor(private val repo: CountersRepo) : DeleteTicksOf {
+class DeleteTicksOfImpl @Inject constructor(private val repo: TickRepository) : DeleteTicksOf {
     override suspend fun invoke(parentId: Long) = repo.deleteTicksOf(parentId)
 }
 
 /**
  * Default Implementation
  */
-class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) :
+class GetTicksSumOfFlowImpl @Inject constructor(private val repo: TickRepository) :
     GetTicksSumOfFlow {
     override fun invoke(
         parentId: Long,
-        timeType: TimeType,
+        timeType: TickSort,
         start: Instant,
         end: Instant,
     ): Flow<Double> =
@@ -120,12 +119,12 @@ class GetTicksSumOfFlowImpl @Inject constructor(private val repo: CountersRepo) 
 /**
  * Default Implementation
  */
-class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRepo) :
+class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: TickRepository) :
     GetTicksAverageOfFlow {
 
     override fun invoke(
         parentId: Long,
-        timeType: TimeType,
+        timeType: TickSort,
         start: Instant,
         end: Instant,
     ): Flow<Double> =
@@ -140,17 +139,23 @@ class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: CountersRe
 /**
  * Default Implementation
  */
-class GetTicksSumByFlowImpl @Inject constructor(private val repo: CountersRepo) :
+class GetTicksSumByFlowImpl @Inject constructor(private val repo: TickRepository) :
     GetTicksSumByFlow {
     override fun invoke(): Flow<Map<Long, Double>> = repo.getTicksSumByFlow()
+}
+
+fun UiTick.getTime(sort: TickSort): Instant = when (sort) {
+    TickSort.TimeForData  -> timeForData
+    TickSort.TimeModified -> timeModified
+    TickSort.TimeCreated  -> timeCreated
 }
 
 class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
     override fun invoke(
         filteredTicks: List<UiTick>,
-        sort: TimeType,
+        sort: TickSort,
         domain: TimeDomain,
-        range: ClosedRange<Double>
+        range: ClosedRange<Double>,
     ): List<PointByPercent> {
         val width = (domain.start - domain.end).absoluteValue
         val height = (range.start - range.endInclusive).absoluteValue
@@ -161,6 +166,5 @@ class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
             )
         }
     }
-
 
 }

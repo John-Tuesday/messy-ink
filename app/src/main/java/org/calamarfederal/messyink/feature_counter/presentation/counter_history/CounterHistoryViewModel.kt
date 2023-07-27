@@ -7,24 +7,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
@@ -34,22 +29,21 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.math.MinMax
 import org.calamarfederal.messyink.common.math.include
 import org.calamarfederal.messyink.common.math.minMaxOf
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
+import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.getTime
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -59,7 +53,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 private fun minMaxOfDomainRange(
     ticks: List<UiTick>,
-    sort: TimeType,
+    sort: TickSort,
 ): Pair<TimeDomain?, ClosedRange<Double>?> {
     var domain: MinMax<Instant>? = null
     var range: MinMax<Double>? = null
@@ -113,7 +107,7 @@ class CounterHistoryViewModel @Inject constructor(
     private val counterIdState =
         savedStateHandle.getStateFlow(CounterHistoryNode.COUNTER_ID, NOID)
 
-    private val _tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
+    private val _tickSortState = MutableStateFlow(TickSort.TimeForData)
     val tickSortState = _tickSortState.asStateFlow()
     private val _timeDomainState =
         MutableStateFlow(TimeDomain(_currentTime().let { it - 1.days .. it }))
@@ -204,7 +198,7 @@ class CounterHistoryViewModel @Inject constructor(
         _amountRangeState.update { range ?: it }
     }
 
-    fun changeTickSort(sort: TickSort.TimeType) {
+    fun changeTickSort(sort: TickSort) {
         _tickSortState.value = sort
     }
 

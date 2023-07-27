@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
@@ -56,7 +54,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
-import org.calamarfederal.messyink.feature_counter.domain.TickSort
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error
 
@@ -119,7 +117,7 @@ private fun EditTickLayout(
     Surface(modifier = modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             var pickerOpenT by remember {
-                mutableStateOf<TickSort.TimeType?>(null)
+                mutableStateOf<TickSort?>(null)
             }
             val amountFocusRequester = remember { FocusRequester() }
             var amountInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -145,9 +143,9 @@ private fun EditTickLayout(
                 time = tickSupport.timeForDataInput.toLocalDateTime(timeZone),
                 isError = tickSupport.timeForDataError,
                 helpText = tickSupport.timeForDataHelp,
-                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeForData,
+                isPickerOpen = pickerOpenT == TickSort.TimeForData,
                 requestDialogChange = {
-                    pickerOpenT = if (it) TickSort.TimeType.TimeForData else null
+                    pickerOpenT = if (it) TickSort.TimeForData else null
                 },
                 changeTime = {
                     onChangeTick(tickSupport.copy(timeForDataInput = it))
@@ -160,9 +158,9 @@ private fun EditTickLayout(
                 time = tickSupport.timeModifiedInput.toLocalDateTime(timeZone),
                 isError = tickSupport.timeModifiedError,
                 helpText = tickSupport.timeModifiedHelp,
-                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeModified,
+                isPickerOpen = pickerOpenT == TickSort.TimeModified,
                 requestDialogChange = {
-                    pickerOpenT = if (it) TickSort.TimeType.TimeModified else null
+                    pickerOpenT = if (it) TickSort.TimeModified else null
                 },
                 changeTime = {
                     onChangeTick(tickSupport.copy(timeModifiedInput = it))
@@ -175,9 +173,9 @@ private fun EditTickLayout(
                 time = tickSupport.timeCreatedInput.toLocalDateTime(timeZone),
                 isError = tickSupport.timeCreatedError,
                 helpText = tickSupport.timeCreatedHelp,
-                isPickerOpen = pickerOpenT == TickSort.TimeType.TimeCreated,
+                isPickerOpen = pickerOpenT == TickSort.TimeCreated,
                 requestDialogChange = {
-                    pickerOpenT = if (it) TickSort.TimeType.TimeCreated else null
+                    pickerOpenT = if (it) TickSort.TimeCreated else null
                 },
                 changeTime = {
                     onChangeTick(tickSupport.copy(timeCreatedInput = it))

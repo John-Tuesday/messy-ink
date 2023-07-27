@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
-import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -62,7 +62,7 @@ class GameCounterViewModel @Inject constructor(
     private val ioScope = viewModelScope + SupervisorJob() + ioDispatcher
 
     private val counterIdState = savedStateHandle.getStateFlow(GameCounterNode.COUNTER_ID, NOID)
-    private val tickSortState = MutableStateFlow(TickSort.TimeType.TimeForData)
+    private val tickSortState = MutableStateFlow(TickSort.TimeForData)
 
     /**
      * counter being examined; idk how to handle when DNE.

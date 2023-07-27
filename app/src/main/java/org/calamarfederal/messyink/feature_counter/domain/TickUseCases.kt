@@ -3,7 +3,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -18,7 +18,7 @@ fun interface GetTicksOfFlow {
     /**
      * list of all UiTick sharing [parentId]
      */
-    operator fun invoke(parentId: Long, sort: TimeType): Flow<List<UiTick>>
+    operator fun invoke(parentId: Long, sort: TickSort): Flow<List<UiTick>>
 }
 
 fun interface GetTickSupport {
@@ -94,7 +94,7 @@ fun interface GetTicksSumOfFlow {
      */
     operator fun invoke(
         parentId: Long,
-        timeType: TimeType,
+        timeType: TickSort,
         start: Instant,
         end: Instant,
     ): Flow<Double>
@@ -102,7 +102,7 @@ fun interface GetTicksSumOfFlow {
     /**
      * overload of [invoke] for when time has no bounds
      */
-    operator fun invoke(parentId: Long, timeType: TimeType): Flow<Double> =
+    operator fun invoke(parentId: Long, timeType: TickSort): Flow<Double> =
         invoke(
             parentId = parentId,
             timeType = timeType,
@@ -124,7 +124,7 @@ fun interface GetTicksAverageOfFlow {
      */
     operator fun invoke(
         parentId: Long,
-        timeType: TimeType,
+        timeType: TickSort,
         start: Instant,
         end: Instant,
     ): Flow<Double>
@@ -132,7 +132,7 @@ fun interface GetTicksAverageOfFlow {
     /**
      * Overload for [invoke]. Useful when there are no time bounds
      */
-    operator fun invoke(parentId: Long, timeType: TimeType): Flow<Double> =
+    operator fun invoke(parentId: Long, timeType: TickSort): Flow<Double> =
         invoke(
             parentId = parentId,
             timeType = timeType,
@@ -164,7 +164,7 @@ fun interface TicksToGraphPoints {
      */
     operator fun invoke(
         filteredTicks: List<UiTick>,
-        sort: TimeType,
+        sort: TickSort,
         domain: TimeDomain,
         range: ClosedRange<Double>,
     ): List<PointByPercent>

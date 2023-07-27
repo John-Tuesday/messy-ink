@@ -4,14 +4,17 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepository
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepositoryImpl
 import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepoImpl
 import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.di.CounterTickModule
 import javax.inject.Singleton
 
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [CounterModuleBindings::class],
+    replaces = [CounterTickModule::class],
 )
 abstract class CounterTestModuleBinder {
     /**
@@ -19,5 +22,5 @@ abstract class CounterTestModuleBinder {
      */
     @Binds
     @Singleton
-    abstract fun bindCounterRepo(repoImpl: CountersRepoImpl): CountersRepo
+    abstract fun counterTickRepo(impl: CounterTickRepositoryImpl): CounterTickRepository
 }

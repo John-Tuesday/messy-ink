@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
@@ -49,11 +48,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
-import org.calamarfederal.messyink.feature_counter.domain.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeCreated
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeForData
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeModified
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MaterialLevel
@@ -69,7 +64,7 @@ internal fun TickLogsLayout(
     ticks: List<UiTick>,
     onDelete: (Long) -> Unit,
     onEdit: (Long) -> Unit,
-    sort: TickSort.TimeType,
+    sort: TickSort,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
@@ -108,7 +103,7 @@ private fun TickListItem(
     tick: UiTick,
     selected: Boolean,
     modifier: Modifier = Modifier,
-    sort: TimeType? = null,
+    sort: TickSort? = null,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     dateTimeFormat: DateTimeFormat = DateTimeFormat(),
 ) {
@@ -155,15 +150,15 @@ private fun TickListItem(
 
             Text(
                 text = timeForData,
-                style = style.merge(if (sort == TimeForData) pickedMod else null)
+                style = style.merge(if (sort == TickSort.TimeForData) pickedMod else null)
             )
             Text(
                 text = timeModified,
-                style = style.merge(if (sort == TimeModified) pickedMod else null)
+                style = style.merge(if (sort == TickSort.TimeModified) pickedMod else null)
             )
             Text(
                 text = timeCreated,
-                style = style.merge(if (sort == TimeCreated) pickedMod else null)
+                style = style.merge(if (sort == TickSort.TimeCreated) pickedMod else null)
             )
         }
     }, tonalElevation = LocalAbsoluteTonalElevation.current.let {
@@ -227,7 +222,7 @@ private fun TickOptions(
 private fun TickLogsScreenPreview() {
     TickLogsLayout(
         ticks = previewUiTicks(1L).take(15).toList(),
-        sort = TimeForData,
+        sort = TickSort.TimeForData,
         onDelete = {},
         onEdit = {},
     )

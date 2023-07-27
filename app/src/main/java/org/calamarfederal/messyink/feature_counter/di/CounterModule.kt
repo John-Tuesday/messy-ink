@@ -37,20 +37,6 @@ annotation class CurrentTime
 annotation class CurrentTimeZone
 
 /**
- * Bindings for each Counter-feature ViewModel
- */
-@Module
-@InstallIn(ViewModelComponent::class)
-abstract class CounterModuleBindings {
-    /**
-     * Binds CountersRepo Implementation to Interface
-     */
-    @Binds
-    @ViewModelScoped
-    abstract fun bindCounterRepo(repoImpl: CountersRepoImpl): CountersRepo
-}
-
-/**
  * Provider for each Counter-feature ViewModel
  */
 @Module

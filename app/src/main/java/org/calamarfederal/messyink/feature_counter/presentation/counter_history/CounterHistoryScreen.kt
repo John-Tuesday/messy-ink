@@ -14,7 +14,6 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sort
@@ -24,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -46,9 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
-import org.calamarfederal.messyink.feature_counter.domain.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
-import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType.TimeForData
+import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
@@ -86,8 +82,8 @@ fun CounterHistoryScreen(
     onEditTickChanged: (UiTickSupport) -> Unit,
     onCancelEditTick: () -> Unit,
     onFinalizeEditTick: () -> Unit,
-    tickSort: TickSort.TimeType,
-    onChangeSort: (TickSort.TimeType) -> Unit,
+    tickSort: TickSort,
+    onChangeSort: (TickSort) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -151,7 +147,7 @@ fun CounterHistoryScreen(
 @Composable
 private fun TabbedLayout(
     ticks: List<UiTick>,
-    tickSort: TimeType,
+    tickSort: TickSort,
     tickSupport: UiTickSupport?,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
@@ -223,8 +219,8 @@ private fun TabbedLayout(
 private fun HistoryTopBar(
     selectedIndex: Int,
     onNavigateUp: () -> Unit,
-    tickSort: TimeType,
-    changeSort: (TickSort.TimeType) -> Unit,
+    tickSort: TickSort,
+    changeSort: (TickSort) -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -249,33 +245,33 @@ private fun HistoryTopBar(
                 DropdownMenuItem(
                     text = { Text("Time Data") },
                     onClick = {
-                        changeSort(TickSort.TimeType.TimeForData)
+                        changeSort(TickSort.TimeForData)
                         showSortOptions = false
                     },
                     trailingIcon = {
-                        if (tickSort == TimeType.TimeForData)
+                        if (tickSort == TickSort.TimeForData)
                             Icon(Icons.Filled.Check, "chosen")
                     },
                 )
                 DropdownMenuItem(
                     text = { Text("Time Modified") },
                     onClick = {
-                        changeSort(TickSort.TimeType.TimeModified)
+                        changeSort(TickSort.TimeModified)
                         showSortOptions = false
                     },
                     trailingIcon = {
-                        if (tickSort == TimeType.TimeModified)
+                        if (tickSort == TickSort.TimeModified)
                             Icon(Icons.Filled.Check, "chosen")
                     },
                 )
                 DropdownMenuItem(
                     text = { Text("Time Created") },
                     onClick = {
-                        changeSort(TickSort.TimeType.TimeCreated)
+                        changeSort(TickSort.TimeCreated)
                         showSortOptions = false
                     },
                     trailingIcon = {
-                        if (tickSort == TimeType.TimeCreated)
+                        if (tickSort == TickSort.TimeCreated)
                             Icon(Icons.Filled.Check, "chosen")
                     },
                 )
@@ -307,7 +303,7 @@ private fun CounterHistoryScreenPreview() {
         onFinalizeEditTick = {},
         onCancelEditTick = {},
         onEditTick = {},
-        tickSort = TimeForData,
+        tickSort = TickSort.TimeForData,
         onChangeSort = {},
         onNavigateUp = {},
     )
