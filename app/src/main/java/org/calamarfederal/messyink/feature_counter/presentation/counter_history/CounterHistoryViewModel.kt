@@ -26,9 +26,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.common.math.MinMax
-import org.calamarfederal.messyink.common.math.include
-import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
@@ -51,12 +48,17 @@ private fun minMaxOfDomainRange(
     ticks: List<UiTick>,
     sort: TickSort,
 ): Pair<TimeDomain?, ClosedRange<Double>?> {
-    var domain: MinMax<Instant>? = null
-    var range: MinMax<Double>? = null
+    var domain: ClosedRange<Instant>? = null
+    var range: ClosedRange<Double>? = null
     for (tick in ticks) {
-        range = range?.let { it include tick.amount } ?: minMaxOf(tick.amount, tick.amount)
+        range = range?.let {
+            if (tick.amount in it) it
+            else minOf(it.start, tick.amount) .. maxOf(it.endInclusive, tick.amount)
+        } ?: tick.amount .. tick.amount
         val time = tick.getTime(sort)
-        domain = domain?.let { it include time } ?: minMaxOf(time, time)
+        domain = domain?.let {
+            if (time in it) domain else minOf(time, it.start) .. maxOf(time, it.endInclusive)
+        } ?: time .. time
     }
     return domain?.let { TimeDomain(it) } to range
 }
@@ -126,7 +128,6 @@ class CounterHistoryViewModel @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val allTicksState = combineTransform(_tickSortState, counterIdState) { sort, parentId ->
-//        emit(_getAllTicks(parentId = parentId, sort = sort))
         emit(tickRepo.getTicksFlow(parentId = parentId, sort = sort))
     }.transformLatest { emitAll(it) }
         .mapLatest { it.map { tick -> tick.toUi() } }
