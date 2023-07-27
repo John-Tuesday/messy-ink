@@ -24,7 +24,6 @@ import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toTick
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport

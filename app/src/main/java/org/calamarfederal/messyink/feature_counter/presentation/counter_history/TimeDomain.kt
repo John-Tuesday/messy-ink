@@ -1,21 +1,14 @@
-package org.calamarfederal.messyink.feature_counter.presentation.state
+package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Stable
-import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DateTimeUnit.Companion
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
 
 /**
  * Convenience function to convert [millis] to a date using [timeZone]
@@ -116,40 +109,4 @@ class SelectableTimeDomain(
         )
 
     override fun isSelectableYear(year: Int): Boolean = containsYear(year)
-}
-
-/**
- * Provide quick, adaptable options to set domain
- */
-interface TimeDomainTemplate {
-    /**
-     * name for the UI
-     */
-    val label: String
-
-    /**
-     * build/get the domain
-     */
-    fun domain(): TimeDomain
-}
-
-/**
- * Generic class that just calls [domainBuilder] as [domain]
- */
-data class TimeDomainLambdaTemplate(
-    override val label: String,
-    private val domainBuilder: TimeDomainTemplate.() -> TimeDomain,
-) : TimeDomainTemplate {
-    override fun domain() = domainBuilder()
-}
-
-/**
- * Template for building [TimeDomain] based on "time ago," i.e. [duration] form now
- */
-class TimeDomainAgoTemplate(
-    override val label: String,
-    private val duration: Duration,
-    private val timeGetter: GetTime,
-) : TimeDomainTemplate {
-    override fun domain() = timeGetter().let { TimeDomain((it - duration) .. it) }
 }

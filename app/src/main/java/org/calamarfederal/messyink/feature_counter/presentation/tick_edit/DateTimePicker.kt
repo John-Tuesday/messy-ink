@@ -25,7 +25,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
-import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.epochMillisToDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -47,8 +47,6 @@ import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPer
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
-import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters

@@ -20,7 +20,7 @@ import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.error

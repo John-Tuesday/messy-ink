@@ -39,9 +39,7 @@ import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
-import org.calamarfederal.messyink.feature_counter.presentation.state.AllTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import javax.inject.Inject

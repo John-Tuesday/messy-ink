@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport

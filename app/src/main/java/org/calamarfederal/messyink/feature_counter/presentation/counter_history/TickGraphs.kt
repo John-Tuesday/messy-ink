@@ -2,29 +2,21 @@ package org.calamarfederal.messyink.feature_counter.presentation.counter_history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeGesturesPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,9 +61,6 @@ import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomain
-import org.calamarfederal.messyink.feature_counter.presentation.state.TimeDomainTemplate
-import org.calamarfederal.messyink.feature_counter.presentation.state.epochMillisToDate
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.math.absoluteValue
@@ -138,34 +127,6 @@ internal fun TicksOverTimeLayout(
                 changeDomain = changeDomain,
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
-    }
-}
-
-@Composable
-private fun DomainDropdownMenu(
-    domainLabel: String,
-    domainOptions: List<TimeDomainTemplate>,
-    onClick: (TimeDomainTemplate) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(modifier = modifier) {
-        var expanded by remember { mutableStateOf(false) }
-        TextButton(onClick = { expanded = true }) {
-            Icon(if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null)
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(domainLabel)
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            for (opt in domainOptions) {
-                DropdownMenuItem(
-                    text = { Text(opt.label) },
-                    onClick = { onClick(opt); expanded = false },
-                )
-            }
         }
     }
 }
