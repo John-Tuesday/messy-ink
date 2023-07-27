@@ -1,6 +1,11 @@
 package org.calamarfederal.messyink.feature_counter.presentation.state
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
@@ -42,6 +47,20 @@ data class UiCounterSupport(
     val nameError: Boolean = nameHelp.isNullOrBlank(),
     val id: Long? = null,
 )
+
+interface UiEditCounter {
+    val nameCheckedText: UiCheckedTextFieldValue
+    val id: Long?
+}
+
+class MutableUiEditCounter(
+    override val nameCheckedText: MutableUiCheckedTextFieldValue,
+    initialId: Long? = null,
+) : UiEditCounter {
+    override var id: Long? by mutableStateOf(initialId)
+        private set
+
+}
 
 /**
  * Returns true if any error
