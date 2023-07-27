@@ -13,15 +13,14 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
-import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.EditTickNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 
-private fun EditTickUiState.toUiTick(): UiTick? {
-    return UiTick(
+private fun EditTickUiState.toTick(): Tick? {
+    return Tick(
         amount = amountInput.text.toDoubleOrNull() ?: return null,
         timeCreated = timeCreated,
         timeModified = timeModified,
@@ -37,7 +36,6 @@ private fun EditTickUiState.toUiTick(): UiTick? {
 @HiltViewModel
 class EditTickViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val _createTick: CreateTick,
     private val tickRepo: TickRepository,
 ) : ViewModel() {
     private val tickIdState: StateFlow<Long> = savedStateHandle.getStateFlow(
@@ -94,8 +92,8 @@ class EditTickViewModel @Inject constructor(
      */
     fun finalizeTick() {
         viewModelScope.launch {
-            _createTick(
-                editTickUiState.value.toUiTick() ?: return@launch
+            tickRepo.updateTick(
+                editTickUiState.value.toTick() ?: return@launch
             )
         }
     }
