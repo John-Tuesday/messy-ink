@@ -9,6 +9,7 @@ import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
+import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
@@ -22,6 +23,7 @@ class SimpleCreateTickUseCaseImpl @Inject constructor(
     private val repo: TickRepository,
     @CurrentTime
     private val getTime: GetTime,
+    @IODispatcher
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SimpleCreateTickUseCase {
     override suspend fun invoke(amount: Double, parentId: Long): Tick {

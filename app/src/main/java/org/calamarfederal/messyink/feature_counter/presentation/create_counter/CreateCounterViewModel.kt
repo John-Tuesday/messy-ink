@@ -17,8 +17,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
+import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -50,8 +51,9 @@ private fun CreateCounterUiState.toCounterOrNull(): Counter? {
 @HiltViewModel
 class CreateCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    @IODispatcher
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val counterRepo: CountersRepo,
+    private val counterRepo: CounterRepository,
     @CurrentTime
     private val currentTime: GetTime,
 ) : ViewModel() {

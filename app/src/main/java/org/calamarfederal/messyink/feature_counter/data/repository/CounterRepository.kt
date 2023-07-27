@@ -7,7 +7,7 @@ import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 /**
  * # Wrapper for managing counters, ticks, and their common commands
  */
-interface CountersRepo {
+interface CounterRepository {
     /**
      * Watch changes to Counter with [id]
      *

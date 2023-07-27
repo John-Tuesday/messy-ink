@@ -7,8 +7,8 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepository
 import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepositoryImpl
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepoImpl
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepository
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepositoryImpl
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepositoryImpl
 
@@ -17,7 +17,7 @@ import org.calamarfederal.messyink.feature_counter.data.repository.TickRepositor
 abstract class CounterModule {
     @Binds
     @ViewModelScoped
-    abstract fun counterRepo(impl: CountersRepoImpl): CountersRepo
+    abstract fun counterRepo(impl: CounterRepositoryImpl): CounterRepository
 
 }
 

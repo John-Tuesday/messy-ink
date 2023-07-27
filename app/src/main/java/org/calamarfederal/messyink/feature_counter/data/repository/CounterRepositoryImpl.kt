@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
+import org.calamarfederal.messyink.feature_counter.data.source.CounterLocalSource
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toEntity
@@ -29,9 +30,9 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
  * Implement CountersRepo using CounterDao
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class CountersRepoImpl @Inject constructor(
-    private val dao: CounterTickDao,
-) : CountersRepo {
+class CounterRepositoryImpl @Inject constructor(
+    private val dao: CounterLocalSource,
+) : CounterRepository {
     private suspend fun getCounterIds(): List<Long> = dao.counterIds()
 
     override fun getCounterFlow(id: Long): Flow<Counter?> =

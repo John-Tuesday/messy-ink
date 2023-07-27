@@ -6,8 +6,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepository
 import org.calamarfederal.messyink.feature_counter.data.repository.CounterTickRepositoryImpl
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepoImpl
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
 import org.calamarfederal.messyink.feature_counter.data.repository.di.CounterTickModule
 import javax.inject.Singleton
 

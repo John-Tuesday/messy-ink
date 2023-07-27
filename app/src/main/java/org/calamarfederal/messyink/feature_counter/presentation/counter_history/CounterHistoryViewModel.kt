@@ -32,6 +32,7 @@ import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
+import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
@@ -68,6 +69,7 @@ private fun minMaxOfDomainRange(
 @HiltViewModel
 class CounterHistoryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    @IODispatcher
     private val ioDispatcher: CoroutineDispatcher,
     @CurrentTime
     private val _currentTime: GetTime,

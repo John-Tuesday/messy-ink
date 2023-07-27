@@ -5,11 +5,11 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepository
 import org.calamarfederal.messyink.feature_counter.domain.CounterSort.TimeType
 
 
-open class CountersRepoStub : CountersRepo {
+open class CounterRepositoryStub : CounterRepository {
     override fun getCounterFlow(id: Long): Flow<Counter?> {
         TODO("Not yet implemented")
     }

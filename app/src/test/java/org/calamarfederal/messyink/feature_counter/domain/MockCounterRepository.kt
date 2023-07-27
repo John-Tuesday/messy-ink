@@ -7,14 +7,14 @@ import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import kotlin.time.Duration.Companion.days
 
-class MockCountersRepo(
+class MockCounterRepository(
     private val seedTime: Instant = Instant.fromEpochMilliseconds(0L),
     /**
      * Parent Id of all the test Tick
      */
     val parentId: Long = 1L,
     private val amount: Double = 1.00,
-) : CountersRepoStub() {
+) : CounterRepositoryStub() {
     val testUiTicks = (1 .. 100).map {
         val time = seedTime + it.days
         Tick(

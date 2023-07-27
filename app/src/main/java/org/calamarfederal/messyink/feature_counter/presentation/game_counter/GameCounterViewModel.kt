@@ -19,8 +19,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepository
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
+import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
@@ -39,8 +40,9 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    @IODispatcher
     private val ioDispatcher: CoroutineDispatcher,
-    private val counterRepo: CountersRepo,
+    private val counterRepo: CounterRepository,
     private val tickRepo: TickRepository,
     private val _simpleCreateTick: SimpleCreateTickUseCase,
 ) : ViewModel() {
