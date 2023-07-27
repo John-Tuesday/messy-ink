@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,7 +37,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -55,8 +53,6 @@ import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.error
 
 /**
  * Screen Version of Edit Tick. Uses [Scaffold]
@@ -64,11 +60,14 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.error
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditTickScreen(
-    uiTickSupport: UiTickSupport,
-    onChangeTick: (UiTickSupport) -> Unit,
+    editTickState: EditTickUiState,
     onDone: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    onChangeAmount: (TextFieldValue) -> Unit = {},
+    onChangeTimeForData: (Instant) -> Unit = {},
+    onChangeTimeModified: (Instant) -> Unit = {},
+    onChangeTimeCreated: (Instant) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -86,7 +85,7 @@ fun EditTickScreen(
                 actions = {
                     FilledTonalIconButton(
                         onClick = onDone,
-                        enabled = !uiTickSupport.error,
+                        enabled = !editTickState.anyError,
                         modifier = Modifier.testTag(EditTickTestTags.SubmitButton)
                     ) {
                         Icon(Icons.Filled.Done, "save changes")
@@ -96,9 +95,12 @@ fun EditTickScreen(
         },
     ) { padding ->
         EditTickLayout(
-            tickSupport = uiTickSupport,
-            onChangeTick = onChangeTick,
-            onDone = { if (!uiTickSupport.error) onDone() },
+            editTickState = editTickState,
+            onChangeAmount = onChangeAmount,
+            onChangeTimeCreated = onChangeTimeCreated,
+            onChangeTimeForData = onChangeTimeForData,
+            onChangeTimeModified = onChangeTimeModified,
+            onDone = { if (!editTickState.anyError) onDone() },
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -108,10 +110,13 @@ fun EditTickScreen(
 
 @Composable
 private fun EditTickLayout(
-    tickSupport: UiTickSupport,
-    onChangeTick: (UiTickSupport) -> Unit,
+    editTickState: EditTickUiState,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    onChangeAmount: (TextFieldValue) -> Unit = {},
+    onChangeTimeForData: (Instant) -> Unit = {},
+    onChangeTimeModified: (Instant) -> Unit = {},
+    onChangeTimeCreated: (Instant) -> Unit = {},
     timeZone: TimeZone = LocalTimeZone.current,
 ) {
     Surface(modifier = modifier) {
@@ -120,65 +125,54 @@ private fun EditTickLayout(
                 mutableStateOf<TickSort?>(null)
             }
             val amountFocusRequester = remember { FocusRequester() }
-            var amountInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-                mutableStateOf(
-                    TextFieldValue(
-                        tickSupport.amountInput,
-                        TextRange(0, tickSupport.amountInput.length)
-                    )
-                )
-            }
             AmountRow(
-                amountInput = amountInput,
-                onAmountChange = {
-                    amountInput = it
-                    onChangeTick(tickSupport.copy(amountInput = it.text))
-                },
-                isError = tickSupport.error,
-                helpText = tickSupport.amountHelp,
+                amountInput = editTickState.amountInput,
+                onAmountChange = onChangeAmount,
+                isError = editTickState.amountHelpState.isError,
+                helpText = editTickState.amountHelpState.help,
                 focusRequester = amountFocusRequester,
                 onDone = onDone,
             )
             TimeRow(
-                time = tickSupport.timeForDataInput.toLocalDateTime(timeZone),
-                isError = tickSupport.timeForDataError,
-                helpText = tickSupport.timeForDataHelp,
+                time = editTickState.timeForData.toLocalDateTime(timeZone),
+                isError = editTickState.timeForDataHelpState.isError,
+                helpText = editTickState.timeForDataHelpState.help,
                 isPickerOpen = pickerOpenT == TickSort.TimeForData,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeForData else null
                 },
                 changeTime = {
-                    onChangeTick(tickSupport.copy(timeForDataInput = it))
+                    onChangeTimeForData(it)
                     pickerOpenT = null
                 },
                 label = "Time",
                 testTag = EditTickTestTags.TimeForDataField,
             )
             TimeRow(
-                time = tickSupport.timeModifiedInput.toLocalDateTime(timeZone),
-                isError = tickSupport.timeModifiedError,
-                helpText = tickSupport.timeModifiedHelp,
+                time = editTickState.timeModified.toLocalDateTime(timeZone),
+                isError = editTickState.timeModifiedHelpState.isError,
+                helpText = editTickState.timeModifiedHelpState.help,
                 isPickerOpen = pickerOpenT == TickSort.TimeModified,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeModified else null
                 },
                 changeTime = {
-                    onChangeTick(tickSupport.copy(timeModifiedInput = it))
+                    onChangeTimeModified(it)
                     pickerOpenT = null
                 },
                 label = "Modified",
                 testTag = EditTickTestTags.TimeModifiedField,
             )
             TimeRow(
-                time = tickSupport.timeCreatedInput.toLocalDateTime(timeZone),
-                isError = tickSupport.timeCreatedError,
-                helpText = tickSupport.timeCreatedHelp,
+                time = editTickState.timeCreated.toLocalDateTime(timeZone),
+                isError = editTickState.timeCreatedHelpState.isError,
+                helpText = editTickState.timeCreatedHelpState.help,
                 isPickerOpen = pickerOpenT == TickSort.TimeCreated,
                 requestDialogChange = {
                     pickerOpenT = if (it) TickSort.TimeCreated else null
                 },
                 changeTime = {
-                    onChangeTick(tickSupport.copy(timeCreatedInput = it))
+                    onChangeTimeCreated(it)
                     pickerOpenT = null
                 },
                 label = "Created",
@@ -288,11 +282,9 @@ private fun TimeRow(
 @Preview
 @Composable
 private fun EditTickScreenPreview() {
-    val tick = UiTickSupport(id = 1L, parentId = 2L)
     EditTickScreen(
-        uiTickSupport = tick,
-        onChangeTick = {},
-        onDone = {},
-        onClose = {},
+        editTickState = MutableEditTickUiState(),
+        onDone = { /*TODO*/ },
+        onClose = { /*TODO*/ }
     )
 }

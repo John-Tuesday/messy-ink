@@ -21,10 +21,6 @@ fun interface GetTicksOfFlow {
     operator fun invoke(parentId: Long, sort: TickSort): Flow<List<UiTick>>
 }
 
-fun interface GetTickSupport {
-    suspend operator fun invoke(id: Long): UiTickSupport?
-}
-
 /**
  * Create a new [Tick] and set [Tick.timeModified] and [Tick.timeCreated] accordingly
  */

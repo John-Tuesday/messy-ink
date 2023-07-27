@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,17 +40,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
-import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickScreen
 
 /**
  * # Counter History and Details Screen
@@ -69,7 +65,6 @@ import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTi
 @Composable
 fun CounterHistoryScreen(
     ticks: List<UiTick>,
-    tickEdit: UiTickSupport?,
     graphPoints: List<PointByPercent>,
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
@@ -77,9 +72,6 @@ fun CounterHistoryScreen(
     changeGraphDomain: (TimeDomain) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
-    onEditTickChanged: (UiTickSupport) -> Unit,
-    onCancelEditTick: () -> Unit,
-    onFinalizeEditTick: () -> Unit,
     tickSort: TickSort,
     onChangeSort: (TickSort) -> Unit,
     onNavigateUp: () -> Unit,
@@ -121,12 +113,8 @@ fun CounterHistoryScreen(
         TabbedLayout(
             ticks = ticks,
             tickSort = tickSort,
-            tickSupport = tickEdit,
             onDeleteTick = onDeleteTick,
             onEditTick = onEditTick,
-            onEditTickChanged = onEditTickChanged,
-            onFinalizeEditTick = onFinalizeEditTick,
-            onCancelEditTick = onCancelEditTick,
             state = pagerState,
             graphPoints = graphPoints,
             graphDomain = graphDomain,
@@ -146,12 +134,8 @@ fun CounterHistoryScreen(
 private fun TabbedLayout(
     ticks: List<UiTick>,
     tickSort: TickSort,
-    tickSupport: UiTickSupport?,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
-    onEditTickChanged: (UiTickSupport) -> Unit,
-    onCancelEditTick: () -> Unit,
-    onFinalizeEditTick: () -> Unit,
     graphPoints: List<PointByPercent>,
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
@@ -193,23 +177,6 @@ private fun TabbedLayout(
             }
         }
     )
-
-    if (tickSupport != null) {
-        AlertDialog(
-            onDismissRequest = onCancelEditTick,
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-                decorFitsSystemWindows = false,
-            )
-        ) {
-            EditTickScreen(
-                uiTickSupport = tickSupport,
-                onChangeTick = onEditTickChanged,
-                onDone = onFinalizeEditTick,
-                onClose = onCancelEditTick,
-            )
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -290,16 +257,12 @@ private fun CounterHistoryScreenPreview() {
 
     CounterHistoryScreen(
         ticks = ticks,
-        tickEdit = null,
         graphPoints = listOf(),
         graphRange = range,
         graphDomain = TimeDomain.AllTime,
         graphDomainLimits = TimeDomain.AllTime,
         changeGraphDomain = {},
         onDeleteTick = {},
-        onEditTickChanged = {},
-        onFinalizeEditTick = {},
-        onCancelEditTick = {},
         onEditTick = {},
         tickSort = TickSort.TimeForData,
         onChangeSort = {},

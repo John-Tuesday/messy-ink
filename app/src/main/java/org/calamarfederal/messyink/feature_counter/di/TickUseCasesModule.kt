@@ -7,7 +7,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
@@ -18,7 +17,6 @@ import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksOfImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTickSupportImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksAverageOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
@@ -39,12 +37,6 @@ abstract class TickUseCasesModule {
      */
     @Binds
     abstract fun bindGetTicksOfFlow(impl: GetTicksOfFlowImpl): GetTicksOfFlow
-
-    /**
-     * Binds Implementation to interface
-     */
-    @Binds
-    abstract fun bindGetTickSupport(impl: GetTickSupportImpl): GetTickSupport
 
     /**
      * Binds Implementation to interface

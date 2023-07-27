@@ -1,16 +1,12 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tick_edit
 
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.semantics.textSelectionRange
 import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -21,16 +17,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -38,7 +29,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -58,7 +49,9 @@ class TickEditScreenUnitTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private lateinit var tickSupportState: MutableStateFlow<UiTickSupport>
+    private lateinit var editTickState: MutableEditTickUiState
+    private lateinit var editAmountHelpState: MutableState<HelpState>
+    private lateinit var startTick: Tick
     private lateinit var onDoneCalled: MutableStateFlow<Boolean>
 
     private val timeZone = TimeZone.UTC
@@ -73,8 +66,8 @@ class TickEditScreenUnitTest {
     @Before
     fun setUp() {
         onDoneCalled = MutableStateFlow(false)
+        editAmountHelpState = mutableStateOf(HelpState())
 
-        val parentId = 1L
         val testDate = LocalDateTime(
             year = 2020,
             monthNumber = 5,
@@ -83,24 +76,23 @@ class TickEditScreenUnitTest {
             minute = 22,
             second = 29
         ).toInstant(timeZone)
-        tickSupportState =
-            MutableStateFlow(
-                UiTickSupport(
-                    amountInput = "abcdef",
-                    timeForDataInput = testDate + 1.days,
-                    timeModifiedInput = testDate + 300.days,
-                    timeCreatedInput = testDate,
-                    parentId = parentId,
-                )
-
-            )
+        startTick = Tick(
+            amount = 1.23,
+            timeForData = testDate + 1.days,
+            timeModified = testDate,
+            timeCreated = testDate,
+            parentId = 1L,
+            id = 2L,
+        )
+        editTickState =
+            mutableEditTickUiStateOf(startTick, MutableEditTickUiState { editAmountHelpState })
 
         composeRule.setContent {
-            val tickSupport by tickSupportState.collectAsState()
             CompositionLocalProvider(LocalTimeZone provides timeZone) {
+
                 EditTickScreen(
-                    uiTickSupport = tickSupport,
-                    onChangeTick = {},
+                    editTickState = editTickState,
+                    onChangeAmount = { editTickState.amountInput = it },
                     onDone = { onDoneCalled.value = true },
                     onClose = {},
                 )
@@ -110,17 +102,10 @@ class TickEditScreenUnitTest {
 
     @Test
     fun `Submit button is disabled when error and enabled when not`() {
-        tickSupportState.update { it.copy(amountError = true) }
+        editAmountHelpState.value = HelpState(isError = true)
         onSubmitButton.assertIsNotEnabled()
 
-        tickSupportState.update {
-            it.copy(
-                amountError = false,
-                timeForDataError = false,
-                timeModifiedError = false,
-                timeCreatedError = false,
-            )
-        }
+        editAmountHelpState.value = HelpState(isError = false)
         onSubmitButton.assertIsEnabled()
     }
 
@@ -144,7 +129,7 @@ class TickEditScreenUnitTest {
             .assertIsFocused()
             .fetchSemanticsNode()
             .config[SemanticsProperties.TextSelectionRange]
-        val expected = TextRange(0, tickSupportState.value.amountInput.length)
+        val expected = TextRange(0, editTickState.amountInput.text.length)
         assert(expected.length > 0)
         assert(selected.start == expected.start)
         assert(selected.end == expected.end)
@@ -171,7 +156,7 @@ class TickEditScreenUnitTest {
         onSubmitButton.performClick()
         assert(onDoneCalled.value)
 
-        tickSupportState.update { it.copy(amountError = true) }
+        editAmountHelpState.value = HelpState(isError = true)
 
         onDoneCalled.value = false
         onAmountField.performImeAction()
@@ -181,23 +166,22 @@ class TickEditScreenUnitTest {
 
     @Test
     fun `Amount and Time Fields are initialized`() {
-        val support = tickSupportState.value
-        onAmountField.assertTextContains(support.amountInput)
+        onAmountField.assertTextContains(editTickState.amountInput.text)
         onTimeForDataNode.assertTextContains(
-            support
-                .timeForDataInput
+            editTickState
+                .timeForData
                 .toLocalDateTime(timeZone)
                 .formatToString(dateTimeFormat),
         )
         onTimeModifiedNode.assertTextContains(
-            support
-                .timeModifiedInput
+            editTickState
+                .timeModified
                 .toLocalDateTime(timeZone)
                 .formatToString(dateTimeFormat),
         )
         onTimeCreatedNode.assertTextContains(
-            support
-                .timeCreatedInput
+            editTickState
+                .timeCreated
                 .toLocalDateTime(timeZone)
                 .formatToString(dateTimeFormat),
         )
@@ -206,7 +190,7 @@ class TickEditScreenUnitTest {
     @Test
     fun `Amount error and help text are shown`() {
         val helpText = "help help help"
-        tickSupportState.update { it.copy(amountError = true, amountHelp = helpText) }
+        editAmountHelpState.value = HelpState(helpText, true)
         onAmountField.assertTextContains(helpText)
         onAmountField.assertHasError()
     }
@@ -214,7 +198,7 @@ class TickEditScreenUnitTest {
     @Test
     fun `Time For Data error and help text are shown`() {
         val helpText = "help help help"
-        tickSupportState.update { it.copy(timeForDataError = true, timeForDataHelp = helpText) }
+        editTickState.timeForDataHelpState = HelpState(isError = true, help = helpText)
         onTimeForDataNode.assertTextContains(helpText)
         onTimeForDataNode.assertHasError()
     }
@@ -222,7 +206,7 @@ class TickEditScreenUnitTest {
     @Test
     fun `Time Modified error and help text are shown`() {
         val helpText = "help help help"
-        tickSupportState.update { it.copy(timeModifiedError = true, timeModifiedHelp = helpText) }
+        editTickState.timeModifiedHelpState = HelpState(isError = true, help = helpText)
         onTimeModifiedNode.assertTextContains(helpText)
         onTimeModifiedNode.assertHasError()
     }
@@ -230,7 +214,7 @@ class TickEditScreenUnitTest {
     @Test
     fun `Time Created error and help text are shown`() {
         val helpText = "help help help"
-        tickSupportState.update { it.copy(timeCreatedError = true, timeCreatedHelp = helpText) }
+        editTickState.timeCreatedHelpState = HelpState(isError = true, help = helpText)
         onTimeCreatedNode.assertTextContains(helpText)
         onTimeCreatedNode.assertHasError()
     }

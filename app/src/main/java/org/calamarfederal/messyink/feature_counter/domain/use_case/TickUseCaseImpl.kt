@@ -11,7 +11,6 @@ import org.calamarfederal.messyink.feature_counter.data.repository.TickRepositor
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
@@ -35,29 +34,6 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: TickRepository) :
     override fun invoke(parentId: Long, sort: TickSort): Flow<List<UiTick>> =
         repo.getTicksFlow(parentId = parentId, sort = sort)
             .mapLatest { it.map { item -> item.toUi() } }
-}
-
-class GetTickSupportImpl @Inject constructor(private val repo: TickRepository) : GetTickSupport {
-    override suspend fun invoke(id: Long): UiTickSupport? {
-        return repo.getTickFlow(id).singleOrNull()?.let {
-            UiTickSupport(
-                amountInput = it.amount.toString(),
-                amountHelp = null,
-                amountError = false,
-                timeForDataInput = it.timeForData,
-                timeForDataHelp = null,
-                timeForDataError = false,
-                timeModifiedInput = it.timeModified,
-                timeModifiedHelp = null,
-                timeModifiedError = false,
-                timeCreatedInput = it.timeModified,
-                timeCreatedHelp = null,
-                timeCreatedError = false,
-                parentId = it.parentId,
-                id = it.id
-            )
-        }
-    }
 }
 
 /**

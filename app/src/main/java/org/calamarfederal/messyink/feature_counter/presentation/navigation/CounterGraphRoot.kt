@@ -11,9 +11,12 @@ import org.calamarfederal.messyink.common.navigation.NavigationRoot
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.counterHistory
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToCounterHistory
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.counterOverview
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterOverviewNode.navigateToCounterOverview
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.createCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToCreateCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode.navigateToEditCounter
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.EditTickNode.editTick
+import org.calamarfederal.messyink.feature_counter.presentation.navigation.EditTickNode.navigateToEditTick
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.gameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.navigateToGameCounter
 
@@ -51,7 +54,12 @@ object CounterGraphRoot : NavigationRoot<CounterGraphNode>, NavigationNode {
                 onEditCounter = { navController.navigateToEditCounter(it) },
             )
             counterHistory(
-                onNavigateUp = { navController.navigateUp() }
+                onNavigateUp = { navController.navigateUp() },
+                onNavigateToEditTick = { navController.navigateToEditTick(it) }
+            )
+            editTick(
+                onDone = { if (!navController.navigateUp()) navController.navigateToCounterOverview() },
+                onCancel = { if (!navController.navigateUp()) navController.navigateToCounterOverview() },
             )
             createCounter(
                 onCancel = { navController.navigateUp() },

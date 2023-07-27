@@ -51,16 +51,8 @@ class CounterHistoryScreenTest {
         ticksSupportState = MutableStateFlow(null)
 
         composeRule.setContent {
-            val counter by counterState.collectAsState()
             val ticks by ticksState.collectAsState()
             val tickSort by tickSortState.collectAsState()
-            val tickSupport by ticksSupportState.collectAsState()
-            val tickSum by remember {
-                derivedStateOf { ticks.sumOf { it.amount } }
-            }
-            val tickAverage by remember {
-                derivedStateOf { ticks.sumOf { it.amount } / ticks.size }
-            }
             val graphRange by remember {
                 derivedStateOf { ticks.minOf { it.amount } .. ticks.maxOf { it.amount } }
             }
@@ -74,7 +66,6 @@ class CounterHistoryScreenTest {
             CounterHistoryScreen(
                 ticks = ticks,
                 tickSort = tickSort,
-                tickEdit = tickSupport,
                 graphPoints = listOf(),
                 graphRange = graphRange,
                 graphDomain = graphDomain,
@@ -83,9 +74,6 @@ class CounterHistoryScreenTest {
                 changeGraphDomain = {},
                 onDeleteTick = {},
                 onEditTick = {},
-                onEditTickChanged = {},
-                onFinalizeEditTick = {},
-                onCancelEditTick = {},
                 onNavigateUp = {},
             )
         }

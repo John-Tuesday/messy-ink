@@ -41,6 +41,7 @@ internal object CounterHistoryNode : CounterGraphNode {
     @OptIn(ExperimentalMaterial3Api::class)
     fun NavGraphBuilder.counterHistory(
         onNavigateUp: () -> Unit,
+        onNavigateToEditTick: (Long) -> Unit,
         onEntry: @Composable (NavBackStackEntry) -> Unit = {},
     ) {
         composable(
@@ -54,7 +55,6 @@ internal object CounterHistoryNode : CounterGraphNode {
 
             val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
             val tickSort by viewModel.tickSortState.collectAsStateWithLifecycle()
-            val tickEdit by viewModel.editTickSupportState.collectAsStateWithLifecycle()
             val graphPoints by viewModel.tickGraphPointsState.collectAsStateWithLifecycle()
             val graphRange by viewModel.amountRangeState.collectAsStateWithLifecycle()
             val graphDomain by viewModel.timeDomainState.collectAsStateWithLifecycle()
@@ -62,17 +62,13 @@ internal object CounterHistoryNode : CounterGraphNode {
 
             CounterHistoryScreen(
                 ticks = ticks,
-                tickEdit = tickEdit,
                 graphPoints = graphPoints,
                 graphRange = graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
                 changeGraphDomain = { viewModel.changeGraphZoom(domain = it) },
                 onDeleteTick = viewModel::deleteTick,
-                onEditTick = viewModel::startTickEdit,
-                onCancelEditTick = viewModel::discardTickEdit,
-                onFinalizeEditTick = viewModel::finalizeTickEdit,
-                onEditTickChanged = viewModel::updateTickEdit,
+                onEditTick = onNavigateToEditTick,
                 tickSort = tickSort,
                 onChangeSort = viewModel::changeTickSort,
                 onNavigateUp = onNavigateUp,

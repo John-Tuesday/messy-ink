@@ -32,16 +32,13 @@ import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
-import org.calamarfederal.messyink.feature_counter.domain.GetTickSupport
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -75,8 +72,6 @@ class CounterHistoryViewModel @Inject constructor(
     @CurrentTime
     private val _currentTime: GetTime,
     private val _getAllTicks: GetTicksOfFlow,
-    private val _getTickSupport: GetTickSupport,
-    private val _updateTick: UpdateTickFromSupport,
     private val _deleteTick: DeleteTicks,
     private val _ticksToGraphPoints: TicksToGraphPoints,
 ) : ViewModel() {
@@ -120,13 +115,6 @@ class CounterHistoryViewModel @Inject constructor(
      * User-chosen range for the graph
      */
     val amountRangeState = _amountRangeState.asStateFlow()
-
-    private val _editTickSupportState = MutableStateFlow<UiTickSupport?>(null)
-
-    /**
-     * Tick in edit-workspace
-     */
-    val editTickSupportState = _editTickSupportState.asStateFlow()
 
     /**
      * Unfiltered ticks of chosen counter
@@ -205,47 +193,6 @@ class CounterHistoryViewModel @Inject constructor(
      */
     fun addTick(amount: Double) {
         ioScope.launch {
-        }
-    }
-
-    /**
-     * Set [editTickSupport] to represent the tick with [id]
-     */
-    fun startTickEdit(id: Long) {
-        ioScope.launch {
-            _editTickSupportState.update { _getTickSupport(id) }
-        }
-    }
-
-    /**
-     * Update [editTickSupport] and check for errors
-     */
-    fun updateTickEdit(support: UiTickSupport) {
-        _editTickSupportState.update { it?.let { support } }
-        val amountError = support.amountInput.toDoubleOrNull() == null
-        val amountHelp = if (amountError) "Enter in a valid decimal number" else null
-        _editTickSupportState.update {
-            it?.copy(
-                amountHelp = amountHelp,
-                amountError = amountError
-            )
-        }
-    }
-
-    /**
-     * Clear [editTickSupport] and do not modify any data
-     */
-    fun discardTickEdit() {
-        _editTickSupportState.value = null
-    }
-
-    /**
-     * Update corresponding tick. Sets [editTickSupport] to null on success
-     */
-    fun finalizeTickEdit() {
-        ioScope.launch {
-            if (_updateTick(_editTickSupportState.value ?: return@launch))
-                _editTickSupportState.value = null
         }
     }
 
