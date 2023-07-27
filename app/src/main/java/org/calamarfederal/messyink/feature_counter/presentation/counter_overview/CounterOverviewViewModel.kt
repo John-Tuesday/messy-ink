@@ -16,12 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
@@ -36,9 +35,9 @@ class CounterOverviewViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCountersFlow: GetCountersFlow,
     private val _getTicksSumByFlow: GetTicksSumByFlow,
-    private val _createTick: CreateTick,
     private val _deleteCounter: DeleteCounter,
     private val _deleteTicksFrom: DeleteTicksOf,
+    private val _simpleCreateTick: SimpleCreateTickUseCase,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
@@ -75,14 +74,14 @@ class CounterOverviewViewModel @Inject constructor(
      * Add default increment tick; for no it's just `1.00`
      */
     fun incrementCounter(id: Long) {
-        ioScope.launch { _createTick(UiTick(amount = 1.00, parentId = id, id = NOID)) }
+        viewModelScope.launch { _simpleCreateTick(amount = 1.00, parentId = id) }
     }
 
     /**
      * Add default decrement tick; for now it's just `-1.00`
      */
     fun decrementCounter(id: Long) {
-        ioScope.launch { _createTick(UiTick(amount = -1.00, parentId = id, id = NOID)) }
+        viewModelScope.launch { _simpleCreateTick(amount = -1.00, parentId = id) }
     }
 
     /**

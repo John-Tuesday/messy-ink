@@ -4,19 +4,19 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.domain.use_case.CreateTickImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.DeleteTicksOfImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksOfFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumByFlowImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.GetTicksSumOfFlowImpl
+import org.calamarfederal.messyink.feature_counter.domain.use_case.SimpleCreateTickUseCaseImpl
 import org.calamarfederal.messyink.feature_counter.domain.use_case.TicksToGraphPointsImpl
 
 /**
@@ -36,7 +36,7 @@ abstract class TickUseCasesModule {
      * Binds Implementation to interface
      */
     @Binds
-    abstract fun bindCreateTick(impl: CreateTickImpl): CreateTick
+    abstract fun bindCreateTick(impl: SimpleCreateTickUseCaseImpl): SimpleCreateTickUseCase
 
     /**
      * Binds Default Implementation

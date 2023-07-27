@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
@@ -43,9 +43,9 @@ class GameCounterViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val _getCounterFlow: GetCounterFlow,
     private val _getTicksSumOfFlow: GetTicksSumOfFlow,
-    private val _createTick: CreateTick,
     private val _updateCounter: UpdateCounter,
     private val _deleteTicksOf: DeleteTicksOf,
+    private val _simpleCreateTick: SimpleCreateTickUseCase,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
         viewModelScope,
@@ -118,8 +118,8 @@ class GameCounterViewModel @Inject constructor(
      * Add new [UiTick] as a child of [counter] with [amount]
      */
     fun addTick(amount: Double) {
-        ioScope.launch {
-            _createTick(UiTick(amount = amount, parentId = counterIdState.value, id = NOID))
+        viewModelScope.launch {
+            _simpleCreateTick.invoke(amount = amount, parentId = counterIdState.value)
         }
     }
 

@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -21,14 +22,8 @@ fun interface GetTicksOfFlow {
     operator fun invoke(parentId: Long, sort: TickSort): Flow<List<UiTick>>
 }
 
-/**
- * Create a new [Tick] and set [Tick.timeModified] and [Tick.timeCreated] accordingly
- */
-fun interface CreateTick {
-    /**
-     * Create a new [Tick] and set [Tick.timeModified] and [Tick.timeCreated] accordingly
-     */
-    suspend operator fun invoke(tick: UiTick): UiTick
+fun interface SimpleCreateTickUseCase {
+    suspend operator fun invoke(amount: Double, parentId: Long): Tick
 }
 
 /**

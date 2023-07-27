@@ -1,18 +1,24 @@
 package org.calamarfederal.messyink.feature_counter.domain.use_case
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
-import org.calamarfederal.messyink.feature_counter.domain.CreateTick
+import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.domain.GetTime
+import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
@@ -30,13 +36,28 @@ class GetTicksOfFlowImpl @Inject constructor(private val repo: TickRepository) :
             .mapLatest { it.map { item -> item.toUi() } }
 }
 
-/**
- * Default Implementation
- */
-class CreateTickImpl @Inject constructor(private val repo: TickRepository) : CreateTick {
-    override suspend fun invoke(tick: UiTick): UiTick {
-        require(tick.parentId != NOID) { "Cannot create a Tick without a valid Parent ID" }
-        return repo.createTick(tick.toTick()).toUi()
+class SimpleCreateTickUseCaseImpl @Inject constructor(
+    private val repo: TickRepository,
+    @CurrentTime
+    private val getTime: GetTime,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : SimpleCreateTickUseCase {
+    override suspend fun invoke(amount: Double, parentId: Long): Tick {
+        require(parentId != NOID)
+        val time = getTime()
+        return withContext(ioDispatcher) {
+            repo.createTick(
+                Tick(
+                    amount = amount,
+                    timeModified = time,
+                    timeCreated = time,
+                    timeForData = time,
+                    parentId = parentId,
+                    id = NOID,
+                )
+            )
+        }
+
     }
 }
 
