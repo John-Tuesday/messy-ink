@@ -3,12 +3,12 @@ package org.calamarfederal.messyink.feature_counter.data
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion
-import org.calamarfederal.messyink.data.CounterTickDao
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepoImpl
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.Tick
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.junit.Before
 import org.junit.Test

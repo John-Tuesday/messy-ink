@@ -3,6 +3,7 @@ package org.calamarfederal.messyink.feature_counter.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 import kotlin.time.Duration.Companion.days
 

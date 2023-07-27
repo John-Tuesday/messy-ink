@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
-import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf

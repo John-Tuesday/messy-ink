@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.feature_counter.domain
+package org.calamarfederal.messyink.feature_counter.data.model
 
 import kotlinx.datetime.Instant
 
@@ -36,4 +36,19 @@ data class Tick(
     val id: Long,
 )
 
+enum class TickSort {
+    /**
+     * Time the tick was first created
+     */
+    TimeCreated,
 
+    /**
+     * Time the tick was last modified
+     */
+    TimeModified,
+
+    /**
+     * Default time to use when identifying when the tick 'happened'
+     */
+    TimeForData,
+}

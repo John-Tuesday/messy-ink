@@ -1,11 +1,10 @@
-package org.calamarfederal.messyink.data.entity
+package org.calamarfederal.messyink.feature_counter.data.source.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.TimeTypeConverters
 
 private object CounterTableNames {
     const val TableName = "counter"

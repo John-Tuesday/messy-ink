@@ -1,7 +1,11 @@
-package org.calamarfederal.messyink.feature_counter.domain
+package org.calamarfederal.messyink.feature_counter.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
+import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
+import org.calamarfederal.messyink.feature_counter.domain.TickSort
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
 
 /**

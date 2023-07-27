@@ -1,8 +1,8 @@
 package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.domain.TickSort.TimeType
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 
 /**
  * Sort Ticks by element

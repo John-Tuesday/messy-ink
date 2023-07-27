@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.data
+package org.calamarfederal.messyink.feature_counter.data.source.database
 
 import androidx.room.TypeConverter
 import kotlinx.datetime.Instant

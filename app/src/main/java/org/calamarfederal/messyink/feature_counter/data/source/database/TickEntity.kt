@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.data.entity
+package org.calamarfederal.messyink.feature_counter.data.source.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,8 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.TimeTypeConverters
-
 
 private object TickTableNames {
     const val TableName: String = "counter_tick"

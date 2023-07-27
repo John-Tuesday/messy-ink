@@ -1,11 +1,10 @@
-package org.calamarfederal.messyink.data
+package org.calamarfederal.messyink.feature_counter.data.source.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import org.calamarfederal.messyink.data.entity.TickEntity
 
 /**
  * # Dao focusing on [TickEntity]

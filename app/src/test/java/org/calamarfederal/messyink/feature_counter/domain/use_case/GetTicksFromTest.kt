@@ -2,7 +2,6 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.MockCountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.TickSort

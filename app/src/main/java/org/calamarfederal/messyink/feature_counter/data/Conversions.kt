@@ -1,9 +1,9 @@
 package org.calamarfederal.messyink.feature_counter.data
 
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
-import org.calamarfederal.messyink.feature_counter.domain.Counter
-import org.calamarfederal.messyink.feature_counter.domain.Tick
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 
 internal fun CounterEntity.toCounter() = Counter(
     name = name,

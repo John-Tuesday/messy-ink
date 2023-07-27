@@ -2,13 +2,10 @@ package org.calamarfederal.messyink.feature_counter.di
 
 import dagger.Binds
 import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import org.calamarfederal.messyink.feature_counter.data.CountersRepoImpl
-import org.calamarfederal.messyink.feature_counter.domain.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepoImpl
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
 import javax.inject.Singleton
 
 @Module

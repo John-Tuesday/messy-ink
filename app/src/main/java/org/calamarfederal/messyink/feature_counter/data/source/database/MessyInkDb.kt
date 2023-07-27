@@ -1,4 +1,4 @@
-package org.calamarfederal.messyink.data
+package org.calamarfederal.messyink.feature_counter.data.source.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
@@ -6,8 +6,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.RoomDatabase
 import androidx.room.Update
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
 
 private const val DB_VERSION: Int = 12
 

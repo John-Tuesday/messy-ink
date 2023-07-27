@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.calamarfederal.messyink.data.MessyInkDb
+import org.calamarfederal.messyink.feature_counter.data.source.database.MessyInkDb
 import javax.inject.Singleton
 
 /**

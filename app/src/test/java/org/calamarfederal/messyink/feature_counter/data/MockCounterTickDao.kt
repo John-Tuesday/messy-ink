@@ -1,7 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.data
 
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
 
 class MockCounterTickDao(
     private val tickTable: List<TickEntity>,

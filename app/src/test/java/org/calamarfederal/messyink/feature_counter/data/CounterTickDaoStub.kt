@@ -2,10 +2,10 @@ package org.calamarfederal.messyink.feature_counter.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.CounterTickDao
-import org.calamarfederal.messyink.data.RowsChanged
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
+import org.calamarfederal.messyink.feature_counter.data.source.database.RowsChanged
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
 
 open class CounterTickDaoStub : CounterTickDao {
     override suspend fun ticksWithParentId(parentId: Long): List<TickEntity> {

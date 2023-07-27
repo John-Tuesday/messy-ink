@@ -6,14 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.core.view.WindowCompat
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -21,7 +18,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
-import org.calamarfederal.messyink.data.CounterTickDao
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.insertPrettyData
 import org.calamarfederal.messyink.feature_counter.data.prettyCounterWorkout
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToCounterHistory

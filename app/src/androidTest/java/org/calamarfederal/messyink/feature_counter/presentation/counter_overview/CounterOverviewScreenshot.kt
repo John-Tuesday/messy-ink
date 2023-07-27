@@ -8,7 +8,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.calamarfederal.messyink.MainActivity
-import org.calamarfederal.messyink.data.CounterTickDao
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.insertPrettyData
 import org.calamarfederal.messyink.saveScreenshot
 import org.junit.Before

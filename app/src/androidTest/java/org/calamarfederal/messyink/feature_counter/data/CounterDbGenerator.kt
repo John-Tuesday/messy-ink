@@ -1,9 +1,9 @@
 package org.calamarfederal.messyink.feature_counter.data
 
 import kotlinx.datetime.Instant
-import org.calamarfederal.messyink.data.CounterTickDao
-import org.calamarfederal.messyink.data.entity.CounterEntity
-import org.calamarfederal.messyink.data.entity.TickEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
 import org.calamarfederal.messyink.feature_counter.di.TestTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days

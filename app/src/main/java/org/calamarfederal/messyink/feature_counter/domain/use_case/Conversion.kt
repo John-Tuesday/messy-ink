@@ -1,7 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.domain.use_case
 
-import org.calamarfederal.messyink.feature_counter.domain.Counter
-import org.calamarfederal.messyink.feature_counter.domain.Tick
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
