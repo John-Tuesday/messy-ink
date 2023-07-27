@@ -32,24 +32,6 @@ fun interface CreateTick {
 }
 
 /**
- * SAM to Update Tick
- *
- * @see [invoke]
- */
-fun interface UpdateTick {
-    /**
-     * find and set [UiTick] to [changed]; also update [UiCounter.timeModified]
-     *
-     * should it return the new value or `null` if not found
-     */
-    suspend operator fun invoke(changed: UiTick): Boolean
-}
-
-fun interface UpdateTickFromSupport {
-    suspend operator fun invoke(support: UiTickSupport): Boolean
-}
-
-/**
  * @see [invoke]
  */
 fun interface DeleteTicks {
@@ -97,36 +79,6 @@ fun interface GetTicksSumOfFlow {
 
     /**
      * overload of [invoke] for when time has no bounds
-     */
-    operator fun invoke(parentId: Long, timeType: TickSort): Flow<Double> =
-        invoke(
-            parentId = parentId,
-            timeType = timeType,
-            start = Instant.DISTANT_PAST,
-            end = Instant.DISTANT_FUTURE
-        )
-}
-
-/**
- * SAM
- *
- * @see invoke
- */
-fun interface GetTicksAverageOfFlow {
-    /**
-     * Average all ticks from [[start], [end]] with [parentId]
-     *
-     * @return Flow should emit 0.00 when no ticks exist (if it crashes make it nullable)
-     */
-    operator fun invoke(
-        parentId: Long,
-        timeType: TickSort,
-        start: Instant,
-        end: Instant,
-    ): Flow<Double>
-
-    /**
-     * Overload for [invoke]. Useful when there are no time bounds
      */
     operator fun invoke(parentId: Long, timeType: TickSort): Flow<Double> =
         invoke(

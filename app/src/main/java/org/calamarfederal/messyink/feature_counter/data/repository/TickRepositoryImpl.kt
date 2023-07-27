@@ -24,28 +24,8 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
 
 class TickRepositoryImpl @Inject constructor(
     private val dao: TickLocalSource,
-    @CurrentTime
-    private val getCurrentTime: GetTime,
 ) : TickRepository {
     private suspend fun getTickIds(): List<Long> = dao.tickIds()
-
-    private suspend fun _createNewTick(
-        amount: Double,
-        parentId: Long,
-        timeForData: Instant? = null,
-    ): Tick {
-        require(parentId != NOID)
-
-        val time = getCurrentTime()
-        return Tick(
-            amount = amount,
-            timeCreated = time,
-            timeModified = time,
-            timeForData = timeForData ?: time,
-            parentId = parentId,
-            id = generateId(getTickIds().toSet())
-        )
-    }
 
     override fun getTicksFlow(parentId: Long, sort: TickSort): Flow<List<Tick>> =
         when (sort) {
@@ -61,7 +41,7 @@ class TickRepositoryImpl @Inject constructor(
     override suspend fun createTick(tick: Tick): Tick {
         require(tick.parentId != NOID) { "Cannot create Tick without a valid Parent ID" }
 
-        val outTick = _createNewTick(tick.amount, parentId = tick.parentId)
+        val outTick = tick.copy(id = generateId(getTickIds().toSet()))
         dao.insertTick(outTick.toEntity())
         return outTick
     }

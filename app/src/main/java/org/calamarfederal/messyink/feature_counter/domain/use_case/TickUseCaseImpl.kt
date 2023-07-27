@@ -3,7 +3,6 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
@@ -11,18 +10,13 @@ import org.calamarfederal.messyink.feature_counter.data.repository.TickRepositor
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksAverageOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.domain.UpdateTick
-import org.calamarfederal.messyink.feature_counter.domain.UpdateTickFromSupport
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
-import org.calamarfederal.messyink.feature_counter.presentation.state.error
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -43,23 +37,6 @@ class CreateTickImpl @Inject constructor(private val repo: TickRepository) : Cre
     override suspend fun invoke(tick: UiTick): UiTick {
         require(tick.parentId != NOID) { "Cannot create a Tick without a valid Parent ID" }
         return repo.createTick(tick.toTick()).toUi()
-    }
-}
-
-/**
- * Default Implementation
- */
-class UpdateTickImpl @Inject constructor(private val repo: TickRepository) : UpdateTick {
-    override suspend fun invoke(changed: UiTick) = repo.updateTick(changed.toTick())
-}
-
-class UpdateTickFromSupportImpl @Inject constructor(private val repo: TickRepository) :
-    UpdateTickFromSupport {
-    override suspend fun invoke(support: UiTickSupport): Boolean {
-        if (support.error || support.id == null) return false
-
-        val tick = repo.getTickFlow(support.id).singleOrNull() ?: return false
-        return repo.updateTick(support.toTickOrNull() ?: return false)
     }
 }
 
@@ -90,26 +67,6 @@ class GetTicksSumOfFlowImpl @Inject constructor(private val repo: TickRepository
         end: Instant,
     ): Flow<Double> =
         repo.getTicksSumOfFlow(parentId = parentId, timeType = timeType, start = start, end = end)
-}
-
-/**
- * Default Implementation
- */
-class GetTicksAverageOfFlowImpl @Inject constructor(private val repo: TickRepository) :
-    GetTicksAverageOfFlow {
-
-    override fun invoke(
-        parentId: Long,
-        timeType: TickSort,
-        start: Instant,
-        end: Instant,
-    ): Flow<Double> =
-        repo.getTicksAverageOfFlow(
-            parentId = parentId,
-            timeType = timeType,
-            start = start,
-            end = end
-        )
 }
 
 /**
