@@ -2,6 +2,7 @@ package org.calamarfederal.messyink.feature_counter.domain.use_case
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.invoke
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
@@ -9,6 +10,7 @@ import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
+import org.calamarfederal.messyink.feature_counter.di.DefaultDispatcher
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
@@ -54,19 +56,19 @@ fun UiTick.getTime(sort: TickSort): Instant = when (sort) {
     TickSort.TimeCreated  -> timeCreated
 }
 
-/**
- *
- */
-class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
-    override fun invoke(
+class TicksToGraphPointsImpl @Inject constructor(
+    @DefaultDispatcher
+    private val coroutineDispatcher: CoroutineDispatcher
+) : TicksToGraphPoints {
+    override suspend fun invoke(
         filteredTicks: List<UiTick>,
         sort: TickSort,
         domain: TimeDomain,
         range: ClosedRange<Double>,
-    ): List<PointByPercent> {
+    ): List<PointByPercent> = withContext(coroutineDispatcher) {
         val width = (domain.start - domain.end).absoluteValue
         val height = (range.start - range.endInclusive).absoluteValue
-        return filteredTicks.map { tick ->
+        filteredTicks.map { tick ->
             PointByPercent(
                 x = (tick.getTime(sort) - domain.start) / width,
                 y = (tick.amount - range.start) / (height)
