@@ -42,7 +42,6 @@ class TimeDomain(first: Instant, second: Instant, inclusive: Boolean) {
         inclusive = true
     )
 
-    @OptIn(ExperimentalStdlibApi::class)
     constructor(openEndRange: OpenEndRange<Instant>) : this(
         first = openEndRange.start,
         second = openEndRange.endExclusive,

@@ -131,7 +131,7 @@ internal fun TicksOverTimeLayout(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DomainBoundsAndPicker(
     domain: TimeDomain,
@@ -196,50 +196,6 @@ private fun DomainBoundsAndPicker(
             },
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TimeDomainPicker(
-    initial: LocalTime,
-    onSubmit: (LocalTime) -> Unit,
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
-    limit: ClosedRange<LocalTime>? = null,
-    title: String = "Set Time",
-    state: TimePickerState = rememberTimePickerState(
-        initialHour = initial.hour,
-        initialMinute = initial.minute,
-    ),
-) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onSubmit(
-                        LocalTime(
-                            hour = state.hour,
-                            minute = state.minute
-                        )
-                    )
-                },
-                enabled = limit?.contains(LocalTime(hour = state.hour, minute = state.minute))
-                    ?: true
-            ) {
-                Text("Set")
-            }
-        },
-        dismissButton = { TextButton(onClick = onCancel) { Text("Cancel") } },
-        title = { Text(title) },
-        text = {
-            TimePicker(
-                modifier = modifier,
-                state = state
-            )
-        }
-    )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

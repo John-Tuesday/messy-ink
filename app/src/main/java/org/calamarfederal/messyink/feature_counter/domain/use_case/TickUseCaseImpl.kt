@@ -43,12 +43,18 @@ class SimpleCreateTickUseCaseImpl @Inject constructor(
     }
 }
 
+/**
+ *
+ */
 fun UiTick.getTime(sort: TickSort): Instant = when (sort) {
     TickSort.TimeForData  -> timeForData
     TickSort.TimeModified -> timeModified
     TickSort.TimeCreated  -> timeCreated
 }
 
+/**
+ *
+ */
 class TicksToGraphPointsImpl @Inject constructor() : TicksToGraphPoints {
     override fun invoke(
         filteredTicks: List<UiTick>,

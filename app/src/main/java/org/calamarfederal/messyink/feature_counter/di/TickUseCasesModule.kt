@@ -16,7 +16,6 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.TicksToGraphP
 @InstallIn(ViewModelComponent::class)
 abstract class TickUseCasesModule {
 
-
     /**
      * Binds Implementation to interface
      */

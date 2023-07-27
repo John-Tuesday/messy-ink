@@ -10,8 +10,6 @@ import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.source.TickLocalSource
 import org.calamarfederal.messyink.feature_counter.data.toEntity
 import org.calamarfederal.messyink.feature_counter.data.toTick
-import org.calamarfederal.messyink.feature_counter.di.CurrentTime
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import javax.inject.Inject
 import kotlin.random.Random
@@ -22,6 +20,9 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
     return newId
 }
 
+/**
+ *
+ */
 class TickRepositoryImpl @Inject constructor(
     private val dao: TickLocalSource,
 ) : TickRepository {
@@ -48,6 +49,7 @@ class TickRepositoryImpl @Inject constructor(
 
     override suspend fun updateTick(tick: Tick) =
         0 < dao.updateTick(tick.toEntity())
+
     override suspend fun deleteTick(id: Long) = dao.deleteTick(id)
     override suspend fun deleteTicks(ids: List<Long>) = dao.deleteTicks(ids)
     override suspend fun deleteTicksOf(parentId: Long) = dao.deleteTickWithParentId(parentId)

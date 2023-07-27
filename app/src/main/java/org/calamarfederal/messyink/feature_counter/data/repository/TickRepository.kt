@@ -5,6 +5,9 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 
+/**
+ *
+ */
 interface TickRepository {
     /**
      * Watch all ticks which have parent_id = [parentId]

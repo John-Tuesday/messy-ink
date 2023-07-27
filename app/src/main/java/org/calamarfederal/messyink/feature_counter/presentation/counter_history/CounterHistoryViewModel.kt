@@ -100,6 +100,10 @@ class CounterHistoryViewModel @Inject constructor(
         savedStateHandle.getStateFlow(CounterHistoryNode.COUNTER_ID, NOID)
 
     private val _tickSortState = MutableStateFlow(TickSort.TimeForData)
+
+    /**
+     * Order which ticks are sorted before any operation
+     */
     val tickSortState = _tickSortState.asStateFlow()
     private val _timeDomainState =
         MutableStateFlow(TimeDomain(_currentTime().let { it - 1.days .. it }))
@@ -186,6 +190,9 @@ class CounterHistoryViewModel @Inject constructor(
         _amountRangeState.update { range ?: it }
     }
 
+    /**
+     * Change the [tickSortState]
+     */
     fun changeTickSort(sort: TickSort) {
         _tickSortState.value = sort
     }

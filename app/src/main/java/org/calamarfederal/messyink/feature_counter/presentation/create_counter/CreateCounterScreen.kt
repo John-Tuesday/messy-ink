@@ -166,7 +166,7 @@ private fun EditTitleField(
 private fun PreviewCreateScreen() {
     MessyInkTheme {
         CreateCounterScreen(
-            counterName = TextFieldValue("sldfkj"),
+            counterName = TextFieldValue("Test Counter Name"),
             counterNameError = false,
             counterNameHelp = null,
             isEditCounter = false,

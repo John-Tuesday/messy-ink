@@ -1,8 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -13,14 +11,14 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
 
 /**
  * # History and Details
  * ## of a Counter, including its ticks
  */
-internal object CounterHistoryNode : CounterGraphNode {
+internal data object CounterHistoryNode : CounterGraphNode {
     private const val BASE_ROUTE = "counter_history"
 
     /**
@@ -38,7 +36,6 @@ internal object CounterHistoryNode : CounterGraphNode {
         navigate("$BASE_ROUTE/$counterId", navOptions = navOptions)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     fun NavGraphBuilder.counterHistory(
         onNavigateUp: () -> Unit,
         onNavigateToEditTick: (Long) -> Unit,

@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
-import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
@@ -43,16 +42,9 @@ class CounterOverviewViewModel @Inject constructor(
         initial
     )
 
-    private fun <T> Flow<T>.stateInIo(initial: T) = stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
-        initial
-    )
-
     private val ioScope: CoroutineScope get() = viewModelScope + SupervisorJob() + ioDispatcher
 
     private val counterSortState = MutableStateFlow(CounterSort.TimeCreated)
-    private val tickSortState = MutableStateFlow(TickSort.TimeCreated)
 
     /**
      * State of all counters
@@ -87,7 +79,6 @@ class CounterOverviewViewModel @Inject constructor(
      * @param[id] valid [UiCounter.id]
      */
     fun deleteCounter(id: Long) {
-//        ioScope.launch { _deleteCounter(id) }
         ioScope.launch { counterRepo.deleteCounter(id) }
     }
 
@@ -95,7 +86,6 @@ class CounterOverviewViewModel @Inject constructor(
      * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
      */
     fun clearCounterTicks(counterId: Long) {
-//        ioScope.launch { _deleteTicksFrom(parentId = counterId) }
         ioScope.launch { tickRepo.deleteTicksOf(counterId) }
     }
 }

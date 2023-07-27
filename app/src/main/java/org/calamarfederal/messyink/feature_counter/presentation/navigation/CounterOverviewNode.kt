@@ -1,7 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,7 +18,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.counter_overview
  *
  * Provide high level summary of all Counters and act as a nexus for navigation
  */
-internal object CounterOverviewNode : CounterGraphNode {
+internal data object CounterOverviewNode : CounterGraphNode {
     override val route: String = "counter_overview"
 
     fun NavController.navigateToCounterOverview(

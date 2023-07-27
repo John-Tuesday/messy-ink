@@ -1,7 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,7 +19,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
  * # Game Mode Node
  * ## designed to track stats in games like player health in MtG
  */
-internal object GameCounterNode : CounterGraphNode {
+internal data object GameCounterNode : CounterGraphNode {
     private const val BASE_ROUTE = "game_counter"
     const val COUNTER_ID = "counter_id"
 

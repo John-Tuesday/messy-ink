@@ -129,7 +129,7 @@ fun CounterHistoryScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TabbedLayout(
     ticks: List<UiTick>,

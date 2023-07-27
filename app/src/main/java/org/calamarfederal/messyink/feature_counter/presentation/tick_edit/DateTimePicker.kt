@@ -27,6 +27,9 @@ import kotlinx.datetime.atTime
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.epochMillisToDate
 
+/**
+ * Two stage Dialog. First [DatePicker], then [TimePicker]
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateTimePicker(

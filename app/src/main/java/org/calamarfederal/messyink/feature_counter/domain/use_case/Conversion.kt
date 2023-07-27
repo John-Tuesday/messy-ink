@@ -25,39 +25,3 @@ internal fun Tick.toUi() = UiTick(
     parentId = parentId,
     id = id,
 )
-
-internal fun UiCounter.toCounter() = Counter(
-    name = name,
-    timeModified = timeModified,
-    timeCreated = timeCreated,
-    id = id,
-)
-
-internal fun UiTick.toTick() = Tick(
-    amount = amount,
-    timeModified = timeModified,
-    timeForData = timeForData,
-    timeCreated = timeCreated,
-    parentId = parentId,
-    id = id,
-)
-
-internal fun Counter.toSupport(): UiCounterSupport = UiCounterSupport(
-    nameInput = name,
-    nameError = false,
-    nameHelp = null,
-    id = id,
-)
-
-internal fun UiTickSupport.toTickOrNull(): Tick? {
-    if (this.error) return null
-
-    return Tick(
-        amount = amountInput.toDoubleOrNull() ?: return null,
-        timeModified = timeModifiedInput,
-        timeCreated = timeCreatedInput,
-        timeForData = timeForDataInput,
-        parentId = parentId,
-        id = id ?: NOID,
-    )
-}
