@@ -30,12 +30,12 @@ import org.calamarfederal.messyink.common.math.MinMax
 import org.calamarfederal.messyink.common.math.include
 import org.calamarfederal.messyink.common.math.minMaxOf
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicks
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksOfFlow
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
 import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
+import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
@@ -71,8 +71,7 @@ class CounterHistoryViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     @CurrentTime
     private val _currentTime: GetTime,
-    private val _getAllTicks: GetTicksOfFlow,
-    private val _deleteTick: DeleteTicks,
+    private val tickRepo: TickRepository,
     private val _ticksToGraphPoints: TicksToGraphPoints,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
@@ -121,8 +120,11 @@ class CounterHistoryViewModel @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val allTicksState = combineTransform(_tickSortState, counterIdState) { sort, parentId ->
-        emit(_getAllTicks(parentId = parentId, sort = sort))
-    }.transformLatest { emitAll(it) }.stateInIo(listOf())
+//        emit(_getAllTicks(parentId = parentId, sort = sort))
+        emit(tickRepo.getTicksFlow(parentId = parentId, sort = sort))
+    }.transformLatest { emitAll(it) }
+        .mapLatest { it.map { tick -> tick.toUi() } }
+        .stateInIo(listOf())
 
     private val domainRangeLimitsState = combine(allTicksState, _tickSortState) { ticks, sort ->
         minMaxOfDomainRange(ticks, sort)
@@ -189,17 +191,9 @@ class CounterHistoryViewModel @Inject constructor(
     }
 
     /**
-     * Add a tick from the UI
-     */
-    fun addTick(amount: Double) {
-        ioScope.launch {
-        }
-    }
-
-    /**
      * Delete tick with matching [id]
      */
     fun deleteTick(id: Long) {
-        ioScope.launch { _deleteTick(id) }
+        ioScope.launch { tickRepo.deleteTick(id) }
     }
 }

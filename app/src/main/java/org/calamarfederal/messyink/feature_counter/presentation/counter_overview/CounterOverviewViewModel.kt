@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.GetCountersFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumByFlow
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
+import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
@@ -33,10 +33,8 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class CounterOverviewViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
-    private val _getCountersFlow: GetCountersFlow,
-    private val _getTicksSumByFlow: GetTicksSumByFlow,
-    private val _deleteCounter: DeleteCounter,
-    private val _deleteTicksFrom: DeleteTicksOf,
+    private val counterRepo: CountersRepo,
+    private val tickRepo: TickRepository,
     private val _simpleCreateTick: SimpleCreateTickUseCase,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
@@ -62,13 +60,14 @@ class CounterOverviewViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val countersState =
         counterSortState
-            .flatMapLatest { _getCountersFlow(it) }
+            .flatMapLatest { counterRepo.getCountersFlow(it) }
+            .mapLatest { it.map { counter -> counter.toUI() } }
             .stateInViewModel(listOf())
 
     /**
      * State of ticks sum, grouped by [UiTick.parentId]
      */
-    val ticksSumState = _getTicksSumByFlow().stateInViewModel(mapOf())
+    val ticksSumState = tickRepo.getTicksSumByFlow().stateInViewModel(mapOf())
 
     /**
      * Add default increment tick; for no it's just `1.00`
@@ -88,13 +87,15 @@ class CounterOverviewViewModel @Inject constructor(
      * @param[id] valid [UiCounter.id]
      */
     fun deleteCounter(id: Long) {
-        ioScope.launch { _deleteCounter(id) }
+//        ioScope.launch { _deleteCounter(id) }
+        ioScope.launch { counterRepo.deleteCounter(id) }
     }
 
     /**
      * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
      */
     fun clearCounterTicks(counterId: Long) {
-        ioScope.launch { _deleteTicksFrom(parentId = counterId) }
+//        ioScope.launch { _deleteTicksFrom(parentId = counterId) }
+        ioScope.launch { tickRepo.deleteTicksOf(counterId) }
     }
 }

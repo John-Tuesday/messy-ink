@@ -19,11 +19,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
-import org.calamarfederal.messyink.feature_counter.domain.GetCounterFlow
-import org.calamarfederal.messyink.feature_counter.domain.GetTicksSumOfFlow
+import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
+import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
-import org.calamarfederal.messyink.feature_counter.domain.UpdateCounter
+import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
@@ -41,10 +40,8 @@ import kotlin.time.Duration.Companion.seconds
 class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val ioDispatcher: CoroutineDispatcher,
-    private val _getCounterFlow: GetCounterFlow,
-    private val _getTicksSumOfFlow: GetTicksSumOfFlow,
-    private val _updateCounter: UpdateCounter,
-    private val _deleteTicksOf: DeleteTicksOf,
+    private val counterRepo: CountersRepo,
+    private val tickRepo: TickRepository,
     private val _simpleCreateTick: SimpleCreateTickUseCase,
 ) : ViewModel() {
     private fun <T> Flow<T>.stateInViewModel(initial: T) = stateIn(
@@ -68,15 +65,16 @@ class GameCounterViewModel @Inject constructor(
      * counter being examined; idk how to handle when DNE.
      */
     val counter = counterIdState
-        .flatMapLatest { _getCounterFlow(it) }
-        .mapLatest { it ?: UiCounter(name = "<DNE>", id = NOID) }
+        .flatMapLatest { counterRepo.getCounterFlow(id = it) }
+        .mapLatest { it?.toUI() ?: UiCounter(name = "<DNE>", id = NOID) }
         .stateInViewModel(UiCounter(name = "<init>", id = NOID))
 
     /**
      * Sum all [UiTick] of parent [counter]
      */
     val tickSum = counterIdState.combineTransform(tickSortState) { id, sort ->
-        emitAll(_getTicksSumOfFlow(id, sort))
+//        emitAll(_getTicksSumOfFlow(id, sort))
+        emitAll(tickRepo.getTicksSumOfFlow(parentId = id, timeType = sort))
     }.stateInIo(0.00)
 
     private val _primaryIncrement = MutableStateFlow(5.00)
@@ -105,13 +103,6 @@ class GameCounterViewModel @Inject constructor(
      */
     fun changeSecondaryIncrement(inc: Double) {
         _secondaryIncrement.value = inc
-    }
-
-    /**
-     * change [counter.name][UiCounter.name] to [name]
-     */
-    fun onChangeName(name: String) {
-        ioScope.launch { _updateCounter(counter.value.copy(name = name)) }
     }
 
     /**
@@ -146,6 +137,11 @@ class GameCounterViewModel @Inject constructor(
      * Deletes all ticks owned by [counter], then adds on ticks with [amount]
      */
     fun restartCounter(amount: Double = 0.00) {
-        ioScope.launch { _deleteTicksOf(counterIdState.value); addTick(amount) }
+//        ioScope.launch { _deleteTicksOf(counterIdState.value); addTick(amount) }
+        ioScope.launch {
+            val id = counterIdState.value
+            tickRepo.deleteTicksOf(id)
+            _simpleCreateTick(amount, id)
+        }
     }
 }
