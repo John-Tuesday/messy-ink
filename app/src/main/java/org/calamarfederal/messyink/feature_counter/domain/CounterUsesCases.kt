@@ -1,6 +1,7 @@
 package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.flow.Flow
+import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounterSupport
 
@@ -28,7 +29,7 @@ fun interface GetCountersFlow {
      *
      * @return flow emits empty list when none can be found
      */
-    operator fun invoke(sort: CounterSort.TimeType): Flow<List<UiCounter>>
+    operator fun invoke(sort: CounterSort): Flow<List<UiCounter>>
 }
 
 /**

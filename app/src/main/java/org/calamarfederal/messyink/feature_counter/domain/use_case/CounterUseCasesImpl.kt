@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
-import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.repository.CountersRepo
 import org.calamarfederal.messyink.feature_counter.domain.CreateCounterFromSupport
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
@@ -37,7 +37,7 @@ class GetCounterFlowImpl @Inject constructor(private val repo: CountersRepo) : G
  */
 class GetCountersFlowImpl @Inject constructor(private val repo: CountersRepo) : GetCountersFlow {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(sort: CounterSort.TimeType): Flow<List<UiCounter>> =
+    override fun invoke(sort: CounterSort): Flow<List<UiCounter>> =
         repo.getCountersFlow(sort).mapLatest { it.map { item -> item.toUI() } }
 }
 

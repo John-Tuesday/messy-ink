@@ -2,7 +2,7 @@ package org.calamarfederal.messyink.feature_counter.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
-import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 
 /**
  * # Wrapper for managing counters, ticks, and their common commands
@@ -21,7 +21,7 @@ interface CountersRepo {
      *
      * @return Flow emits empty list when no Counter exists
      */
-    fun getCountersFlow(sort: CounterSort.TimeType): Flow<List<Counter>>
+    fun getCountersFlow(sort: CounterSort): Flow<List<Counter>>
 
     /**
      * Copy [counter]'s values, but save with a new id, and set its timeModified, and timeCreated values. returns the new [Counter]

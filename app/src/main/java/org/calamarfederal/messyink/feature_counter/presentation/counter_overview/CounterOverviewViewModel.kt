@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.domain.CounterSort
 import org.calamarfederal.messyink.feature_counter.domain.CreateTick
 import org.calamarfederal.messyink.feature_counter.domain.DeleteCounter
 import org.calamarfederal.messyink.feature_counter.domain.DeleteTicksOf
@@ -54,7 +54,7 @@ class CounterOverviewViewModel @Inject constructor(
 
     private val ioScope: CoroutineScope get() = viewModelScope + SupervisorJob() + ioDispatcher
 
-    private val counterSortState = MutableStateFlow(CounterSort.TimeType.TimeCreated)
+    private val counterSortState = MutableStateFlow(CounterSort.TimeCreated)
     private val tickSortState = MutableStateFlow(TickSort.TimeCreated)
 
     /**

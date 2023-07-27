@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.mapLatest
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
-import org.calamarfederal.messyink.feature_counter.domain.CounterSort
+import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toEntity
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
@@ -40,10 +40,10 @@ class CountersRepoImpl @Inject constructor(
     override fun getCounterFlow(id: Long): Flow<Counter?> =
         dao.counterFlow(id).distinctUntilChanged().mapLatest { it?.toCounter() }
 
-    override fun getCountersFlow(sort: CounterSort.TimeType): Flow<List<Counter>> =
+    override fun getCountersFlow(sort: CounterSort): Flow<List<Counter>> =
         when (sort) {
-            CounterSort.TimeType.TimeCreated  -> dao.countersByCreatedFlow()
-            CounterSort.TimeType.TimeModified -> dao.countersByModifiedFlow()
+            CounterSort.TimeCreated  -> dao.countersByCreatedFlow()
+            CounterSort.TimeModified -> dao.countersByModifiedFlow()
         }.distinctUntilChanged()
             .map { data -> data.map { it.toCounter() } }
 
