@@ -24,7 +24,7 @@ fun interface TicksToGraphPoints {
      * Sort ticks by [sort] and cull any out of [domain] or out of [range]
      */
     suspend operator fun invoke(
-        filteredTicks: List<UiTick>,
+        filteredTicks: List<Tick>,
         sort: TickSort,
         domain: TimeDomain,
         range: ClosedRange<Double>,

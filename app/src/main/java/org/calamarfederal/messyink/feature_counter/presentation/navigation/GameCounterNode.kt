@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 
 /**
  * # Game Mode Node

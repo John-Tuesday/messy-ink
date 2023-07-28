@@ -22,7 +22,6 @@ import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -59,7 +58,7 @@ class CounterOverviewViewModel @Inject constructor(
             .stateInViewModel(listOf())
 
     /**
-     * State of ticks sum, grouped by [UiTick.parentId]
+     * State of ticks sum
      */
     val ticksSumState = tickRepo.getTicksSumByFlow().stateInViewModel(mapOf())
 
@@ -85,7 +84,7 @@ class CounterOverviewViewModel @Inject constructor(
     }
 
     /**
-     * Delete all [UiTick] with `[UiTick.parentId] == [counterId]`
+     * Delete all child ticks of [counterId]
      */
     fun clearCounterTicks(counterId: Long) {
         ioScope.launch { tickRepo.deleteTicksOf(counterId) }

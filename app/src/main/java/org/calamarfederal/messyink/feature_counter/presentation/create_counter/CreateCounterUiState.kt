@@ -11,7 +11,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.HelpState
 
 /**

@@ -26,7 +26,6 @@ import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTickSupport
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +37,6 @@ class CounterHistoryScreenTest {
     lateinit var counterState: MutableStateFlow<UiCounter>
     lateinit var ticksState: MutableStateFlow<List<UiTick>>
     lateinit var tickSortState: MutableStateFlow<TickSort>
-    lateinit var ticksSupportState: MutableStateFlow<UiTickSupport?>
 
     @Before
     fun setUp() {
@@ -48,7 +46,6 @@ class CounterHistoryScreenTest {
                 .toList()
         )
         tickSortState = MutableStateFlow(TickSort.TimeForData)
-        ticksSupportState = MutableStateFlow(null)
 
         composeRule.setContent {
             val ticks by ticksState.collectAsState()

@@ -26,16 +26,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.model.getTime
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.domain.use_case.getTime
-import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
+import org.calamarfederal.messyink.feature_counter.domain.use_case.toUi
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -45,7 +46,7 @@ import kotlin.time.Duration.Companion.seconds
  * find the min and max [UiTick.amount] and time (chosen by [sort]) of [ticks]
  */
 private fun minMaxOfDomainRange(
-    ticks: List<UiTick>,
+    ticks: List<Tick>,
     sort: TickSort,
 ): Pair<TimeDomain?, ClosedRange<Double>?> {
     var domain: ClosedRange<Instant>? = null
@@ -130,8 +131,12 @@ class CounterHistoryViewModel @Inject constructor(
     val allTicksState = combineTransform(_tickSortState, counterIdState) { sort, parentId ->
         emit(tickRepo.getTicksFlow(parentId = parentId, sort = sort))
     }.transformLatest { emitAll(it) }
-        .mapLatest { it.map { tick -> tick.toUi() } }
         .stateInIo(listOf())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tickLogState = allTicksState
+        .mapLatest { it.map { it.toUi() } }
+        .stateInViewModel(listOf())
 
     private val domainRangeLimitsState = combine(allTicksState, _tickSortState) { ticks, sort ->
         minMaxOfDomainRange(ticks, sort)

@@ -50,7 +50,8 @@ internal data object CounterHistoryNode : CounterGraphNode {
 
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
-            val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
+//            val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
+            val ticks by viewModel.tickLogState.collectAsStateWithLifecycle()
             val tickSort by viewModel.tickSortState.collectAsStateWithLifecycle()
             val graphPoints by viewModel.tickGraphPointsState.collectAsStateWithLifecycle()
             val graphRange by viewModel.amountRangeState.collectAsStateWithLifecycle()

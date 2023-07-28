@@ -16,7 +16,7 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.EditTickNode
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import javax.inject.Inject
 
 private fun EditTickUiState.toTick(): Tick? {

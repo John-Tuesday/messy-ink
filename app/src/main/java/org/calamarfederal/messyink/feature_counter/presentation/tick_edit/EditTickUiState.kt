@@ -12,7 +12,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 
 /**
  * Ui State holder for communicating error / validation logic

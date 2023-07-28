@@ -22,7 +22,7 @@ import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.GetTime
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.CreateCounterNode
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import javax.inject.Inject
 
 private fun CreateCounterUiState.toCounterOrNull(): Counter? {

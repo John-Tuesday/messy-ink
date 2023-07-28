@@ -10,7 +10,7 @@ import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.source.TickLocalSource
 import org.calamarfederal.messyink.feature_counter.data.toEntity
 import org.calamarfederal.messyink.feature_counter.data.toTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import javax.inject.Inject
 import kotlin.random.Random
 

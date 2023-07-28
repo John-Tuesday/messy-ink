@@ -25,9 +25,8 @@ import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -72,7 +71,7 @@ class GameCounterViewModel @Inject constructor(
         .stateInViewModel(UiCounter(name = "<init>", id = NOID))
 
     /**
-     * Sum all [UiTick] of parent [counter]
+     * Sum all Ticks of parent [counter]
      */
     val tickSum = counterIdState.combineTransform(tickSortState) { id, sort ->
 //        emitAll(_getTicksSumOfFlow(id, sort))
@@ -108,7 +107,7 @@ class GameCounterViewModel @Inject constructor(
     }
 
     /**
-     * Add new [UiTick] as a child of [counter] with [amount]
+     * Add new Tick as a child of [counter] with [amount]
      */
     fun addTick(amount: Double) {
         viewModelScope.launch {

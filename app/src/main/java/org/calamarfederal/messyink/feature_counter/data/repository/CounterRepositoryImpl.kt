@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.mapLatest
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.source.CounterLocalSource
-import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toEntity
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import javax.inject.Inject
 import kotlin.random.Random
 

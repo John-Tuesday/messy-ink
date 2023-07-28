@@ -6,8 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
 import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.domain.use_case.SimpleCreateTickUseCaseImpl
-import org.calamarfederal.messyink.feature_counter.domain.use_case.TicksToGraphPointsImpl
+import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCaseImpl
+import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPointsImpl
 
 /**
  * Bind Tick use case implementation to interface

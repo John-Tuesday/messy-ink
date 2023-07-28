@@ -87,3 +87,8 @@ fun Tick.getTime(sort: TickSort): Instant = when (sort) {
     TickSort.TimeModified -> timeModified
     TickSort.TimeCreated  -> timeCreated
 }
+
+/**
+ * Constant value to represent an unset ID
+ */
+const val NOID: Long = 0L

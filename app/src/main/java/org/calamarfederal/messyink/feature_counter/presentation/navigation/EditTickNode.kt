@@ -9,7 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickScreen
 import org.calamarfederal.messyink.feature_counter.presentation.tick_edit.EditTickViewModel
 

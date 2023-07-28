@@ -1,23 +1,18 @@
-package org.calamarfederal.messyink.feature_counter.domain.use_case
+package org.calamarfederal.messyink.feature_counter.domain
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.model.getTime
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.CurrentTime
 import org.calamarfederal.messyink.feature_counter.di.DefaultDispatcher
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
-import org.calamarfederal.messyink.feature_counter.domain.TicksToGraphPoints
-import org.calamarfederal.messyink.feature_counter.presentation.state.NOID
+import org.calamarfederal.messyink.feature_counter.data.model.NOID
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -47,21 +42,12 @@ class SimpleCreateTickUseCaseImpl @Inject constructor(
     }
 }
 
-/**
- *
- */
-fun UiTick.getTime(sort: TickSort): Instant = when (sort) {
-    TickSort.TimeForData  -> timeForData
-    TickSort.TimeModified -> timeModified
-    TickSort.TimeCreated  -> timeCreated
-}
-
 class TicksToGraphPointsImpl @Inject constructor(
     @DefaultDispatcher
     private val coroutineDispatcher: CoroutineDispatcher
 ) : TicksToGraphPoints {
     override suspend fun invoke(
-        filteredTicks: List<UiTick>,
+        filteredTicks: List<Tick>,
         sort: TickSort,
         domain: TimeDomain,
         range: ClosedRange<Double>,
