@@ -40,7 +40,6 @@ object DispatcherProviderModule {
      * for example: use with Room
      */
     @Provides
-//    @ViewModelScoped
     @IODispatcher
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
@@ -48,7 +47,6 @@ object DispatcherProviderModule {
      * Dispatcher for CPU intensive work, off the Main (ui) thread
      */
     @Provides
-//    @ViewModelScoped
     @DefaultDispatcher
     fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }

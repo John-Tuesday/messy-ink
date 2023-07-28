@@ -16,7 +16,6 @@ import org.calamarfederal.messyink.feature_counter.data.repository.TickRepositor
 @InstallIn(ViewModelComponent::class)
 abstract class CounterModule {
     @Binds
-    @ViewModelScoped
     abstract fun counterRepo(impl: CounterRepositoryImpl): CounterRepository
 
 }
@@ -25,7 +24,6 @@ abstract class CounterModule {
 @InstallIn(ViewModelComponent::class)
 abstract class TickModule {
     @Binds
-    @ViewModelScoped
     abstract fun tickRepo(impl: TickRepositoryImpl): TickRepository
 }
 
@@ -33,6 +31,5 @@ abstract class TickModule {
 @InstallIn(ViewModelComponent::class)
 abstract class CounterTickModule {
     @Binds
-    @ViewModelScoped
     abstract fun counterTickRepo(impl: CounterTickRepositoryImpl): CounterTickRepository
 }
