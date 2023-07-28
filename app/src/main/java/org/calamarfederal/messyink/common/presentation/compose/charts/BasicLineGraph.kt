@@ -47,11 +47,11 @@ data class GraphSize2d(
     /**
      * the stroke width of the drawn horizontal axis
      */
-    val xAxisWidth: Dp = 2.dp,
+    val xAxisWidth: Dp = 4.dp,
     /**
      * the stroke width of the drawn vertical axis
      */
-    val yAxisWidth: Dp = 2.dp,
+    val yAxisWidth: Dp = 4.dp,
     /**
      * the stroke width of the drawn horizontal grid lines
      */
@@ -68,7 +68,15 @@ data class GraphSize2d(
      * the number of divisions along the y axis (for grid lines)
      */
     val yAxisChunks: Int = 10,
+
+    /**
+     * Position by percent
+     */
     val yAxisAt: Float? = null,
+
+    /**
+     * Position by percent
+     */
     val xAxisAt: Float? = null,
     /**
      * the stroke width of the drawn line
@@ -243,11 +251,12 @@ fun BasicLineGraph(
                         y = it.y.toFloat() - startPoint.y,
                     )
                 }
+                val xAxis = (graphSize.xAxisAt?.let { 1f - it } ?: 1f) * size.height - startPoint.y
                 path.lineTo(
                     x = adjustedGraphPoints.last().x.toFloat() - startPoint.x,
-                    y = size.height,
+                    y = xAxis,
                 )
-                path.lineTo(x = 0f, y = size.height)
+                path.lineTo(x = 0f, y = xAxis)
                 path.close()
                 drawPath(
                     path = path,
