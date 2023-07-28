@@ -16,9 +16,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.ListItem
@@ -48,9 +48,8 @@ import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 import org.calamarfederal.messyink.ui.theme.MaterialLevel
 import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
@@ -61,7 +60,7 @@ import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun TickLogsLayout(
-    ticks: List<UiTick>,
+    ticks: List<Tick>,
     onDelete: (Long) -> Unit,
     onEdit: (Long) -> Unit,
     sort: TickSort,
@@ -100,7 +99,7 @@ internal fun TickLogsLayout(
 
 @Composable
 private fun TickListItem(
-    tick: UiTick,
+    tick: Tick,
     selected: Boolean,
     modifier: Modifier = Modifier,
     sort: TickSort? = null,
@@ -197,7 +196,7 @@ private fun TickOptions(
                         leadingIcon = { Icon(Icons.Filled.Edit, "edit tick") },
                         modifier = Modifier.testTag(CounterHistoryTestTags.TickLogEntryEdit),
                     )
-                    Divider(
+                    HorizontalDivider(
                         Modifier
                             .fillMaxHeight()
                             .padding(vertical = 4.dp)
@@ -221,7 +220,7 @@ private fun TickOptions(
 @Composable
 private fun TickLogsScreenPreview() {
     TickLogsLayout(
-        ticks = previewUiTicks(1L).take(15).toList(),
+        ticks = listOf(),
         sort = TickSort.TimeForData,
         onDelete = {},
         onEdit = {},

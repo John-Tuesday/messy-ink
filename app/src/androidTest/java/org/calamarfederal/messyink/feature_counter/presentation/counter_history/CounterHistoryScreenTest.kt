@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
 import org.calamarfederal.messyink.feature_counter.data.generateTicks
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.toCounter
 import org.calamarfederal.messyink.feature_counter.data.toTick
@@ -35,14 +36,14 @@ class CounterHistoryScreenTest {
     val composeRule = createComposeRule()
 
     lateinit var counterState: MutableStateFlow<UiCounter>
-    lateinit var ticksState: MutableStateFlow<List<UiTick>>
+    lateinit var ticksState: MutableStateFlow<List<Tick>>
     lateinit var tickSortState: MutableStateFlow<TickSort>
 
     @Before
     fun setUp() {
         counterState = MutableStateFlow(generateCounters().take(1).first().toCounter().toUI())
         ticksState = MutableStateFlow(
-            generateTicks(parentId = counterState.value.id).take(10).map { it.toTick().toUi() }
+            generateTicks(parentId = counterState.value.id).take(10).map { it.toTick() }
                 .toList()
         )
         tickSortState = MutableStateFlow(TickSort.TimeForData)

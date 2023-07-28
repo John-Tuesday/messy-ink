@@ -1,7 +1,9 @@
 package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -13,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryScreen
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryViewModel
+import org.calamarfederal.messyink.feature_counter.presentation.counter_history.TimeDomain
 
 /**
  * # History and Details
@@ -50,18 +53,20 @@ internal data object CounterHistoryNode : CounterGraphNode {
 
             val viewModel: CounterHistoryViewModel = hiltViewModel(entry)
 
-//            val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
-            val ticks by viewModel.tickLogState.collectAsStateWithLifecycle()
+            val ticks by viewModel.allTicksState.collectAsStateWithLifecycle()
             val tickSort by viewModel.tickSortState.collectAsStateWithLifecycle()
-            val graphPoints by viewModel.tickGraphPointsState.collectAsStateWithLifecycle()
-            val graphRange by viewModel.amountRangeState.collectAsStateWithLifecycle()
-            val graphDomain by viewModel.timeDomainState.collectAsStateWithLifecycle()
-            val graphDomainLimits by viewModel.domainLimitState.collectAsStateWithLifecycle()
+            val tickGraphState by viewModel.tickGraphState.collectAsStateWithLifecycle()
+            val graphDomain by remember(tickGraphState.currentDomain) {
+                derivedStateOf { TimeDomain(tickGraphState.currentDomain) }
+            }
+            val graphDomainLimits by remember(tickGraphState.domainBounds) {
+                derivedStateOf { TimeDomain(tickGraphState.domainBounds) }
+            }
 
             CounterHistoryScreen(
                 ticks = ticks,
-                graphPoints = graphPoints,
-                graphRange = graphRange,
+                graphPoints = tickGraphState.graphPoints,
+                graphRange = tickGraphState.currentRange,//graphRange,
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
                 changeGraphDomain = { viewModel.changeGraphZoom(domain = it) },

@@ -42,10 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiTick
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
 import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
 
@@ -64,7 +64,7 @@ import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiT
 )
 @Composable
 fun CounterHistoryScreen(
-    ticks: List<UiTick>,
+    ticks: List<Tick>,
     graphPoints: List<PointByPercent>,
     graphRange: ClosedRange<Double>,
     graphDomain: TimeDomain,
@@ -132,7 +132,7 @@ fun CounterHistoryScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TabbedLayout(
-    ticks: List<UiTick>,
+    ticks: List<Tick>,
     tickSort: TickSort,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
@@ -256,7 +256,7 @@ private fun CounterHistoryScreenPreview() {
     val range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount }
 
     CounterHistoryScreen(
-        ticks = ticks,
+        ticks = listOf(),
         graphPoints = listOf(),
         graphRange = range,
         graphDomain = TimeDomain.AllTime,
