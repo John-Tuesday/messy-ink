@@ -8,9 +8,8 @@ import kotlinx.coroutines.flow.mapLatest
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.CounterSort
 import org.calamarfederal.messyink.feature_counter.data.source.CounterLocalSource
-import org.calamarfederal.messyink.feature_counter.data.toCounter
-import org.calamarfederal.messyink.feature_counter.data.toEntity
 import org.calamarfederal.messyink.feature_counter.data.model.NOID
+import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -24,6 +23,20 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
     while (pool.contains(newId) || newId == NOID) newId = nextRand()
     return newId
 }
+
+internal fun Counter.toEntity() = CounterEntity(
+    name = name,
+    timeCreated = timeCreated,
+    timeModified = timeModified,
+    id = id,
+)
+
+internal fun CounterEntity.toCounter() = Counter(
+    name = name,
+    timeCreated = timeCreated,
+    timeModified = timeModified,
+    id = id,
+)
 
 /**
  * Implement CountersRepo using CounterDao

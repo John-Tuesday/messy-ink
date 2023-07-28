@@ -13,7 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
-import org.calamarfederal.messyink.feature_counter.data.toCounter
+import org.calamarfederal.messyink.feature_counter.data.repository.toCounter
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

@@ -22,8 +22,8 @@ import org.calamarfederal.messyink.feature_counter.data.generateTicks
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.data.toCounter
-import org.calamarfederal.messyink.feature_counter.data.toTick
+import org.calamarfederal.messyink.feature_counter.data.repository.toCounter
+import org.calamarfederal.messyink.feature_counter.data.repository.toTick
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

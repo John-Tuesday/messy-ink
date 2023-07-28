@@ -8,9 +8,8 @@ import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.source.TickLocalSource
-import org.calamarfederal.messyink.feature_counter.data.toEntity
-import org.calamarfederal.messyink.feature_counter.data.toTick
 import org.calamarfederal.messyink.feature_counter.data.model.NOID
+import org.calamarfederal.messyink.feature_counter.data.source.database.TickEntity
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -19,6 +18,24 @@ private fun generateId(pool: Set<Long>, nextRand: () -> Long = { Random.nextLong
     while (pool.contains(newId) || newId == NOID) newId = nextRand()
     return newId
 }
+
+internal fun TickEntity.toTick() = Tick(
+    amount = amount,
+    timeModified = timeModified,
+    timeCreated = timeCreated,
+    timeForData = timeForData,
+    parentId = parentId,
+    id = id,
+)
+
+internal fun Tick.toEntity() = TickEntity(
+    amount = amount,
+    timeModified = timeModified,
+    timeCreated = timeCreated,
+    timeForData = timeForData,
+    parentId = parentId,
+    id = id,
+)
 
 /**
  *
