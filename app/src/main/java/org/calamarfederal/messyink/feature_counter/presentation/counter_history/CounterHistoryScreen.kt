@@ -249,14 +249,11 @@ private fun HistoryTopBar(
 @Composable
 private fun CounterHistoryScreenPreview() {
     val counter = previewUiCounters.first()
-    var tickSum: Double? = null
-    val ticks = previewUiTicks(counter.id).take(7).apply {
-        tickSum = sumOf { it.amount }
-    }.toList()
+    val ticks = previewUiTicks(counter.id).take(7).toList()
     val range = ticks.minOf { it.amount } .. ticks.maxOf { it.amount }
 
     CounterHistoryScreen(
-        ticks = listOf(),
+        ticks = ticks,
         graphPoints = listOf(),
         graphRange = range,
         graphDomain = TimeDomain.AllTime,
