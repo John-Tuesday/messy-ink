@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,11 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
- * # Create or Edit [UiCounter]
+ * # Create or Edit Counter
  * ## Intended to be an m3 implementation of a Fullscreen Dialog
  *
  * [onCancel] should discard changes and [onDone] should save them.
@@ -81,9 +80,9 @@ fun CreateCounterScreen(
 }
 
 /**
- * Layout of all user-controlled  [UiCounter] attributes
+ * Layout of all user-controlled  Counter attributes
  *
- * currently only [UiCounter.name]
+ * currently only Counter.name
  */
 @Composable
 private fun CreateCounterLayout(
@@ -111,7 +110,7 @@ private fun CreateCounterLayout(
             focusRequester = titleFocusRequester,
         )
 
-        Divider()
+        HorizontalDivider()
 
         LaunchedEffect(Unit) {
             titleFocusRequester.requestFocus()

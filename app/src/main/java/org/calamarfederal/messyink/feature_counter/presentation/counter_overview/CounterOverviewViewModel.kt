@@ -20,13 +20,11 @@ import org.calamarfederal.messyink.feature_counter.data.repository.CounterReposi
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
-import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * # [UiCounter] Overview View Model
+ * # Counter Overview View Model
  * ## provide summary details and simple actions
  */
 @HiltViewModel
@@ -54,7 +52,7 @@ class CounterOverviewViewModel @Inject constructor(
     val countersState =
         counterSortState
             .flatMapLatest { counterRepo.getCountersFlow(it) }
-            .mapLatest { it.map { counter -> counter.toUI() } }
+            .mapLatest { it.map { counter -> counter } }
             .stateInViewModel(listOf())
 
     /**
@@ -77,7 +75,7 @@ class CounterOverviewViewModel @Inject constructor(
     }
 
     /**
-     * @param[id] valid [UiCounter.id]
+     * @param[id] valid Counter.id
      */
     fun deleteCounter(id: Long) {
         ioScope.launch { counterRepo.deleteCounter(id) }

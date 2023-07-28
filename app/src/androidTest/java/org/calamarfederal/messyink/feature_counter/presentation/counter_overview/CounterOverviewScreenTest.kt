@@ -12,9 +12,8 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.toCounter
-import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,13 +28,13 @@ class CounterOverviewScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    lateinit var countersState: MutableStateFlow<List<UiCounter>>
+    lateinit var countersState: MutableStateFlow<List<Counter>>
     lateinit var tickSumState: MutableStateFlow<Map<Long, Double>>
 
     @Before
     fun setUp() {
         countersState =
-            MutableStateFlow(generateCounters().take(5).map { it.toCounter().toUI() }.toList())
+            MutableStateFlow(generateCounters().take(5).map { it.toCounter() }.toList())
         tickSumState = MutableStateFlow(countersState.value.associate { it.id to 1.00 })
 
         composeRule.setContent {

@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
+import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
 
@@ -45,7 +45,7 @@ import org.calamarfederal.messyink.ui.theme.toMaterialLevelCiel
  */
 @Composable
 internal fun CounterListCard(
-    counter: UiCounter,
+    counter: Counter,
     amount: Double?,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,

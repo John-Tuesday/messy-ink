@@ -46,8 +46,8 @@ import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiTicks
+import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
+import org.calamarfederal.messyink.feature_counter.presentation.previewUiTicks
 
 /**
  * # Counter History and Details Screen

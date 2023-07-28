@@ -30,25 +30,25 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
+import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 
 /**
- * # Overview of all [UiCounter]
+ * # Overview of all [Counter]
  *
- * provides brief stats and quick actions for each [UiCounter]. Nexus for more detailed screens
+ * provides brief stats and quick actions for each [Counter]. Nexus for more detailed screens
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CounterOverviewScreen(
-    counters: List<UiCounter>,
+    counters: List<Counter>,
     tickSums: Map<Long, Double>,
-    onCounterIncrement: (UiCounter) -> Unit,
-    onCounterDecrement: (UiCounter) -> Unit,
-    onDeleteCounter: (UiCounter) -> Unit,
-    onClearCounterTicks: (UiCounter) -> Unit,
+    onCounterIncrement: (Counter) -> Unit,
+    onCounterDecrement: (Counter) -> Unit,
+    onDeleteCounter: (Counter) -> Unit,
+    onClearCounterTicks: (Counter) -> Unit,
     onCreateCounter: () -> Unit,
     onNavigateToCounterDetails: (Long) -> Unit,
     onNavigateToCounterGameMode: (Long) -> Unit,
@@ -93,15 +93,15 @@ fun CounterOverviewScreen(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterOverviewLayout(
-    counters: List<UiCounter>,
+    counters: List<Counter>,
     tickSums: Map<Long, Double>,
-    onCounterIncrement: (UiCounter) -> Unit,
-    onCounterDecrement: (UiCounter) -> Unit,
-    onClearCounterTicks: (UiCounter) -> Unit,
-    onDeleteCounter: (UiCounter) -> Unit,
-    onViewHistory: (UiCounter) -> Unit,
-    onViewInFull: (UiCounter) -> Unit,
-    onEditCounter: (UiCounter) -> Unit,
+    onCounterIncrement: (Counter) -> Unit,
+    onCounterDecrement: (Counter) -> Unit,
+    onClearCounterTicks: (Counter) -> Unit,
+    onDeleteCounter: (Counter) -> Unit,
+    onViewHistory: (Counter) -> Unit,
+    onViewInFull: (Counter) -> Unit,
+    onEditCounter: (Counter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expandIndex by remember { mutableLongStateOf(-1L) }

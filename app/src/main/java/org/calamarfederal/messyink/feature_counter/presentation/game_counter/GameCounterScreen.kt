@@ -37,9 +37,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.TickButton.Primary
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
-import org.calamarfederal.messyink.feature_counter.presentation.state.previewUiCounters
+import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 
@@ -51,7 +51,7 @@ import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameCounterScreen(
-    counter: UiCounter,
+    counter: Counter,
     tickSum: Double,
     primaryIncrement: Double,
     onChangePrimaryIncrement: (Double) -> Unit,
@@ -91,7 +91,7 @@ fun GameCounterScreen(
 
 @Composable
 internal fun GameCounterLayout(
-    counter: UiCounter,
+    counter: Counter,
     tickSum: Double,
     primaryIncrement: Double,
     onChangePrimaryIncrement: (Double) -> Unit,
@@ -145,7 +145,7 @@ internal fun GameCounterLayout(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CounterCenter(
-    counter: UiCounter,
+    counter: Counter,
     tickSum: Double,
     onAddCustomTick: () -> Unit,
     onEditCounter: () -> Unit,

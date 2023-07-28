@@ -18,18 +18,24 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.CounterRepository
 import org.calamarfederal.messyink.feature_counter.data.repository.TickRepository
 import org.calamarfederal.messyink.feature_counter.di.IODispatcher
 import org.calamarfederal.messyink.feature_counter.domain.SimpleCreateTickUseCase
-import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode
 import org.calamarfederal.messyink.feature_counter.data.model.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.state.UiCounter
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+private fun defaultCounter(time: Instant = Instant.DISTANT_PAST) = Counter(
+    name = "DEFAULT",
+    timeModified = time,
+    timeCreated = time,
+    id = NOID,
+)
 
 /**
  * # Game Mode Counter View Model
@@ -67,14 +73,13 @@ class GameCounterViewModel @Inject constructor(
      */
     val counter = counterIdState
         .flatMapLatest { counterRepo.getCounterFlow(id = it) }
-        .mapLatest { it?.toUI() ?: UiCounter(name = "<DNE>", id = NOID) }
-        .stateInViewModel(UiCounter(name = "<init>", id = NOID))
+        .mapLatest { it ?: defaultCounter() }
+        .stateInViewModel(defaultCounter())
 
     /**
      * Sum all Ticks of parent [counter]
      */
     val tickSum = counterIdState.combineTransform(tickSortState) { id, sort ->
-//        emitAll(_getTicksSumOfFlow(id, sort))
         emitAll(tickRepo.getTicksSumOfFlow(parentId = id, timeType = sort))
     }.stateInIo(0.00)
 
@@ -122,7 +127,6 @@ class GameCounterViewModel @Inject constructor(
      */
     fun undoTick() {
         TODO("needs to implemented properly, with corresponding redo")
-//        ioScope.launch { _undoTicks(parentId = counterIdState.value, duration = 1.minutes) }
     }
 
     /**
@@ -138,7 +142,6 @@ class GameCounterViewModel @Inject constructor(
      * Deletes all ticks owned by [counter], then adds on ticks with [amount]
      */
     fun restartCounter(amount: Double = 0.00) {
-//        ioScope.launch { _deleteTicksOf(counterIdState.value); addTick(amount) }
         ioScope.launch {
             val id = counterIdState.value
             tickRepo.deleteTicksOf(id)

@@ -7,7 +7,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.calamarfederal.messyink.feature_counter.data.generateCounters
 import org.calamarfederal.messyink.feature_counter.data.toCounter
-import org.calamarfederal.messyink.feature_counter.domain.use_case.toUI
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +17,7 @@ class GameCounterScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val testCounter = generateCounters().first().toCounter().toUI()
+    private val testCounter = generateCounters().first().toCounter()
     private val testSum = 1.23
 
     private val primaryIncButton get() = composeRule.onNodeWithTag(GameCounterTestTags.PrimaryIncButton)
