@@ -52,6 +52,7 @@ object CounterGraphRoot : NavigationRoot<CounterGraphNode>, NavigationNode {
             )
             gameCounterNode(
                 onEditCounter = { navController.navigateToEditCounter(it) },
+                onNavigateUp = { if (!navController.navigateUp()) navController.navigateToCounterOverview() }
             )
             counterHistory(
                 onNavigateUp = { navController.navigateUp() },
