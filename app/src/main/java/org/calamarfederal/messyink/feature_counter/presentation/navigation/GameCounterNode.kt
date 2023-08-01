@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen
 import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterViewModel
 import org.calamarfederal.messyink.feature_counter.data.model.NOID
-import org.calamarfederal.messyink.feature_counter.presentation.game_counter.GameCounterScreen_2
 
 /**
  * # Game Mode Node
@@ -64,26 +63,14 @@ internal data object GameCounterNode : CounterGraphNode {
             val primaryIncrement by viewModel.primaryIncrement.collectAsStateWithLifecycle()
             val secondaryIncrement by viewModel.secondaryIncrement.collectAsStateWithLifecycle()
 
-            GameCounterScreen_2(
+            GameCounterScreen(
                 counterName = counter.name,
                 tickSum = tickSum,
+                primaryIncrement = primaryIncrement,
+                secondaryIncrement = secondaryIncrement,
                 onAddTick = viewModel::addTick,
                 onNavigateUp = onNavigateUp,
-
             )
-//            GameCounterScreen(
-//                counter = counter,
-//                tickSum = tickSum,
-//                primaryIncrement = primaryIncrement,
-//                onChangePrimaryIncrement = viewModel::changePrimaryIncrement,
-//                secondaryIncrement = secondaryIncrement,
-//                onChangeSecondaryIncrement = viewModel::changeSecondaryIncrement,
-//                onAddTick = viewModel::addTick,
-//                onUndo = viewModel::undoTick,
-//                onRedo = viewModel::redoTick,
-//                onReset = viewModel::restartCounter,
-//                onEditCounter = { onEditCounter(counter.id) },
-//            )
         }
     }
 }

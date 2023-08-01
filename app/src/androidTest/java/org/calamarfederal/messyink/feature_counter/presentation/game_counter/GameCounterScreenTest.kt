@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -34,38 +35,33 @@ class GameCounterScreenTest {
             val secondaryInc = 5.00
 
             GameCounterScreen(
-                counter = counter,
+                counterName = counter.name,
                 tickSum = sum,
-                primaryIncrement = primaryInc,
-                onChangePrimaryIncrement = {},
-                secondaryIncrement = secondaryInc,
-                onChangeSecondaryIncrement = {},
                 onAddTick = {},
-                onUndo = {},
-                onRedo = {},
-                onReset = {},
-                onEditCounter = {},
+                primaryIncrement = primaryInc,
+                secondaryIncrement = secondaryInc,
+                onNavigateUp = {},
             )
         }
     }
 
     @Test
     fun `All Buttons are displayed`() {
-        primaryIncButton.assertIsDisplayed()
-        secondaryIncButton.assertIsDisplayed()
-        secondaryDecButton.assertIsDisplayed()
-        primaryDecButton.assertIsDisplayed()
+        primaryIncButton.assertHasClickAction()
+        secondaryIncButton.assertHasClickAction()
+        secondaryDecButton.assertHasClickAction()
+        primaryDecButton.assertHasClickAction()
     }
 
     @Test
     fun `Counter name is displayed`() {
-        composeRule.onNodeWithTag(GameCounterTestTags.SummaryBox)
+        composeRule.onNodeWithTag(GameCounterTestTags.CounterNameText)
             .assertTextContains(testCounter.name)
     }
 
     @Test
     fun `Sum is displayed`() {
-        composeRule.onNodeWithTag(GameCounterTestTags.SummaryBox)
+        composeRule.onNodeWithTag(GameCounterTestTags.TotalSumText)
             .assertTextContains("$testSum", substring = true)
     }
 }

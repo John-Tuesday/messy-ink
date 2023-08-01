@@ -45,8 +45,6 @@ private fun defaultCounter(time: Instant = Instant.DISTANT_PAST) = Counter(
 @HiltViewModel
 class GameCounterViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    @IODispatcher
-    private val ioDispatcher: CoroutineDispatcher,
     private val counterRepo: CounterRepository,
     private val tickRepo: TickRepository,
     private val _simpleCreateTick: SimpleCreateTickUseCase,
@@ -56,14 +54,6 @@ class GameCounterViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initial,
     )
-
-    private fun <T> Flow<T>.stateInIo(initial: T) = stateIn(
-        ioScope,
-        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
-        initial,
-    )
-
-    private val ioScope = viewModelScope + SupervisorJob() + ioDispatcher
 
     private val counterIdState = savedStateHandle.getStateFlow(GameCounterNode.COUNTER_ID, NOID)
     private val tickSortState = MutableStateFlow(TickSort.TimeForData)
@@ -81,7 +71,7 @@ class GameCounterViewModel @Inject constructor(
      */
     val tickSum = counterIdState.combineTransform(tickSortState) { id, sort ->
         emitAll(tickRepo.getTicksSumOfFlow(parentId = id, timeType = sort))
-    }.stateInIo(0.00)
+    }.stateInViewModel(0.00)
 
     private val _primaryIncrement = MutableStateFlow(5.00)
 
@@ -89,13 +79,6 @@ class GameCounterViewModel @Inject constructor(
      * Quick and usually larger increment
      */
     val primaryIncrement = _primaryIncrement.asStateFlow()
-
-    /**
-     * Change primary increment
-     */
-    fun changePrimaryIncrement(inc: Double) {
-        _primaryIncrement.value = inc
-    }
 
     private val _secondaryIncrement = MutableStateFlow(1.00)
 
@@ -105,47 +88,11 @@ class GameCounterViewModel @Inject constructor(
     val secondaryIncrement = _secondaryIncrement.asStateFlow()
 
     /**
-     * Change secondary increment
-     */
-    fun changeSecondaryIncrement(inc: Double) {
-        _secondaryIncrement.value = inc
-    }
-
-    /**
      * Add new Tick as a child of [counter] with [amount]
      */
     fun addTick(amount: Double) {
         viewModelScope.launch {
-            _simpleCreateTick.invoke(amount = amount, parentId = counterIdState.value)
-        }
-    }
-
-    /**
-     * # Not Implemented
-     *
-     * undo last action / action group / or actions within a time period such that it can be redone
-     */
-    fun undoTick() {
-        TODO("needs to implemented properly, with corresponding redo")
-    }
-
-    /**
-     * # Not Implemented
-     *
-     * redo last action / action group / or actions within a time period such that it can be redone
-     */
-    fun redoTick() {
-        TODO("needs to implemented properly, with corresponding undo")
-    }
-
-    /**
-     * Deletes all ticks owned by [counter], then adds on ticks with [amount]
-     */
-    fun restartCounter(amount: Double = 0.00) {
-        ioScope.launch {
-            val id = counterIdState.value
-            tickRepo.deleteTicksOf(id)
-            _simpleCreateTick(amount, id)
+            _simpleCreateTick(amount = amount, parentId = counterIdState.value)
         }
     }
 }
