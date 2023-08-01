@@ -76,6 +76,7 @@ fun CounterHistoryScreen(
     onChangeSort: (TickSort) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
+    changeGraphDomainToFit: () -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = CounterHistoryTab::size)
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
@@ -120,6 +121,7 @@ fun CounterHistoryScreen(
             graphDomain = graphDomain,
             graphDomainLimits = graphDomainLimits,
             changeGraphDomain = changeGraphDomain,
+            changeGraphDomainToFit = changeGraphDomainToFit,
             graphRange = graphRange,
             modifier = Modifier
                 .padding(padding)
@@ -140,6 +142,7 @@ private fun TabbedLayout(
     graphDomain: TimeDomain,
     graphDomainLimits: TimeDomain,
     changeGraphDomain: (TimeDomain) -> Unit,
+    changeGraphDomainToFit: () -> Unit,
     graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(pageCount = CounterHistoryTab::size),
@@ -173,6 +176,7 @@ private fun TabbedLayout(
                     domain = graphDomain,
                     domainLimits = graphDomainLimits,
                     changeDomain = changeGraphDomain,
+                    changeDomainToFit = changeGraphDomainToFit,
                 )
             }
         }
@@ -259,6 +263,7 @@ private fun CounterHistoryScreenPreview() {
         graphDomain = TimeDomain.AllTime,
         graphDomainLimits = TimeDomain.AllTime,
         changeGraphDomain = {},
+        changeGraphDomainToFit = {},
         onDeleteTick = {},
         onEditTick = {},
         tickSort = TickSort.TimeForData,

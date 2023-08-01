@@ -71,6 +71,7 @@ internal fun TicksOverTimeLayout(
     domain: TimeDomain,
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
+    changeDomainToFit: () -> Unit,
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(
         xAxisAt = -(range.start / (range.start - range.endInclusive).absoluteValue).toFloat()
@@ -121,6 +122,7 @@ internal fun TicksOverTimeLayout(
                 domain = domain,
                 domainLimits = domainLimits,
                 changeDomain = changeDomain,
+                changeDomainToFit = changeDomainToFit,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -133,6 +135,7 @@ private fun DomainBoundsAndPicker(
     domain: TimeDomain,
     domainLimits: TimeDomain,
     changeDomain: (TimeDomain) -> Unit,
+    changeDomainToFit: () -> Unit,
     modifier: Modifier = Modifier,
     timeZone: TimeZone = LocalTimeZone.current,
     dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
@@ -180,7 +183,7 @@ private fun DomainBoundsAndPicker(
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
-            onFitToData = { changeDomain(domainLimits); openDomainPicker = false },
+            onFitToData = { changeDomainToFit(); openDomainPicker = false },
             onSubmit = {
                 changeDomain(
                     TimeDomain(
@@ -308,6 +311,7 @@ private fun TickAmountOverTimePreview() {
                 domain = domain,
                 domainLimits = domain,
                 changeDomain = {},
+                changeDomainToFit = {},
             )
         }
     }

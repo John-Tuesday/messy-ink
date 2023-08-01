@@ -70,6 +70,7 @@ internal data object CounterHistoryNode : CounterGraphNode {
                 graphDomain = graphDomain,
                 graphDomainLimits = graphDomainLimits,
                 changeGraphDomain = { viewModel.changeGraphZoom(domain = it) },
+                changeGraphDomainToFit = { viewModel.changeGraphZoom() },
                 onDeleteTick = viewModel::deleteTick,
                 onEditTick = onNavigateToEditTick,
                 tickSort = tickSort,
