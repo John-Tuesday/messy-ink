@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.data.repository
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
@@ -17,8 +18,7 @@ class TickGraphRepositoryUnitTest {
 
     @Before
     fun setUp() {
-        val dep = DummyTickRepository()
-        repo = TickGraphRepositoryImpl(dep)
+        repo = TickGraphRepositoryImpl(Dispatchers.Default)
     }
 
     @Test

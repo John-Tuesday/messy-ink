@@ -78,28 +78,14 @@ interface TickGraphRepository {
         domain: ClosedRange<Instant>? = null,
         range: ClosedRange<Double>? = null,
     ): TickGraphState
-
-    /**
-     * Return a [Flow] which will track changes to ticks of [counterId] and sort by [sort]
-     *
-     * [domain] and [range] define the x and y axes. If left null,
-     * then the [getMaxBounds] alternative is used
-     */
-    fun getGraphPointsFlow(
-        counterId: Long,
-        sort: TickSort,
-        domain: ClosedRange<Instant>? = null,
-        range: ClosedRange<Double>? = null,
-    ): Flow<TickGraphState>
 }
 
 /**
  * Default Implementation
  */
 class TickGraphRepositoryImpl @Inject constructor(
-    private val tickRepo: TickRepository,
     @DefaultDispatcher
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : TickGraphRepository {
     override suspend fun getMaxBounds(
         ticks: List<Tick>,
@@ -170,14 +156,4 @@ class TickGraphRepositoryImpl @Inject constructor(
             graphPoints = graphPoints,
         )
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getGraphPointsFlow(
-        counterId: Long,
-        sort: TickSort,
-        domain: ClosedRange<Instant>?,
-        range: ClosedRange<Double>?,
-    ): Flow<TickGraphState> = tickRepo
-        .getTicksFlow(parentId = counterId, sort = sort)
-        .mapLatest { convertToGraphState(it, sort, domain, range) }
 }

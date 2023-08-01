@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,12 +69,17 @@ class CounterHistoryViewModel @Inject constructor(
         chosenDomainState,
         chosenRangeState
     ) { counterId, sort, domain, range ->
-        tickGraphRepository.getGraphPointsFlow(
-            counterId = counterId,
+        tickRepo.getTicksFlow(
+            parentId = counterId,
             sort = sort,
-            domain = domain,
-            range = range,
-        )
+        ).mapLatest {
+            tickGraphRepository.convertToGraphState(
+                ticks = it,
+                sort = sort,
+                domain = domain,
+                range = range,
+            )
+        }
     }.flatMapLatest { it }
         .stateInViewModel(TickGraphState())
 
