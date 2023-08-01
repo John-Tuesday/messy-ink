@@ -56,6 +56,8 @@ interface TickGraphRepository {
 
     /**
      * with [domain] and [range] as the viewport, map [ticks] to [PointByPercent]
+     *
+     * requires [domain] and [range] starts and ends not to be equal
      */
     suspend fun convertToGraphPoints(
         ticks: List<Tick>,
@@ -63,6 +65,19 @@ interface TickGraphRepository {
         domain: ClosedRange<Instant>,
         range: ClosedRange<Double>,
     ): List<PointByPercent>
+
+    /**
+     * map [ticks] to [PointByPercent] with graph determined by [domain] and [range]
+     * using the time value specified by [sort]
+     *
+     * if [domain] or [range] are `null` then use the maxBounds
+     */
+    suspend fun convertToGraphState(
+        ticks: List<Tick>,
+        sort: TickSort,
+        domain: ClosedRange<Instant>? = null,
+        range: ClosedRange<Double>? = null,
+    ): TickGraphState
 
     /**
      * Return a [Flow] which will track changes to ticks of [counterId] and sort by [sort]
@@ -116,12 +131,44 @@ class TickGraphRepositoryImpl @Inject constructor(
         domain: ClosedRange<Instant>,
         range: ClosedRange<Double>,
     ): List<PointByPercent> = withContext(defaultDispatcher) {
+        require(domain.start != domain.endInclusive) { "Domain start cannot equal end" }
+        require(range.start != range.endInclusive) { "Range start cannot equal end" }
         ticks.map {
             PointByPercent(
                 x = (it.getTime(sort) - domain.start) / (domain.endInclusive - domain.start).absoluteValue,
                 y = (it.amount - range.start) / (range.endInclusive - range.start).absoluteValue,
             )
         }
+    }
+
+    override suspend fun convertToGraphState(
+        ticks: List<Tick>,
+        sort: TickSort,
+        domain: ClosedRange<Instant>?,
+        range: ClosedRange<Double>?,
+    ): TickGraphState {
+        val bounds = getMaxBounds(ticks = ticks, sort = sort)
+        val currentDomain = domain ?: bounds.first
+        val currentRange = (range ?: bounds.second).let {
+            if (it.start == it.endInclusive)
+                minOf(0.00, it.start) .. maxOf(1.00, it.start)
+            else
+                it
+        }
+        val graphPoints = convertToGraphPoints(
+            ticks = ticks,
+            sort = sort,
+            domain = currentDomain,
+            range = currentRange,
+        )
+
+        return TickGraphState(
+            currentDomain = currentDomain,
+            domainBounds = bounds.first,
+            currentRange = currentRange,
+            rangeBounds = bounds.second,
+            graphPoints = graphPoints,
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -132,34 +179,5 @@ class TickGraphRepositoryImpl @Inject constructor(
         range: ClosedRange<Double>?,
     ): Flow<TickGraphState> = tickRepo
         .getTicksFlow(parentId = counterId, sort = sort)
-        .mapLatest { allTicks ->
-            val filtered = allTicks.filter {
-                val d = domain?.contains(it.getTime(sort)) ?: true
-                val r = range?.contains(it.amount) ?: true
-                d && r
-            }
-
-            val bounds = getMaxBounds(ticks = filtered, sort = sort)
-            val currentDomain = domain ?: bounds.first
-            val currentRange = (range ?: bounds.second).let {
-                if (it.start == it.endInclusive)
-                    minOf(0.00, it.start) .. maxOf(1.00, it.start)
-                else
-                    it
-            }
-            val graphPoints = convertToGraphPoints(
-                ticks = filtered,
-                sort = sort,
-                domain = currentDomain,
-                range = currentRange,
-            )
-
-            TickGraphState(
-                currentDomain = currentDomain,
-                domainBounds = bounds.first,
-                currentRange = currentRange,
-                rangeBounds = bounds.second,
-                graphPoints = graphPoints,
-            )
-        }
+        .mapLatest { convertToGraphState(it, sort, domain, range) }
 }
