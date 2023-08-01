@@ -2,6 +2,7 @@ package org.calamarfederal.messyink.feature_counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -35,8 +36,6 @@ internal data object GameCounterNode : CounterGraphNode {
         ) { it.name }
     }"
 
-    internal fun buildDestination(counterId: Long) = "$BASE_ROUTE/$counterId"
-
     fun NavController.navigateToGameCounter(
         counterId: Long,
         navOptions: NavOptions? = null,
@@ -44,32 +43,37 @@ internal data object GameCounterNode : CounterGraphNode {
         navigate("$BASE_ROUTE/$counterId", navOptions)
     }
 
-    fun NavGraphBuilder.gameCounterNode(
-        onEditCounter: (Long) -> Unit,
+    @Composable
+    fun GameCounterScreenBuilder(
         onNavigateUp: () -> Unit,
-        onEntry: @Composable (NavBackStackEntry) -> Unit = {},
+        viewModel: GameCounterViewModel = hiltViewModel(),
+    ) {
+        val counter by viewModel.counter.collectAsStateWithLifecycle()
+        val tickSum by viewModel.tickSum.collectAsStateWithLifecycle()
+        val primaryIncrement by viewModel.primaryIncrement.collectAsStateWithLifecycle()
+        val secondaryIncrement by viewModel.secondaryIncrement.collectAsStateWithLifecycle()
+
+        GameCounterScreen(
+            counterName = counter.name,
+            tickSum = tickSum,
+            primaryIncrement = primaryIncrement,
+            secondaryIncrement = secondaryIncrement,
+            onAddTick = viewModel::addTick,
+            onNavigateUp = onNavigateUp,
+        )
+    }
+
+    fun NavGraphBuilder.gameCounterNode(
+        onNavigateUp: () -> Unit,
     ) {
         composable(
             route = GameCounterNode.route,
             arguments = GameCounterNode.arguments,
             deepLinks = GameCounterNode.deepLinks,
         ) { entry ->
-            onEntry(entry)
-
-            val viewModel: GameCounterViewModel = hiltViewModel(entry)
-
-            val counter by viewModel.counter.collectAsStateWithLifecycle()
-            val tickSum by viewModel.tickSum.collectAsStateWithLifecycle()
-            val primaryIncrement by viewModel.primaryIncrement.collectAsStateWithLifecycle()
-            val secondaryIncrement by viewModel.secondaryIncrement.collectAsStateWithLifecycle()
-
-            GameCounterScreen(
-                counterName = counter.name,
-                tickSum = tickSum,
-                primaryIncrement = primaryIncrement,
-                secondaryIncrement = secondaryIncrement,
-                onAddTick = viewModel::addTick,
+            GameCounterScreenBuilder(
                 onNavigateUp = onNavigateUp,
+                viewModel = hiltViewModel(entry),
             )
         }
     }

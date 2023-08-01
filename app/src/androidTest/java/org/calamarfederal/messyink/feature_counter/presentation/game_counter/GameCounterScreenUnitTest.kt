@@ -1,7 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -14,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GameCounterScreenTest {
+class GameCounterScreenUnitTest {
     @get:Rule
     val composeRule = createComposeRule()
 

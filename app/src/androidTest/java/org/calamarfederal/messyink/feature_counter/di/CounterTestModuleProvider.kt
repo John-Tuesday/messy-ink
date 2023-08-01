@@ -2,21 +2,13 @@ package org.calamarfederal.messyink.feature_counter.di
 
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
 import org.calamarfederal.messyink.feature_counter.data.repository.di.CounterTickDaoModule
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterDao
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.source.database.MessyInkDb
 import org.calamarfederal.messyink.feature_counter.data.source.database.TickDao
-import org.calamarfederal.messyink.feature_counter.domain.GetTime
-import org.calamarfederal.messyink.feature_counter.domain.GetTimeZone
-import javax.inject.Singleton
 
 @Module
 @TestInstallIn(

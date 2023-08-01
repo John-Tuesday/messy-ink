@@ -163,7 +163,7 @@ private fun GameCounterLayout(
             }
         }
         Button(
-            onClick = { onAddTick(secondaryIncrement) },
+            onClick = { onAddTick(-secondaryIncrement) },
             colors = colors.secondaryDecrementColors,
             modifier = Modifier
                 .weight(secondaryWeight)
