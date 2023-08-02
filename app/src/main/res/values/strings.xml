@@ -17,6 +17,8 @@
     <string name="navigate_up">Navigate up</string>
     <!--  Content description for any close button -->
     <string name="close">Close</string>
+    <!--  Content description for any cancel button -->
+    <string name="cancel">Cancel</string>
     <!--  Save button label -->
     <string name="save">Save</string>
     <!--  Content description for Sort Icon button  -->
@@ -67,5 +69,16 @@
     <!--  Error / Feedback  -->
     <string name="counter_name_help_blank">Please enter a name with non-whitespace characters</string>
 
+    <!--  Edit Tick Screen  -->
+    <!--  Title in app bar  -->
+    <string name="tick_edit_title">Edit Tick</string>
+    <!--  Amount input label  -->
+    <string name="tick_amount_input_label">Amount</string>
+    <!--  Date error feedback  -->
+    <string name="tick_help_invalid_date">Invalid date</string>
+    <!--  Help text when entered tick amount is only whitespace  -->
+    <string name="tick_amount_help_blank">Please enter a number</string>
+    <!--  Help text when entered tick amount is not a number  -->
+    <string name="tick_amount_help_non_number">Please enter a decimal number</string>
 
 </resources>

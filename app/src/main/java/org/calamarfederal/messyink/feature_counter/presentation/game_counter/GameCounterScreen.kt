@@ -24,9 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.math.absoluteValue
 
@@ -56,6 +58,9 @@ internal fun defaultGameCounterColors(
     secondaryDecrementColors = secondaryDecrementColors,
 )
 
+/**
+ * Screen Designed to be used to track Health or other game stats while playing games like MtG
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameCounterScreen(
@@ -99,7 +104,7 @@ private fun GameCounterTopAppBar(
         title = {},
         navigationIcon = {
             IconButton(onClick = onNavigateUp) {
-                Icon(Icons.Filled.ArrowBack, "navigate up")
+                Icon(Icons.Filled.ArrowBack, stringResource(R.string.navigate_up))
             }
         }
     )

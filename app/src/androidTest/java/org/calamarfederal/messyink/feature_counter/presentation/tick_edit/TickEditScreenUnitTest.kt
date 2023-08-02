@@ -1,5 +1,6 @@
 package org.calamarfederal.messyink.feature_counter.presentation.tick_edit
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -11,7 +12,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
@@ -47,10 +48,10 @@ fun SemanticsNodeInteraction.assertHasError() {
 @RunWith(AndroidJUnit4::class)
 class TickEditScreenUnitTest {
     @get:Rule
-    val composeRule = createComposeRule()
+    val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private lateinit var editTickState: MutableEditTickUiState
-    private lateinit var editAmountHelpState: MutableState<HelpState>
+    private lateinit var editAmountHelpState: MutableState<TickAmountHelp>
     private lateinit var startTick: Tick
     private lateinit var onDoneCalled: MutableStateFlow<Boolean>
 
@@ -66,7 +67,7 @@ class TickEditScreenUnitTest {
     @Before
     fun setUp() {
         onDoneCalled = MutableStateFlow(false)
-        editAmountHelpState = mutableStateOf(HelpState())
+        editAmountHelpState = mutableStateOf(TickAmountHelp.NoHelp)
 
         val testDate = LocalDateTime(
             year = 2020,
@@ -102,10 +103,10 @@ class TickEditScreenUnitTest {
 
     @Test
     fun `Submit button is disabled when error and enabled when not`() {
-        editAmountHelpState.value = HelpState(isError = true)
+        editAmountHelpState.value = TickAmountHelp.BlankHelp
         onSubmitButton.assertIsNotEnabled()
 
-        editAmountHelpState.value = HelpState(isError = false)
+        editAmountHelpState.value = TickAmountHelp.NoHelp
         onSubmitButton.assertIsEnabled()
     }
 
@@ -156,7 +157,7 @@ class TickEditScreenUnitTest {
         onSubmitButton.performClick()
         assert(onDoneCalled.value)
 
-        editAmountHelpState.value = HelpState(isError = true)
+        editAmountHelpState.value = TickAmountHelp.BlankHelp
 
         onDoneCalled.value = false
         onAmountField.performImeAction()
@@ -189,32 +190,32 @@ class TickEditScreenUnitTest {
 
     @Test
     fun `Amount error and help text are shown`() {
-        val helpText = "help help help"
-        editAmountHelpState.value = HelpState(helpText, true)
+        editAmountHelpState.value = TickAmountHelp.BlankHelp
+        val helpText = editAmountHelpState.value.getHelp(composeRule.activity)!!
         onAmountField.assertTextContains(helpText)
         onAmountField.assertHasError()
     }
 
     @Test
     fun `Time For Data error and help text are shown`() {
-        val helpText = "help help help"
-        editTickState.timeForDataHelpState = HelpState(isError = true, help = helpText)
+        editTickState.timeForDataHelpState = TickTimeHelp.InvalidHelp
+        val helpText = TickTimeHelp.InvalidHelp.getHelp(composeRule.activity)!!
         onTimeForDataNode.assertTextContains(helpText)
         onTimeForDataNode.assertHasError()
     }
 
     @Test
     fun `Time Modified error and help text are shown`() {
-        val helpText = "help help help"
-        editTickState.timeModifiedHelpState = HelpState(isError = true, help = helpText)
+        editTickState.timeModifiedHelpState = TickTimeHelp.InvalidHelp
+        val helpText = TickTimeHelp.InvalidHelp.getHelp(composeRule.activity)!!
         onTimeModifiedNode.assertTextContains(helpText)
         onTimeModifiedNode.assertHasError()
     }
 
     @Test
     fun `Time Created error and help text are shown`() {
-        val helpText = "help help help"
-        editTickState.timeCreatedHelpState = HelpState(isError = true, help = helpText)
+        editTickState.timeCreatedHelpState = TickTimeHelp.InvalidHelp
+        val helpText = TickTimeHelp.InvalidHelp.getHelp(composeRule.activity)!!
         onTimeCreatedNode.assertTextContains(helpText)
         onTimeCreatedNode.assertHasError()
     }

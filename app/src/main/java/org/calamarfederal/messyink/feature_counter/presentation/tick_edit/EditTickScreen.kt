@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -49,6 +50,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
@@ -73,13 +75,13 @@ fun EditTickScreen(
         modifier = modifier,
         topBar = {
             MediumTopAppBar(
-                title = { Text("Edit Tick") },
+                title = { Text(stringResource(R.string.tick_edit_title)) },
                 navigationIcon = {
                     IconButton(
                         onClick = onClose,
                         modifier = Modifier.testTag(EditTickTestTags.CloseButton)
                     ) {
-                        Icon(Icons.Filled.Close, "discard changes")
+                        Icon(Icons.Filled.Close, stringResource(R.string.cancel))
                     }
                 },
                 actions = {
@@ -88,7 +90,7 @@ fun EditTickScreen(
                         enabled = !editTickState.anyError,
                         modifier = Modifier.testTag(EditTickTestTags.SubmitButton)
                     ) {
-                        Icon(Icons.Filled.Done, "save changes")
+                        Icon(Icons.Filled.Done, stringResource(R.string.save))
                     }
                 }
             )
@@ -145,7 +147,7 @@ private fun EditTickLayout(
                     onChangeTimeForData(it)
                     pickerOpenT = null
                 },
-                label = "Time",
+                label = stringResource(R.string.time_for_data),
                 testTag = EditTickTestTags.TimeForDataField,
             )
             TimeRow(
@@ -160,7 +162,7 @@ private fun EditTickLayout(
                     onChangeTimeModified(it)
                     pickerOpenT = null
                 },
-                label = "Modified",
+                label = stringResource(R.string.time_modified),
                 testTag = EditTickTestTags.TimeModifiedField,
             )
             TimeRow(
@@ -175,7 +177,7 @@ private fun EditTickLayout(
                     onChangeTimeCreated(it)
                     pickerOpenT = null
                 },
-                label = "Created",
+                label = stringResource(R.string.time_created),
                 testTag = EditTickTestTags.TimeCreatedField,
             )
             LaunchedEffect(Unit) {
@@ -200,7 +202,7 @@ private fun AmountRow(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Amount",
+            text = stringResource(R.string.tick_amount_input_label),
             modifier = Modifier.alignByBaseline(),
         )
         OutlinedTextField(
@@ -237,7 +239,7 @@ private fun TimeRow(
         fontStyle = FontStyle.Italic
     ),
     testTag: String = "",
-    label: String = "Time",
+    label: String = "",
     dateTimeFormatter: DateTimeFormat = DateTimeFormat(),
     timeZone: TimeZone = LocalTimeZone.current,
 ) {
@@ -246,6 +248,7 @@ private fun TimeRow(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
+            val invalidDate = stringResource(R.string.tick_help_invalid_date)
             Text(
                 text = label,
                 modifier = Modifier.alignByBaseline(),
@@ -255,7 +258,7 @@ private fun TimeRow(
                 modifier = Modifier
                     .alignByBaseline()
                     .testTag(testTag)
-                    .semantics { if (isError) error("Invalid Date") },
+                    .semantics { if (isError) error(helpText ?: invalidDate) },
             ) {
                 Text(
                     text = time.formatToString(dateTimeFormatter),
