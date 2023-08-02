@@ -35,6 +35,11 @@ object CounterHistoryTestTags {
     const val DomainPickerSave = "domain-date-picker-save"
 
     /**
+     * Scrollable lazy column of tick log entries
+     */
+    const val TickLogScrollable = "tick-log-container"
+
+    /**
      * Details of a tick in Tick Log view
      */
     const val TickLogEntry = "tick-log-entry"

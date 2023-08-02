@@ -38,10 +38,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
 import org.calamarfederal.messyink.feature_counter.data.repository.TickGraphState
@@ -194,14 +196,14 @@ private fun HistoryTopBar(
         },
         actions = {
             IconButton(onClick = { showSortOptions = !showSortOptions }) {
-                Icon(Icons.Filled.Sort, "Change sort")
+                Icon(Icons.Filled.Sort, stringResource(id = R.string.sort_icon_button_content_description))
             }
             DropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
             ) {
                 DropdownMenuItem(
-                    text = { Text("Time Data") },
+                    text = { Text(stringResource(R.string.time_for_data)) },
                     onClick = {
                         changeSort(TickSort.TimeForData)
                         showSortOptions = false
@@ -212,7 +214,7 @@ private fun HistoryTopBar(
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text("Time Modified") },
+                    text = { Text(stringResource(R.string.time_modified)) },
                     onClick = {
                         changeSort(TickSort.TimeModified)
                         showSortOptions = false
@@ -223,7 +225,7 @@ private fun HistoryTopBar(
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text("Time Created") },
+                    text = { Text(stringResource(R.string.time_created)) },
                     onClick = {
                         changeSort(TickSort.TimeCreated)
                         showSortOptions = false

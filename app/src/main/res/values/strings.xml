@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Messy Ink</string>
+    <string name="sort_icon_button_content_description">Sort</string>
+    <string name="time_modified">Time Modified</string>
+    <string name="time_created">Time Created</string>
+    <string name="time_for_data">Time For Data</string>
 </resources>

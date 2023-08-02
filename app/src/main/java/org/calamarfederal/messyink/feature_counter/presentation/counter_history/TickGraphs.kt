@@ -42,11 +42,13 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.compose.charts.GraphSize2d
@@ -203,7 +205,7 @@ private fun DomainBoundsAndPicker(
             onDismiss = { openDomainPicker = false },
             onFitToData = { changeDomainToFit(); openDomainPicker = false },
             onSubmit = {
-                changeDomain(it)
+                changeDomain(it.start .. it.endInclusive.plus(1, DateTimeUnit.DAY))
                 openDomainPicker = false
             },
         )

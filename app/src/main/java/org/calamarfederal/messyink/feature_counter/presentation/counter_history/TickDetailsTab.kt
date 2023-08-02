@@ -66,7 +66,7 @@ internal fun TickLogsLayout(
     sort: TickSort,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.testTag(CounterHistoryTestTags.TickLogScrollable)) {
         items(items = ticks, key = { it.id }) { tick ->
             var showOptions by remember { mutableStateOf(false) }
             val haptic = LocalHapticFeedback.current
