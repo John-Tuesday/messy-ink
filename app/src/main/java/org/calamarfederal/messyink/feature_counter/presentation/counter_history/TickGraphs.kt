@@ -42,40 +42,38 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.presentation.compose.charts.LineGraph
-import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.common.presentation.time.toUtcMillis
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
-import org.calamarfederal.messyink.feature_counter.presentation.previewUiTicks
+import org.calamarfederal.messyink.feature_counter.data.repository.TickGraphState
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 import kotlin.math.absoluteValue
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TicksOverTimeLayout(
     tickSort: TickSort,
-    graphPoints: List<PointByPercent>,
+    graphState: TickGraphState,
     pointInfo: (Int) -> String,
-    range: ClosedRange<Double>,
-    domain: TimeDomain,
-    domainLimits: TimeDomain,
-    changeDomain: (TimeDomain) -> Unit,
+    changeDomain: (ClosedRange<Instant>) -> Unit,
     changeDomainToFit: () -> Unit,
     modifier: Modifier = Modifier,
     graphSize: GraphSize2d = GraphSize2d(
-        xAxisAt = -(range.start / (range.start - range.endInclusive).absoluteValue).toFloat()
-    )
+        xAxisAt = -(graphState.currentRange.start / (graphState.currentRange.start - graphState.currentRange.endInclusive).absoluteValue).toFloat()
+    ),
+    timeZone: TimeZone = LocalTimeZone.current,
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -88,7 +86,7 @@ internal fun TicksOverTimeLayout(
                     .weight(1f)
                     .clickable { showPointInfo = !showPointInfo }
                     .testTag(CounterHistoryTestTags.TickGraph),
-                lineGraphPoints = graphPoints,
+                lineGraphPoints = graphState.graphPoints,
                 pointInfo = {
                     if (showPointInfo) pointInfo(it) else null
                 },
@@ -108,7 +106,7 @@ internal fun TicksOverTimeLayout(
                 rangeSlotIndexed = {
                     if (it == 0 || it == graphSize.yAxisChunks - 1) {
                         Text(
-                            text = if (it == 0) "${range.start}" else "${range.endInclusive}",
+                            text = if (it == 0) "${graphState.currentRange.start}" else "${graphState.currentRange.endInclusive}",
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .wrapContentHeight(align = if (it == 0) Alignment.Bottom else Alignment.Top)
@@ -118,10 +116,34 @@ internal fun TicksOverTimeLayout(
             )
 
 //          Show current domain min and max and allow edit
+            val localDomain by remember(graphState.currentDomain, timeZone) {
+                derivedStateOf {
+                    graphState.currentDomain.let {
+                        it.start.toLocalDateTime(timeZone) .. it.endInclusive.toLocalDateTime(
+                            timeZone
+                        )
+                    }
+                }
+            }
+            val selectableDates by remember(graphState.domainBounds, timeZone) {
+                derivedStateOf {
+                    graphState.domainBounds.let {
+                        selectableDatesInRange(
+                            it.start.toLocalDateTime(timeZone).date,
+                            it.endInclusive.toLocalDateTime(timeZone).date
+                        )
+                    }
+                }
+            }
+
             DomainBoundsAndPicker(
-                domain = domain,
-                domainLimits = domainLimits,
-                changeDomain = changeDomain,
+                localDomain = localDomain,
+                selectableDates = selectableDates,
+                changeDomain = {
+                    changeDomain(
+                        it.start.atStartOfDayIn(timeZone) .. it.endInclusive.atStartOfDayIn(timeZone)
+                    )
+                },
                 changeDomainToFit = changeDomainToFit,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -132,28 +154,25 @@ internal fun TicksOverTimeLayout(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DomainBoundsAndPicker(
-    domain: TimeDomain,
-    domainLimits: TimeDomain,
-    changeDomain: (TimeDomain) -> Unit,
+    localDomain: ClosedRange<LocalDateTime>,
+    selectableDates: SelectableDates,
+    changeDomain: (ClosedRange<LocalDate>) -> Unit,
     changeDomainToFit: () -> Unit,
     modifier: Modifier = Modifier,
-    timeZone: TimeZone = LocalTimeZone.current,
-    dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(domain.start, domain.end, timeZone),
+    dateTimeFormat: DateTimeFormat = DateTimeFormat().omitWhen(
+        localDomain.start,
+        localDomain.endInclusive,
+    ),
 ) {
     var openDomainPicker by remember { mutableStateOf(false) }
-    val localDomain by remember(domain, timeZone) {
-        derivedStateOf {
-            domain.start.toLocalDateTime(timeZone) to domain.end.toLocalDateTime(timeZone)
-        }
-    }
     val domainStart by remember(localDomain, dateTimeFormat) {
         derivedStateOf {
-            localDomain.first.formatToString(dateTimeFormat)
+            localDomain.start.formatToString(dateTimeFormat)
         }
     }
     val domainEnd by remember(localDomain, dateTimeFormat) {
         derivedStateOf {
-            localDomain.second.formatToString(dateTimeFormat)
+            localDomain.endInclusive.formatToString(dateTimeFormat)
         }
     }
     Row(
@@ -174,23 +193,17 @@ private fun DomainBoundsAndPicker(
         }
     }
     if (openDomainPicker) {
-        val selectable = domainLimits.toSelectableDates(timeZone)
         val domainState = rememberDateRangePickerState(
-            initialSelectedStartDateMillis = localDomain.first.date.toUtcMillis(),
-            initialSelectedEndDateMillis = localDomain.second.date.toUtcMillis(),
-            selectableDates = selectable,
+            initialSelectedStartDateMillis = localDomain.start.date.toUtcMillis(),
+            initialSelectedEndDateMillis = localDomain.endInclusive.date.toUtcMillis(),
+            selectableDates = selectableDates,
         )
         DomainDatePicker(
             state = domainState,
             onDismiss = { openDomainPicker = false },
             onFitToData = { changeDomainToFit(); openDomainPicker = false },
             onSubmit = {
-                changeDomain(
-                    TimeDomain(
-                        it.start.atStartOfDayIn(timeZone) ..< it.endInclusive.plus(DatePeriod(days = 1))
-                            .atStartOfDayIn(timeZone)
-                    )
-                )
+                changeDomain(it)
                 openDomainPicker = false
             },
         )
@@ -301,15 +314,10 @@ private fun DomainDatePickerPreview() {
 private fun TickAmountOverTimePreview() {
     MessyInkTheme {
         Surface {
-            val ticks = previewUiTicks(1L).take(10).toList()
-            val domain = TimeDomain(ticks.last().timeForData .. ticks.first().timeForData)
             TicksOverTimeLayout(
                 tickSort = TickSort.TimeForData,
-                graphPoints = listOf(),
+                graphState = TickGraphState(),
                 pointInfo = { "" },
-                range = ticks.first().amount .. ticks.last().amount,
-                domain = domain,
-                domainLimits = domain,
                 changeDomain = {},
                 changeDomainToFit = {},
             )

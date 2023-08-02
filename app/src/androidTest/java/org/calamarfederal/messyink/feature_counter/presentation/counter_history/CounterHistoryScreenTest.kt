@@ -22,11 +22,14 @@ import org.calamarfederal.messyink.feature_counter.data.generateTicks
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.repository.TickGraphState
 import org.calamarfederal.messyink.feature_counter.data.repository.toCounter
 import org.calamarfederal.messyink.feature_counter.data.repository.toTick
+import org.calamarfederal.messyink.feature_counter.di.TestTime
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.days
 
 class CounterHistoryScreenTest {
     @get:Rule
@@ -35,36 +38,41 @@ class CounterHistoryScreenTest {
     lateinit var counterState: MutableStateFlow<Counter>
     lateinit var ticksState: MutableStateFlow<List<Tick>>
     lateinit var tickSortState: MutableStateFlow<TickSort>
+    lateinit var tickGraphState: MutableStateFlow<TickGraphState>
 
     @Before
     fun setUp() {
         counterState = MutableStateFlow(generateCounters().take(1).first().toCounter())
+        val tickStartTime = TestTime
+        val tickEndTime = tickStartTime + 10.days
         ticksState = MutableStateFlow(
-            generateTicks(parentId = counterState.value.id).take(10).map { it.toTick() }
+            generateTicks(
+                startTime = tickStartTime,
+                stepTime = 1.days,
+                amount = { it.toDouble() },
+                parentId = counterState.value.id,
+            )
+                .take(10).map { it.toTick() }
                 .toList()
         )
         tickSortState = MutableStateFlow(TickSort.TimeForData)
+        tickGraphState = MutableStateFlow(
+            TickGraphState(
+                currentDomain = tickStartTime .. tickEndTime,
+                domainBounds = tickStartTime .. tickEndTime,
+                currentRange = 1.00 .. 10.00,
+                rangeBounds = 1.00 .. 10.00,
+            ))
 
         composeRule.setContent {
             val ticks by ticksState.collectAsState()
             val tickSort by tickSortState.collectAsState()
-            val graphRange by remember {
-                derivedStateOf { ticks.minOf { it.amount } .. ticks.maxOf { it.amount } }
-            }
-            val graphDomain by remember {
-                derivedStateOf { TimeDomain(ticks.minOf { it.timeForData } .. ticks.maxOf { it.timeForData }) }
-            }
-            val graphDomainLimits by remember {
-                derivedStateOf { TimeDomain(Instant.DISTANT_PAST, Instant.DISTANT_FUTURE, true) }
-            }
+            val graphState by tickGraphState.collectAsState()
 
             CounterHistoryScreen(
                 ticks = ticks,
                 tickSort = tickSort,
-                graphPoints = listOf(),
-                graphRange = graphRange,
-                graphDomain = graphDomain,
-                graphDomainLimits = graphDomainLimits,
+                graphState = graphState,
                 onChangeSort = {},
                 changeGraphDomain = {},
                 onDeleteTick = {},

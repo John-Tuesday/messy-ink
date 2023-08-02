@@ -1,10 +1,8 @@
 package org.calamarfederal.messyink.common.presentation.format
 
 import androidx.compose.material3.CalendarLocale
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -82,16 +80,15 @@ val DateTimeFormat.Companion.Empty: DateTimeFormat
  * between [momentA] and [momentB] (absolute value)
  */
 fun DateTimeFormat.omitWhen(
-    momentA: Instant,
-    momentB: Instant,
-    timeZone: TimeZone,
+    startDateTime: LocalDateTime,
+    endDateTime: LocalDateTime,
     hourThreshold: (Duration) -> Boolean = { it > 1.days },
     minuteThreshold: (Duration) -> Boolean = { it > 1.hours },
     secondThreshold: (Duration) -> Boolean = { it > 1.seconds },
 ): DateTimeFormat {
-    val startDateTime = momentA.toLocalDateTime(timeZone)
-    val endDateTime = momentB.toLocalDateTime(timeZone)
-    val diff = (momentA - momentB).absoluteValue
+    val days = (endDateTime.date.toEpochDays() - startDateTime.date.toEpochDays()).absoluteValue.days
+    val seconds = (endDateTime.time.toSecondOfDay() - startDateTime.time.toSecondOfDay()).absoluteValue.seconds
+    val diff = days + seconds
     return this.copy(
         year = if (startDateTime.year == endDateTime.year) YearFormat.Omit else year,
         month = if (startDateTime.date == endDateTime.date) MonthFormat.Omit else month,

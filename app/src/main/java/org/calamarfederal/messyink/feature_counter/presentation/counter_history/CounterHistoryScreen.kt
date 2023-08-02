@@ -41,9 +41,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.calamarfederal.messyink.common.presentation.compose.charts.PointByPercent
+import kotlinx.datetime.Instant
 import org.calamarfederal.messyink.feature_counter.data.model.Tick
 import org.calamarfederal.messyink.feature_counter.data.model.TickSort
+import org.calamarfederal.messyink.feature_counter.data.repository.TickGraphState
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickGraphs
 import org.calamarfederal.messyink.feature_counter.presentation.counter_history.CounterHistoryTab.TickLogs
 import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
@@ -65,14 +66,11 @@ import org.calamarfederal.messyink.feature_counter.presentation.previewUiTicks
 @Composable
 fun CounterHistoryScreen(
     ticks: List<Tick>,
-    graphPoints: List<PointByPercent>,
-    graphRange: ClosedRange<Double>,
-    graphDomain: TimeDomain,
-    graphDomainLimits: TimeDomain,
-    changeGraphDomain: (TimeDomain) -> Unit,
+    tickSort: TickSort,
+    graphState: TickGraphState,
+    changeGraphDomain: (ClosedRange<Instant>) -> Unit,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
-    tickSort: TickSort,
     onChangeSort: (TickSort) -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -114,15 +112,12 @@ fun CounterHistoryScreen(
         TabbedLayout(
             ticks = ticks,
             tickSort = tickSort,
+            graphState = graphState,
             onDeleteTick = onDeleteTick,
             onEditTick = onEditTick,
             state = pagerState,
-            graphPoints = graphPoints,
-            graphDomain = graphDomain,
-            graphDomainLimits = graphDomainLimits,
-            changeGraphDomain = changeGraphDomain,
             changeGraphDomainToFit = changeGraphDomainToFit,
-            graphRange = graphRange,
+            changeGraphDomain = changeGraphDomain,
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
@@ -136,14 +131,11 @@ fun CounterHistoryScreen(
 private fun TabbedLayout(
     ticks: List<Tick>,
     tickSort: TickSort,
+    graphState: TickGraphState,
     onDeleteTick: (Long) -> Unit,
     onEditTick: (Long) -> Unit,
-    graphPoints: List<PointByPercent>,
-    graphDomain: TimeDomain,
-    graphDomainLimits: TimeDomain,
-    changeGraphDomain: (TimeDomain) -> Unit,
+    changeGraphDomain: (ClosedRange<Instant>) -> Unit,
     changeGraphDomainToFit: () -> Unit,
-    graphRange: ClosedRange<Double>,
     modifier: Modifier = Modifier,
     state: PagerState = rememberPagerState(pageCount = CounterHistoryTab::size),
     userScrollEnabled: Boolean = false,
@@ -170,11 +162,8 @@ private fun TabbedLayout(
 
                 TickGraphs -> TicksOverTimeLayout(
                     tickSort = tickSort,
-                    graphPoints = graphPoints,
+                    graphState = graphState,
                     pointInfo = { "${ticks[it].amount}" },
-                    range = graphRange,
-                    domain = graphDomain,
-                    domainLimits = graphDomainLimits,
                     changeDomain = changeGraphDomain,
                     changeDomainToFit = changeGraphDomainToFit,
                 )
@@ -258,10 +247,7 @@ private fun CounterHistoryScreenPreview() {
 
     CounterHistoryScreen(
         ticks = ticks,
-        graphPoints = listOf(),
-        graphRange = range,
-        graphDomain = TimeDomain.AllTime,
-        graphDomainLimits = TimeDomain.AllTime,
+        graphState = TickGraphState(),
         changeGraphDomain = {},
         changeGraphDomainToFit = {},
         onDeleteTick = {},

@@ -95,8 +95,8 @@ class CounterHistoryViewModel @Inject constructor(
     /**
      * Change the graph viewport domain (width) and range (height)
      */
-    fun changeGraphZoom(domain: TimeDomain? = null, range: ClosedRange<Double>? = null) {
-        _chosenDomainState.update { domain?.run { start .. end } }
+    fun changeGraphZoom(domain: ClosedRange<Instant>? = null, range: ClosedRange<Double>? = null) {
+        _chosenDomainState.update { domain?.run { start .. endInclusive } }
         _chosenRangeState.update { range }
     }
 
