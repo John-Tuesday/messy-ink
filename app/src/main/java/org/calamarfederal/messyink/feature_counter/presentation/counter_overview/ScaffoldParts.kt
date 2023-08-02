@@ -10,6 +10,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import org.calamarfederal.messyink.R
 
 
 @Composable
@@ -22,8 +24,8 @@ internal fun CounterOverviewFAB(
         modifier = modifier,
         onClick = onCreateCounter,
         expanded = expanded,
-        text = { Text("Create Counter") },
-        icon = { Icon(Icons.Filled.Add, "create counter") },
+        text = { Text(stringResource(R.string.counter_create_nav_label)) },
+        icon = { Icon(Icons.Filled.Add, null) },
     )
 }
 
@@ -35,7 +37,7 @@ internal fun CounterOverviewAppBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text("Counters") },
+        title = { Text(stringResource(R.string.counter_overview_title)) },
         scrollBehavior = scrollBehavior,
     )
 }

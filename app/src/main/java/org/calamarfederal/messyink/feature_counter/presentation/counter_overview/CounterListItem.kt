@@ -27,10 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.feature_counter.presentation.previewUiCounters
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
@@ -104,12 +106,12 @@ private fun RowScope.ExtendedOptions(
     onExpand: () -> Unit,
 ) {
     TextButton(onClick = onHistory) {
-        Text("History")
+        Text(stringResource(R.string.counter_history_nav_label))
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
         Icon(Icons.Filled.Timeline, null)
     }
     TextButton(onClick = onExpand) {
-        Text("Full Screen")
+        Text(stringResource(R.string.counter_game_nav_label))
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
         //Material 3 Icon ExpandContent is missing???
         // Considering: ExpandContent, OpenInFull, FitScreen, Fullscreen
@@ -143,7 +145,7 @@ private fun IncButtons(
                 .fillMaxHeight()
 //                .height(buttonSize)
         ) {
-            Icon(Icons.Filled.Remove, "decrement counter")
+            Icon(Icons.Filled.Remove, stringResource(R.string.counter_decrease_description))
         }
         Spacer(Modifier.weight(1f / 3f, fill = true))
         FilledIconButton(
@@ -154,7 +156,7 @@ private fun IncButtons(
                 .fillMaxHeight()
 //                .height(buttonSize)
         ) {
-            Icon(Icons.Filled.Add, "increase counter")
+            Icon(Icons.Filled.Add, stringResource(R.string.counter_increase_description))
         }
     }
 }

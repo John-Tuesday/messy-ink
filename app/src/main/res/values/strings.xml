@@ -1,9 +1,26 @@
 <resources>
     <string name="app_name">Messy Ink</string>
+    <!--  GENERAL  -->
 
+    <!--  Button label to navigate to CounterHistory  -->
+    <string name="counter_history_nav_label">History</string>
+    <!--  Button label to navigate to GameCounter  -->
+    <string name="counter_game_nav_label">Game Mode</string>
+    <!--  Button label to navigate to Edit Counter  -->
+    <string name="counter_edit_nav_label">Edit Counter</string>
+    <!--  Button label to navigate to Create Counter  -->
+    <string name="counter_create_nav_label">Create Counter</string>
+
+    <!--  Content description for any navigate up button  -->
+    <string name="navigate_up">Navigate up</string>
+    <!--  Content description for any close button -->
+    <string name="close">Close</string>
+    <!--  Save button label -->
+    <string name="save">Save</string>
     <!--  Content description for Sort Icon button  -->
     <string name="sort_icon_button_content_description">Sort</string>
 
+    <!--  Counter Hisotry Screen  -->
     <string name="time_modified_labeled">Modified: %1$s</string>
     <string name="time_modified">Time Modified</string>
     <string name="time_created_labeled">Created: %1$s</string>
@@ -28,10 +45,16 @@
     <!--  Label for Navigation Icon leading to Tick Log  -->
     <string name="tick_log">Tick Log</string>
 
-    <!--  Content description for any navigate up button  -->
-    <string name="navigate_up">Navigate up</string>
-    <!--  Content description for any close button -->
-    <string name="close">Close</string>
-    <!--  Save button label -->
-    <string name="save">Save</string>
+    <!--  Counter Overview Screen  -->
+
+    <string name="counter_overview_title">Counters</string>
+    <!--  Button to quickly increase in Counter Overview  -->
+    <string name="counter_increase_description">Increment counter</string>
+    <!--  Button to quickly decrease in Counter Overview  -->
+    <string name="counter_decrease_description">Decrement counter</string>
+    <!--  Counter Option to Clear All  -->
+    <string name="counter_clear_all">Clear all ticks</string>
+    <!--  Counter Option to delete the counter-->
+    <string name="counter_delete">Delete counter</string>
+
 </resources>

@@ -9,8 +9,8 @@ import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
@@ -19,9 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import org.calamarfederal.messyink.R
 
 
 /**
@@ -54,29 +56,29 @@ internal fun CounterOptions(
         ) {
             Column {
                 ListItem(
-                    headlineContent = { Text("Game Mode") },
-                    leadingContent = { Icon(Filled.Ballot, "game mode") },
+                    headlineContent = { Text(stringResource(R.string.counter_game_nav_label)) },
+                    leadingContent = { Icon(Filled.Ballot, null) },
                     modifier = Modifier.clickable(onClick = onGameMode),
                 )
                 ListItem(
-                    headlineContent = { Text("History") },
-                    leadingContent = { Icon(Filled.History, "show details") },
+                    headlineContent = { Text(stringResource(R.string.counter_history_nav_label)) },
+                    leadingContent = { Icon(Filled.History, null) },
                     modifier = Modifier.clickable(onClick = onDetails),
                 )
                 ListItem(
-                    headlineContent = { Text("Clear All Ticks") },
-                    leadingContent = { Icon(Filled.ClearAll, "clear all ticks") },
+                    headlineContent = { Text(stringResource(R.string.counter_clear_all)) },
+                    leadingContent = { Icon(Filled.ClearAll, null) },
                     modifier = Modifier.clickable(onClick = onClear),
                 )
-                Divider()
+                HorizontalDivider()
                 ListItem(
-                    headlineContent = { Text("Edit Counter") },
-                    leadingContent = { Icon(Filled.Edit, "edit counter") },
+                    headlineContent = { Text(stringResource(R.string.counter_edit_nav_label)) },
+                    leadingContent = { Icon(Filled.Edit, null) },
                     modifier = Modifier.clickable(onClick = onEdit),
                 )
                 ListItem(
-                    headlineContent = { Text("Delete Counter") },
-                    leadingContent = { Icon(Filled.DeleteForever, "delete counter") },
+                    headlineContent = { Text(stringResource(R.string.counter_delete)) },
+                    leadingContent = { Icon(Filled.DeleteForever, null) },
                     modifier = Modifier.clickable(onClick = onDelete),
                 )
             }
