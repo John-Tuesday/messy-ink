@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
@@ -31,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import org.calamarfederal.messyink.R
+import org.calamarfederal.messyink.feature_counter.data.model.Counter
 import org.calamarfederal.messyink.ui.theme.MessyInkTheme
 
 /**
@@ -58,7 +62,10 @@ fun CreateCounterScreen(
                 onDone = onDone,
                 enableDone = !counterNameError,
                 scrollBehavior = scrollBehavior,
-                title = if (isEditCounter) "Edit Counter" else "Create Counter",
+                title = if (isEditCounter)
+                    stringResource(R.string.counter_edit_nav_label)
+                else
+                    stringResource(R.string.counter_create_nav_label),
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -129,10 +136,11 @@ private fun EditTitleField(
     helpText: String? = null,
     focusRequester: FocusRequester = FocusRequester(),
 ) {
-
     Column(modifier = modifier) {
+        val unknownError = stringResource(R.string.unknown_error)
+
         Text(
-            text = "Title:",
+            text = stringResource(R.string.counter_title_input_label),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.Start)
         )
@@ -154,7 +162,7 @@ private fun EditTitleField(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .semantics { if (isError) error(helpText ?: "Unknown Error") }
+                .semantics { if (isError) error(helpText ?: unknownError) }
                 .testTag(CreateCounterTestTags.TitleTextField)
         )
     }

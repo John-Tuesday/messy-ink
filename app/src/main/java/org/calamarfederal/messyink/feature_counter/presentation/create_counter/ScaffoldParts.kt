@@ -15,7 +15,9 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import org.calamarfederal.messyink.R
 
 /**
  * Provide m3 Fullscreen Dialog header for [CreateCounterScreen]
@@ -28,7 +30,7 @@ internal fun CreateCounterAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     enableDone: Boolean = false,
-    title: String = "Create Counter",
+    title: String = "",
 ) {
     MediumTopAppBar(
         modifier = modifier,
@@ -44,7 +46,7 @@ internal fun CreateCounterAppBar(
                 onClick = onClose,
                 modifier = Modifier.testTag(CreateCounterTestTags.CloseButton),
             ) {
-                Icon(Icons.Filled.Close, "close")
+                Icon(Icons.Filled.Close, stringResource(R.string.close))
             }
         },
         actions = {
@@ -53,7 +55,7 @@ internal fun CreateCounterAppBar(
                 enabled = enableDone,
                 modifier = Modifier.testTag(CreateCounterTestTags.SubmitButton),
             ) {
-                Icon(Icons.Filled.Done, "finalize counter")
+                Icon(Icons.Filled.Done, stringResource(R.string.save))
             }
         },
         scrollBehavior = scrollBehavior,

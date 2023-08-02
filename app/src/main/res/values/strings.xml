@@ -11,6 +11,8 @@
     <!--  Button label to navigate to Create Counter  -->
     <string name="counter_create_nav_label">Create Counter</string>
 
+    <string name="unknown_error">Unknown error</string>
+
     <!--  Content description for any navigate up button  -->
     <string name="navigate_up">Navigate up</string>
     <!--  Content description for any close button -->
@@ -56,5 +58,14 @@
     <string name="counter_clear_all">Clear all ticks</string>
     <!--  Counter Option to delete the counter-->
     <string name="counter_delete">Delete counter</string>
+
+    <!--  Create / Edit Counter Screen  -->
+
+    <!--  Counter Title input label  -->
+    <string name="counter_title_input_label">Title</string>
+
+    <!--  Error / Feedback  -->
+    <string name="counter_name_help_blank">Please enter a name with non-whitespace characters</string>
+
 
 </resources>
