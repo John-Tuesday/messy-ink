@@ -1,7 +1,37 @@
 <resources>
     <string name="app_name">Messy Ink</string>
+
+    <!--  Content description for Sort Icon button  -->
     <string name="sort_icon_button_content_description">Sort</string>
+
+    <string name="time_modified_labeled">Modified: %1$s</string>
     <string name="time_modified">Time Modified</string>
+    <string name="time_created_labeled">Created: %1$s</string>
     <string name="time_created">Time Created</string>
+    <string name="time_for_data_labeled">Data: %1$s</string>
     <string name="time_for_data">Time For Data</string>
+
+    <!--  Button label on tick options after long pressing; navigates to edit tick  -->
+    <string name="edit_tick_label">Edit</string>
+    <!--  Button label on tick options after long pressing; deletes tick -->
+    <string name="delete_tick_label">Delete</string>
+
+    <!--  Fit to data button label in DomainPicker  -->
+    <string name="fit_to_data">Fit to data</string>
+
+    <!--  Label for Navigation Icon leading to Tick Graph  -->
+    <string name="tick_graph">Tick Graph</string>
+    <!--  Graph content description in TickGraph  -->
+    <string name="tick_graph_description">Line graph showing Tick amount over time</string>
+    <!--  Title of the tick graph  -->
+    <string name="tick_graph_title">Amount v. %1$s</string>
+    <!--  Label for Navigation Icon leading to Tick Log  -->
+    <string name="tick_log">Tick Log</string>
+
+    <!--  Content description for any navigate up button  -->
+    <string name="navigate_up">Navigate up</string>
+    <!--  Content description for any close button -->
+    <string name="close">Close</string>
+    <!--  Save button label -->
+    <string name="save">Save</string>
 </resources>

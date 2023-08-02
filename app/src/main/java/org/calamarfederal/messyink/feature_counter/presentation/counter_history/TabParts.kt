@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import org.calamarfederal.messyink.R
 
 /**
  * # Enum containing all tabs
@@ -24,28 +26,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 @Suppress("MemberVisibilityCanBePrivate")
 internal enum class CounterHistoryTab(
-    val displayName: String,
     private val activeIcon: () -> ImageVector,
     private val inactiveIcon: () -> ImageVector,
 ) {
     TickGraphs(
-        displayName = "Tick Graphs",
         activeIcon = { Icons.Filled.Analytics },
         inactiveIcon = { Icons.Outlined.Analytics }
     ),
     TickLogs(
-        displayName = "Tick Logs",
         activeIcon = { Icons.Filled.DataExploration },
         inactiveIcon = { Icons.Outlined.DataExploration },
     ),
     ;
 
-    /**
-     * mapped tab index of this
-     *
-     * alias for [::ordinal]
-     */
-    val index: Int get() = ordinal
+    val displayName: String
+        @Composable
+        get() = when (this) {
+                TickGraphs -> stringResource(R.string.tick_graph)
+                TickLogs -> stringResource(R.string.tick_log)
+            }
 
     /**
      * Icon representing this tab when it is selected
@@ -60,30 +59,6 @@ internal enum class CounterHistoryTab(
      * defined using a getter so as to not store the [ImageVector] constantly
      */
     val iconInactive: ImageVector get() = inactiveIcon()
-
-    companion object {
-        /**
-         * total number of tabs
-         *
-         * convenience method for: `CounterDetailsTab.values().size`
-         */
-        val size: Int get() = CounterHistoryTab.values().size
-
-        /**
-         * Get the corresponding [CounterHistoryTab] from [index] or `null`
-         */
-        fun fromIndexOrNull(index: Int): CounterHistoryTab? = when (index) {
-            TickGraphs.index -> TickGraphs
-            TickLogs.index   -> TickLogs
-            else             -> null
-        }
-
-        /**
-         * Get the corresponding [CounterHistoryTab] from [index] or throw [IndexOutOfBoundsException]
-         */
-        fun fromIndex(index: Int): CounterHistoryTab = fromIndexOrNull(index)
-            ?: throw (IndexOutOfBoundsException("index: $index does not map to a valid object"))
-    }
 }
 
 @Composable
@@ -93,11 +68,11 @@ internal fun CounterHistoryNavBar(
     modifier: Modifier = Modifier,
 ) {
     NavigationBar(modifier = modifier) {
-        for (tab in CounterHistoryTab.values()) {
+        for (tab in CounterHistoryTab.entries) {
             NavBarItem(
                 tab = tab,
-                isSelected = selectedIndex == tab.index,
-                onClick = { onChangeSelect(tab.index) },
+                isSelected = selectedIndex == tab.ordinal,
+                onClick = { onChangeSelect(tab.ordinal) },
             )
         }
     }

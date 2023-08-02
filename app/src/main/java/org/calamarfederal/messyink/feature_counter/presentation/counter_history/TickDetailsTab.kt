@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.R
+import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.toStringAllowShorten
@@ -103,7 +106,7 @@ private fun TickListItem(
     selected: Boolean,
     modifier: Modifier = Modifier,
     sort: TickSort? = null,
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    timeZone: TimeZone = LocalTimeZone.current,
     dateTimeFormat: DateTimeFormat = DateTimeFormat(),
 ) {
     ListItem(modifier = modifier, headlineContent = {
@@ -126,37 +129,31 @@ private fun TickListItem(
         val pickedMod = TextStyle(fontWeight = FontWeight.SemiBold)
         val timeForData by remember(tick.timeForData, timeZone, dateTimeFormat) {
             derivedStateOf {
-                "data: ${
-                    tick.timeForData.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
-                }"
+                tick.timeForData.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
             }
         }
         val timeModified by remember(tick.timeModified, timeZone, dateTimeFormat) {
             derivedStateOf {
-                "modified: ${
-                    tick.timeModified.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
-                }"
+                tick.timeModified.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
             }
         }
         val timeCreated by remember(tick.timeCreated, timeZone, dateTimeFormat) {
             derivedStateOf {
-                "created: ${
-                    tick.timeCreated.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
-                }"
+                tick.timeCreated.toLocalDateTime(timeZone).formatToString(dateTimeFormat)
             }
         }
         Column {
 
             Text(
-                text = timeForData,
+                text = stringResource(R.string.time_for_data_labeled, timeForData),
                 style = style.merge(if (sort == TickSort.TimeForData) pickedMod else null)
             )
             Text(
-                text = timeModified,
+                text = stringResource(R.string.time_modified_labeled, timeModified),
                 style = style.merge(if (sort == TickSort.TimeModified) pickedMod else null)
             )
             Text(
-                text = timeCreated,
+                text = stringResource(R.string.time_created_labeled, timeCreated),
                 style = style.merge(if (sort == TickSort.TimeCreated) pickedMod else null)
             )
         }
@@ -192,8 +189,8 @@ private fun TickOptions(
                         selected = false,
                         onClick = onEdit,
                         border = null,
-                        label = { Text("Edit") },
-                        leadingIcon = { Icon(Icons.Filled.Edit, "edit tick") },
+                        label = { Text(stringResource(R.string.edit_tick_label)) },
+                        leadingIcon = { Icon(Icons.Filled.Edit, null) },
                         modifier = Modifier.testTag(CounterHistoryTestTags.TickLogEntryEdit),
                     )
                     HorizontalDivider(
@@ -206,8 +203,8 @@ private fun TickOptions(
                         selected = false,
                         onClick = onDelete,
                         border = null,
-                        label = { Text("Delete") },
-                        leadingIcon = { Icon(Icons.Filled.DeleteForever, "delete forever") },
+                        label = { Text(stringResource(R.string.delete_tick_label)) },
+                        leadingIcon = { Icon(Icons.Filled.DeleteForever, null) },
                         modifier = Modifier.testTag(CounterHistoryTestTags.TickLogEntryDelete),
                     )
                 }

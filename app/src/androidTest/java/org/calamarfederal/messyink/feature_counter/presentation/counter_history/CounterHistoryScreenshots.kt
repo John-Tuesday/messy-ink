@@ -18,6 +18,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
 import org.calamarfederal.messyink.feature_counter.data.insertPrettyData
 import org.calamarfederal.messyink.feature_counter.data.prettyCounterWorkout
@@ -62,11 +63,17 @@ class CounterHistoryScreenshots {
     @Before
     fun setUp() {
         hiltRule.inject()
-//
         runBlocking {
             dao.insertPrettyData()
         }
     }
+    private val tickLogNavButton
+        get() = composeRule.onNode(
+            hasText(composeRule.activity.getString(R.string.tick_log)) and hasClickAction()
+        )
+    private val tickGraphNavButton
+        get() = composeRule
+            .onNode(hasText(composeRule.activity.getString(R.string.tick_graph)) and hasClickAction())
 
     @Test
     fun `Graph View Screenshot`() {
@@ -76,8 +83,7 @@ class CounterHistoryScreenshots {
 
     @Test
     fun `Tick Log View Screenshot`() {
-        composeRule.onNode(hasClickAction() and hasText(CounterHistoryTab.TickLogs.displayName))
-            .performClick()
+        tickLogNavButton.performClick()
         val img = composeRule.onRoot().captureToImage()
         saveScreenshot("history-log.png", img.asAndroidBitmap())
     }

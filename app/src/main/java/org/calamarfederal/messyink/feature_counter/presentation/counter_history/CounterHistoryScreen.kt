@@ -78,7 +78,7 @@ fun CounterHistoryScreen(
     modifier: Modifier = Modifier,
     changeGraphDomainToFit: () -> Unit = {},
 ) {
-    val pagerState = rememberPagerState(pageCount = CounterHistoryTab::size)
+    val pagerState = rememberPagerState { CounterHistoryTab.entries.size }
     val currentIndex by remember { derivedStateOf(calculation = pagerState::currentPage) }
     val tabScope = rememberCoroutineScope()
 
@@ -97,7 +97,6 @@ fun CounterHistoryScreen(
         modifier = modifier.nestedScroll(topBarScrollBehavior.nestedScrollConnection),
         topBar = {
             HistoryTopBar(
-                selectedIndex = currentIndex,
                 onNavigateUp = onNavigateUp,
                 tickSort = tickSort,
                 changeSort = onChangeSort,
@@ -139,7 +138,7 @@ private fun TabbedLayout(
     changeGraphDomain: (ClosedRange<Instant>) -> Unit,
     changeGraphDomainToFit: () -> Unit,
     modifier: Modifier = Modifier,
-    state: PagerState = rememberPagerState(pageCount = CounterHistoryTab::size),
+    state: PagerState = rememberPagerState { CounterHistoryTab.entries.size },
     userScrollEnabled: Boolean = false,
 ) {
     HorizontalPager(
@@ -154,7 +153,7 @@ private fun TabbedLayout(
         flingBehavior = PagerDefaults.flingBehavior(state = state),
         key = { it },
         pageContent = { index ->
-            when (CounterHistoryTab.fromIndex(index)) {
+            when (CounterHistoryTab.entries[index]) {
                 TickLogs -> TickLogsLayout(
                     ticks = ticks,
                     sort = tickSort,
@@ -177,7 +176,6 @@ private fun TabbedLayout(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HistoryTopBar(
-    selectedIndex: Int,
     onNavigateUp: () -> Unit,
     tickSort: TickSort,
     changeSort: (TickSort) -> Unit,
@@ -188,10 +186,10 @@ private fun HistoryTopBar(
     TopAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
-        title = { Text(CounterHistoryTab.fromIndex(selectedIndex).displayName) },
+        title = {},
         navigationIcon = {
             IconButton(onClick = onNavigateUp) {
-                Icon(Icons.Filled.ArrowBack, "navigate up")
+                Icon(Icons.Filled.ArrowBack, stringResource(R.string.navigate_up))
             }
         },
         actions = {
@@ -210,7 +208,7 @@ private fun HistoryTopBar(
                     },
                     trailingIcon = {
                         if (tickSort == TickSort.TimeForData)
-                            Icon(Icons.Filled.Check, "chosen")
+                            Icon(Icons.Filled.Check, null)
                     },
                 )
                 DropdownMenuItem(
@@ -221,7 +219,7 @@ private fun HistoryTopBar(
                     },
                     trailingIcon = {
                         if (tickSort == TickSort.TimeModified)
-                            Icon(Icons.Filled.Check, "chosen")
+                            Icon(Icons.Filled.Check, null)
                     },
                 )
                 DropdownMenuItem(
@@ -232,7 +230,7 @@ private fun HistoryTopBar(
                     },
                     trailingIcon = {
                         if (tickSort == TickSort.TimeCreated)
-                            Icon(Icons.Filled.Check, "chosen")
+                            Icon(Icons.Filled.Check, null)
                     },
                 )
             }

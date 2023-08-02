@@ -102,11 +102,12 @@ class CounterHistoryIntegrationTest {
     lateinit var lowerDataDomain: String
 
     private val tickLogNavButton
-        get() = composeRule
-            .onNode(hasText(CounterHistoryTab.TickLogs.displayName) and hasClickAction())
+        get() = composeRule.onNode(
+            hasText(composeRule.activity.getString(R.string.tick_log)) and hasClickAction()
+        )
     private val tickGraphNavButton
         get() = composeRule
-            .onNode(hasText(CounterHistoryTab.TickGraphs.displayName) and hasClickAction())
+            .onNode(hasText(composeRule.activity.getString(R.string.tick_graph)) and hasClickAction())
     private val sortIconButton
         get() = composeRule.onNodeWithContentDescription(
             composeRule.activity.getString(R.string.sort_icon_button_content_description)
@@ -177,9 +178,8 @@ class CounterHistoryIntegrationTest {
         runBlocking {
             assert(dao.tick(2L) != null)
         }
-        composeRule
-            .onNode(hasText(CounterHistoryTab.TickLogs.displayName) and hasClickAction())
-            .performClick()
+
+        tickLogNavButton.performClick()
 
         composeRule
             .onNode(hasText("2") and hasTestTag(CounterHistoryTestTags.TickLogEntry))

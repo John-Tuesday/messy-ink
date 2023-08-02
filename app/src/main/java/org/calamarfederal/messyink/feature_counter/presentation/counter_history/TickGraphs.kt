@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
@@ -50,6 +51,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.common.presentation.compose.LocalTimeZone
 import org.calamarfederal.messyink.common.presentation.compose.charts.GraphSize2d
 import org.calamarfederal.messyink.common.presentation.compose.charts.LineGraph
@@ -83,7 +85,7 @@ internal fun TicksOverTimeLayout(
 
 //          Graph: Amount v Time
             LineGraph(
-                contentDescription = "Line graph of Tick amount over time",
+                contentDescription = stringResource(R.string.tick_graph_description),
                 modifier = Modifier
                     .weight(1f)
                     .clickable { showPointInfo = !showPointInfo }
@@ -95,13 +97,14 @@ internal fun TicksOverTimeLayout(
                 size = graphSize,
                 title = {
                     Text(
-                        text = "Amount vs ${
+                        text = stringResource(R.string.tick_graph_title,
                             when (tickSort) {
-                                TickSort.TimeForData -> "Time Data"
-                                TickSort.TimeCreated -> "Time Created"
-                                TickSort.TimeModified -> "Time Modified"
+                                TickSort.TimeForData -> stringResource(R.string.time_for_data)
+                                TickSort.TimeCreated -> stringResource(R.string.time_for_data)
+                                TickSort.TimeModified -> stringResource(R.string.time_for_data)
                             }
-                        }",
+                            )
+                        ,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 },
@@ -244,7 +247,7 @@ private fun DomainDatePicker(
                     title = {},
                     navigationIcon = {
                         IconButton(onClick = onDismiss) {
-                            Icon(Icons.Filled.Close, "Close")
+                            Icon(Icons.Filled.Close, stringResource(R.string.close))
                         }
                     },
                     actions = {
@@ -252,7 +255,7 @@ private fun DomainDatePicker(
                             onClick = onFitToData,
                             modifier = Modifier.testTag(CounterHistoryTestTags.DomainFitToData)
                         ) {
-                            Text("Fit to Data")
+                            Text(stringResource(R.string.fit_to_data))
                         }
                         TextButton(
                             onClick = {
@@ -274,7 +277,7 @@ private fun DomainDatePicker(
                             ),
                             modifier = Modifier.testTag(CounterHistoryTestTags.DomainPickerSave)
                         ) {
-                            Text(text = "Save")
+                            Text(stringResource(R.string.save))
                         }
                     }
                 )
