@@ -78,6 +78,13 @@ class CreateCounterViewModel @Inject constructor(
     val createCounterUiState: StateFlow<CreateCounterUiState> get() = _createCounterUiState
 
     /**
+     * Reset and re-initialize to new Counter
+     */
+    fun loadCounter(id: Long) {
+        savedStateHandle[CreateCounterNode.INIT_COUNTER_ID] = id
+    }
+
+    /**
      * change the name of the working copy
      *
      * triggers support logic
