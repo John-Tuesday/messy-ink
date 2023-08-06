@@ -169,5 +169,5 @@ fun LocalTime.formatToString(
 
     return listOf(hourStr, minuteStr, secondStr)
         .filterNot { it.isEmpty() }
-        .joinToString(separator = ":") { it } + " $periodStr"
+        .joinToString(separator = ":") { it } + if (periodStr.isNotEmpty()) " $periodStr" else ""
 }

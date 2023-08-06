@@ -86,8 +86,12 @@ fun DateTimeFormat.omitWhen(
     minuteThreshold: (Duration) -> Boolean = { it > 1.hours },
     secondThreshold: (Duration) -> Boolean = { it > 1.seconds },
 ): DateTimeFormat {
-    val days = (endDateTime.date.toEpochDays() - startDateTime.date.toEpochDays()).absoluteValue.days
-    val seconds = (endDateTime.time.toSecondOfDay() - startDateTime.time.toSecondOfDay()).absoluteValue.seconds
+    val days = (endDateTime.date.toEpochDays() - startDateTime.date.toEpochDays())
+        .absoluteValue
+        .days
+    val seconds = (endDateTime.time.toSecondOfDay() - startDateTime.time.toSecondOfDay())
+            .absoluteValue
+            .seconds
     val diff = days + seconds
     return this.copy(
         year = if (startDateTime.year == endDateTime.year) YearFormat.Omit else year,
@@ -105,9 +109,14 @@ fun DateTimeFormat.omitWhen(
 fun LocalDateTime.formatToString(
     dateTimeFormat: DateTimeFormat,
     formatLocale: CalendarLocale = java.util.Locale.getDefault(),
-): String = "${
-    date.formatToString(
+): String {
+    val dateString = date.formatToString(
         dateFormat = dateTimeFormat.dateFormat,
         formatLocale = formatLocale
     )
-} ${time.formatToString(timeFormat = dateTimeFormat.timeFormat)}"
+    val timeString = time.formatToString(timeFormat = dateTimeFormat.timeFormat)
+
+    val sep = if (dateString.isNotEmpty() && timeString.isNotEmpty()) " " else ""
+
+    return dateString + sep + timeString
+}
