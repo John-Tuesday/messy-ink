@@ -1,0 +1,1 @@
+Realice un seguimiento y grafique los valores a lo largo del tiempo. Cuenta la salud de los jugadores en Magic the Gathering.

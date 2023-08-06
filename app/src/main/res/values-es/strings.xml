@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tinta Desordenada</string>
+    <string name="counter_history_nav_label">Historía</string>
+    <string name="counter_game_nav_label">Modo de juego</string>
+    <string name="counter_edit_nav_label">Editar contador</string>
+    <string name="counter_create_nav_label">Crear contador</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="navigate_up">Navega hacia arriba</string>
+    <string name="close">Cerrar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="sort_icon_button_content_description">Ordenar</string>
+    <string name="time_modified_labeled">Modificado: %1$s</string>
+    <string name="time_modified">Hora Modificada</string>
+    <string name="time_created_labeled">Creado: %1$s</string>
+    <string name="time_created">Hora Creado</string>
+    <string name="time_for_data_labeled">Datos: %1$s</string>
+    <string name="time_for_data">Tiempo de datos</string>
+    <string name="edit_tick_label">Editar</string>
+    <string name="delete_tick_label">Eliminar</string>
+    <string name="fit_to_data">Ajuste a los datos</string>
+    <string name="tick_graph">Gráfico de entradas</string>
+    <string name="tick_graph_description">Gráfico de líneas muestra la cantidad a lo largo del tiempo</string>
+    <string name="tick_graph_title">Cantidad vs. %1$s</string>
+    <string name="tick_log">Registro de entradas</string>
+    <string name="counter_overview_title">Contadores</string>
+    <string name="counter_increase_description">Incrementar el contador</string>
+    <string name="counter_decrease_description">Disminuir el contador</string>
+    <string name="counter_clear_all">Eliminar todas las entradas</string>
+    <string name="counter_delete">Eliminar el contador</string>
+    <string name="counter_title_input_label">Título</string>
+    <string name="counter_name_help_blank">Introduzca un título con caracteres que no sean espacios en blanco</string>
+    <string name="tick_edit_title">Editar entrada</string>
+    <string name="tick_amount_input_label">Cantidad</string>
+    <string name="tick_help_invalid_date">Fecha invalida</string>
+    <string name="tick_amount_help_blank">Introduzca un número</string>
+    <string name="tick_amount_help_non_number">Introduzca un número decimal</string>
+</resources>

@@ -1,0 +1,1 @@
+Cree una categoría y luego registre las cantidades. Vea el cambio en las cantidades a lo largo del tiempo en una vista de lista o gráfico. Edite o elimine registros específicos después de que se hayan creado.
