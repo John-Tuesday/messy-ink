@@ -3,11 +3,13 @@ package org.calamarfederal.messyink.feature_counter.presentation.game_counter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -15,13 +17,9 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
-import org.calamarfederal.messyink.feature_counter.data.generateTestData
 import org.calamarfederal.messyink.feature_counter.data.insertPrettyData
-import org.calamarfederal.messyink.feature_counter.data.prettyCounterPlayer1
-import org.calamarfederal.messyink.feature_counter.data.prettyCounterWorkout
-import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
+import org.calamarfederal.messyink.feature_counter.data.loadPrettyCounterPlayer1
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterTickDao
-import org.calamarfederal.messyink.feature_counter.presentation.navigation.CounterHistoryNode.navigateToCounterHistory
 import org.calamarfederal.messyink.feature_counter.presentation.navigation.GameCounterNode.navigateToGameCounter
 import org.calamarfederal.messyink.navigation.MessyInkNavHost
 import org.calamarfederal.messyink.saveScreenshot
@@ -42,7 +40,7 @@ class GameCounterScreenshot {
     @Inject
     lateinit var dao: CounterTickDao
 
-    private val counterId = prettyCounterPlayer1.id
+    lateinit var navController: NavHostController
 
     @BindValue
     val testContent: OnCreateHookImpl = object : OnCreateHookImpl() {
@@ -53,7 +51,9 @@ class GameCounterScreenshot {
                     MessyInkTheme {
                         val navHostController = rememberNavController()
                         MessyInkNavHost.NavHostGraph(navHostController)
-                        navHostController.navigateToGameCounter(counterId = counterId)
+                        LaunchedEffect(navHostController) {
+                            navController = navHostController
+                        }
                     }
                 }
             }
@@ -64,7 +64,11 @@ class GameCounterScreenshot {
     fun setUp() {
         hiltRule.inject()
         runBlocking {
-            dao.insertPrettyData()
+            dao.insertPrettyData(composeRule.activity.resources)
+        }
+        val counterId = loadPrettyCounterPlayer1(composeRule.activity.resources).id
+        composeRule.runOnIdle {
+            navController.navigateToGameCounter(counterId = counterId)
         }
     }
 

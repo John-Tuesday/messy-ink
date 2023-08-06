@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="counter_name_workout">Ejercicio</string>
+    <string name="counter_name_player_1">Jugador 1</string>
+    <string name="counter_name_player_2">Jugador 2</string>
+</resources>

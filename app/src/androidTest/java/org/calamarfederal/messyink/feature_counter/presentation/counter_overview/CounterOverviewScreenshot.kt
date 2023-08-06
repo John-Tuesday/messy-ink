@@ -34,7 +34,7 @@ class CounterOverviewScreenshot {
     fun setUp() {
         hiltRule.inject()
 
-        runBlocking { dao.insertPrettyData() }
+        runBlocking { dao.insertPrettyData(composeRule.activity.resources) }
     }
 
     @Test

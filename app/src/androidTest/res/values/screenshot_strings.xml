@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Name of the Counter used to track times worked out in General Demo  -->
+    <string name="counter_name_workout">Workout</string>
+    <!--  Name of the counter used to track Player 1 health in Game Demo  -->
+    <string name="counter_name_player_1">Player 1</string>
+    <!--  Name of the counter used to track Player 2 health in Game Demo  -->
+    <string name="counter_name_player_2">Player 2</string>
+</resources>
