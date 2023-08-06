@@ -18,7 +18,7 @@ val prettyCounterWorkout: CounterEntity
             id = 1L,
         )
 
-private val prettyCounterPlayer1: CounterEntity
+val prettyCounterPlayer1: CounterEntity
     get() =
         CounterEntity(
             name = "Player 1 Health",
