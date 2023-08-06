@@ -35,6 +35,8 @@ import org.calamarfederal.messyink.MainActivity
 import org.calamarfederal.messyink.OnCreateHookImpl
 import org.calamarfederal.messyink.R
 import org.calamarfederal.messyink.common.presentation.format.DateTimeFormat
+import org.calamarfederal.messyink.common.presentation.format.Empty
+import org.calamarfederal.messyink.common.presentation.format.MonthFormat
 import org.calamarfederal.messyink.common.presentation.format.formatToString
 import org.calamarfederal.messyink.common.presentation.format.omitWhen
 import org.calamarfederal.messyink.feature_counter.data.source.database.CounterEntity
@@ -233,20 +235,31 @@ class CounterHistoryIntegrationTest {
                 startDay.formatToString(it) to endDay.formatToString(it)
             }
 
-
         composeRule
-            .onNodeWithText(
-                "${startDay.month.name} ${startDay.dayOfMonth}",
-                substring = true,
-                ignoreCase = true
+            .onNode(
+                hasText(
+                    text = startDay.formatToString(DateTimeFormat.Empty.copy(month = MonthFormat.FullName)),
+                    substring = true,
+                    ignoreCase = true,
+                ) and hasText(
+                    text = " ${startDay.dayOfMonth}",
+                    substring = true,
+                    ignoreCase = true,
+                )
             )
             .performClick()
 
         composeRule
-            .onNodeWithText(
-                "${startDay.month.name} ${startDay.dayOfMonth}",
-                substring = true,
-                ignoreCase = true
+            .onNode(
+                hasText(
+                    text = startDay.formatToString(DateTimeFormat.Empty.copy(month = MonthFormat.FullName)),
+                    substring = true,
+                    ignoreCase = true,
+                ) and hasText(
+                    text = " ${startDay.dayOfMonth}",
+                    substring = true,
+                    ignoreCase = true,
+                )
             )
             .performClick()
 
@@ -278,20 +291,31 @@ class CounterHistoryIntegrationTest {
             startDay.formatToString(it) to upperDomainDay.formatToString(it)
         }
 
-
         composeRule
-            .onNodeWithText(
-                "${startDay.month.name} ${startDay.dayOfMonth}",
-                substring = true,
-                ignoreCase = true
+            .onNode(
+                hasText(
+                    text = startDay.formatToString(DateTimeFormat.Empty.copy(month = MonthFormat.FullName)),
+                    substring = true,
+                    ignoreCase = true,
+                ) and hasText(
+                    text = " ${startDay.dayOfMonth}",
+                    substring = true,
+                    ignoreCase = true,
+                )
             )
             .performClick()
 
         composeRule
-            .onNodeWithText(
-                "${endDay.month.name} ${endDay.dayOfMonth}",
-                substring = true,
-                ignoreCase = true
+            .onNode(
+                hasText(
+                    text = endDay.formatToString(DateTimeFormat.Empty.copy(month = MonthFormat.FullName)),
+                    substring = true,
+                    ignoreCase = true,
+                ) and hasText(
+                    text = " ${endDay.dayOfMonth}",
+                    substring = true,
+                    ignoreCase = true,
+                )
             )
             .performClick()
 
