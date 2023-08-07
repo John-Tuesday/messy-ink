@@ -23,16 +23,6 @@ android {
         }
     }
 
-    sourceSets {
-        getByName("androidTest") {
-            assets.srcDir("$projectDir/schemas")
-            res.srcDirs("$projectDir/src/androidTest/res")
-        }
-        getByName("debug") {
-            res.srcDirs("$projectDir/src/androidTest/res")
-        }
-    }
-
     buildTypes {
         release {
             isDebuggable = true
@@ -44,6 +34,12 @@ android {
         }
         debug {
             isDebuggable = true
+        }
+    }
+
+    sourceSets {
+        getByName("androidTest") {
+            assets.srcDir("$projectDir/schemas")
         }
     }
     compileOptions {
