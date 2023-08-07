@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -6,9 +9,22 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
 }
 
+val keystorePropertiesFile: File = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
 android {
     namespace = "org.calamarfederal.messyink"
     compileSdk = 34
+
+    signingConfigs {
+        create("releaseConfig") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
 
     defaultConfig {
         applicationId = "org.calamarfederal.messyink"
@@ -25,8 +41,12 @@ android {
 
     buildTypes {
         release {
-            isDebuggable = true
-            isMinifyEnabled = false
+            signingConfigs {
+                signingConfig = getByName("releaseConfig")
+            }
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -34,6 +54,8 @@ android {
         }
         debug {
             isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = ".debug"
         }
     }
 
